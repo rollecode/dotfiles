@@ -93,9 +93,6 @@ FROWNY="\[$ERED\]:(\[$NO_COLOR\]"
 SELECT="if [ \$? = 0 ]; then echo \"${SMILEY}\"; else echo \"${FROWNY}\"; fi"
 CPUTEMP="cat /home/rolle/.cpu_temp"
 
-
-#PS1="\[$NO_COLOR\][\t] [\`${CPUTEMP}\`] \[$ERED\]\`${RAJAT}\`\[$EGREEN\]\u \[$EWHITE\]\[$EBLUE\]\W $\[$NO_COLOR\] "
-
 # Ilman lämpötilaa:
 #PS1="\[$NO_COLOR\][\t] \[$ERED\]\\[$EGREEN\]\u \[$EWHITE\]\[$EBLUE\]\W $\[$NO_COLOR\] "
 
