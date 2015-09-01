@@ -94,10 +94,10 @@ SELECT="if [ \$? = 0 ]; then echo \"${SMILEY}\"; else echo \"${FROWNY}\"; fi"
 CPUTEMP="cat /home/rolle/.cpu_temp"
 
 # Ilman lämpötilaa:
-#PS1="\[$NO_COLOR\][\t] \[$ERED\]\\[$EGREEN\]\u \[$EWHITE\]\[$EBLUE\]\W $\[$NO_COLOR\] "
+#PS1="\[$NO_COLOR\][\t] \[$ERED\]\\[$EGREEN\]\u \[$EWHITE\]\[$BLUE\]\W $\[$NO_COLOR\] "
 
 # Lämpötilan kanssa:
-PS1="\[$NO_COLOR\][\t] [\`${CPUTEMP}\`] \[$ERED\]\\[$EGREEN\]\u \[$EWHITE\]\[$EBLUE\]\W $\[$NO_COLOR\] "
+PS1="\[$NO_COLOR\][\t] [\`${CPUTEMP}\`] \[$ERED\]\\[$EGREEN\]\u \[$EWHITE\]\[$BLUE\]\W $\[$NO_COLOR\] "
 export PS1
 
 # If this is an xterm set the title to user@host:dir
