@@ -8,7 +8,7 @@ module.exports = {
     // or "canary" for less polished but more frequent updates
     updateChannel: 'stable',
 
-    windowSize: '[120, 40]',
+    windowSize: '[145, 40]',
 
     // default font size in pixels for all tabs
     fontSize: 12,
@@ -66,13 +66,13 @@ module.exports = {
       gray: '#666666',
       white: '#d0d0d0',
       lightBlack: '#999999',
-      lightRed: '#ff0000',
-      lightGreen: '#33ff00',
-      lightYellow: '#ffff00',
-      lightBlue: '#0066ff',
-      lightMagenta: '#cc00ff',
-      lightCyan: '#00ffff',
-      lightWhite: '#ffffff'
+      lightRed: '#ff5555',
+      lightGreen: '#50fa7b',
+      lightYellow: '#f1fa8c',
+      lightBlue: '#6272a4',
+      lightMagenta: '#ff79c6',
+      lightCyan: '#8be9fd',
+      lightWhite: '#d0d0d0'
     },
 
     // the shell to run when spawning a new session (i.e. /usr/local/bin/fish)
