@@ -2,7 +2,7 @@
 
 Using bash daily on Mac and Linux. These are my dotfiles for backup purposes. Inspired by others. Includes modified dracula theme for Hyper.
 
-![](https://rolle.wtf/dotfiles-hyper.png "Screenshot")
+![](https://rolle.wtf/dotfiles-hyper-dracula.png "Screenshot")
 
 
 
