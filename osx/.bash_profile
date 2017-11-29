@@ -1,11 +1,16 @@
 # Paths
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
 export PATH=~/.composer/vendor/bin:$PATH
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-export PATH=${PATH}:/Users/rolle/android/sdk/tools:/Users/rolle/android/sdk/platform-tools
 export PATH=/usr/local/sbin:$PATH
-export PATH=~/Projects/phpcs/scripts:$PATH
-export PATH=$HOME:/usr/bin/psql:/usr/local:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:$PATH
+export PATH=$PATH:~/Projects/phpcs/bin:$PATH
+export PATH=$PATH:~/Projects/phpcs/scripts:$PATH
+export PATH=$PATH:/usr/local:$PATH
+export PATH=$PATH:/usr/local/sbin:$PATH
+export PATH=$PATH:/usr/local/bin:$PATH
+export PATH=$PATH:/usr/sbin:$PATH
+export PATH=$PATH:/usr/bin:$PATH
+
+# Other exports
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
 
 # Locales
 export LC_CTYPE="en_US.UTF-8"
