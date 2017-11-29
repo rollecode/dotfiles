@@ -61,7 +61,6 @@ elif [ -f /etc/bash_completion ]; then
 fi;
 
 # Load other dotfiles
-for file in ~/.{aliases_private, .aliases, .bashrc}; do
-    [ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
-unset file;
+source $HOME/.aliases_private
+source $HOME/.aliases
+source $HOME/.bashrc
