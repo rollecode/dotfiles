@@ -57,8 +57,8 @@ module.exports = {
     // an array here instead of a color map object
     colors: {
       black: '#44475a',
-      red: '#ff5555',
-      green: '#50fa7b',
+      red: '#cc0000',
+      green: '#73d215',
       yellow: '#f1fa8c',
       blue: '#6272a4',
       magenta: '#ff79c6',
@@ -66,8 +66,8 @@ module.exports = {
       gray: '#666666',
       white: '#d0d0d0',
       lightBlack: '#999999',
-      lightRed: '#ff5555',
-      lightGreen: '#50fa7b',
+      lightRed: '#cc0000',
+      lightGreen: '#73d215',
       lightYellow: '#f1fa8c',
       lightBlue: '#6272a4',
       lightMagenta: '#ff79c6',
@@ -119,7 +119,7 @@ module.exports = {
   //   `@company/project`
   //   `project#1.0.1`
   plugins: [
-    'hyperpower'
+    'hyperboring'
   ],
 
   // in development, you can create a directory under
