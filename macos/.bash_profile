@@ -1,3 +1,6 @@
+# Silence Catalina zsh notification
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # Paths
 export PATH=~/.composer/vendor/bin:$PATH
 export PATH=/usr/local/sbin:$PATH
