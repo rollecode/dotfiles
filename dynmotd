@@ -2,9 +2,11 @@
 # Rolle's dynamic motd
 # Symlink this file to /usr/bin/dynmotd and add it to your ~/.bash_profile
 # Set in /usr/ssh/sshd_config:
-
 # PrintMotd no
 # PrintLastLog no
+
+# Set env
+PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Set up colors:
 NO_COLOR='\e[0m' # Disable any colors
@@ -45,61 +47,95 @@ BMAGENTA='\e[45m'
 BCYAN='\e[46m'
 BWHITE='\e[47m'
 
-echo -e "
-$ECYAN`figlet -f /usr/share/figlet/fonts/contessa.flf " peikko"`
+FILE_MOTD='/etc/motd'
 
+BIN_DATE='/bin/date'
+BIN_FIGLET='/usr/bin/figlet'
+BIN_HOSTNAME='/bin/hostname'
+BIN_IP='/sbin/ip'
+BIN_GREP='/bin/grep'
+BIN_SED='/bin/sed'
+BIN_UPTIME='/usr/bin/uptime'
+BIN_CAT='/bin/cat'
+BIN_UNAME='/bin/uname'
+BIN_FREE='/usr/bin/free'
+BIN_HEAD='/usr/bin/head'
+BIN_TAIL='/usr/bin/tail'
+BIN_DF='/bin/df'
+BIN_AWK='/bin/awk'
+BIN_BC='/usr/bin/bc'
+BIN_PS='/bin/ps'
+BIN_PUBLICIP='cat /home/rolle/publicip.log'
+BIN_RELEASE='cat /etc/fedora-release'
 
- $CYAN powered by `cat /etc/redhat-release |head -1`
- $CYAN _________________________________________
+#echo -e ''
+#/usr/bin/figlet -f /home/rolle/.local/share/fonts/3d.flf " peikko" |lolcat
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+cat /etc/ssh/sshd-banner |lolcat
 
- $CYAN uptime: $CYAN`/usr/bin/better_uptime`.$NO_COLOR
- $CYAN memory: $CYAN`cat /proc/meminfo | grep MemFree | awk {'print int($2/1000)'}` MB vapaana / `cat /proc/meminfo | grep MemTotal | awk {'print int($2/1000)'}` MB$NO_COLOR
- $CYAN processes: $CYAN`cat /proc/loadavg | cut -d"/" -f2| cut -d" " -f1`$NO_COLOR"
+RELEASE=`cat /etc/redhat-release |head -1 |lolcat`
+#UPTIME=`/usr/bin/better_uptime |lolcat`
+#UPTIME=`cat /home/rolle/uptime.txt |lolcat`
+UPTIME=`uptime -p |lolcat`
+LOADAVG=`cat /proc/loadavg |lolcat`
+echo -e "  $RELEASE \c" |lolcat
+echo -e "  $UPTIME \c" |lolcat
+echo -e "  load average: $LOADAVG" |lolcat
 
-echo -e "$ERED
+#echo -e "$GREEN Memory$WHITE: `cat /proc/meminfo | grep MemFree | awk {'print int($2/1000)'}` MB / `cat /proc/meminfo | grep MemTotal | awk {'print int($2/1000)'}` MB$NO_COLOR"
+#echo -e "$GREEN Processes$WHITE: `cat /proc/loadavg | cut -d"/" -f2| cut -d" " -f1`$NO_COLOR"
+#echo -e "$GREEN Global IP Address${WHITE}: $(${BIN_PUBLICIP})"
+#echo -e "$GREEN Private IP Address${WHITE}: $(${BIN_IP} addr show enp2s0 2>/dev/null | ${BIN_GREP} 'inet ' | ${BIN_SED} -e 's/.*inet \([^ ]*\)\/.*/\1/')"
+#echo -e "$GREEN CPU Usage${WHITE}: $(echo $(${BIN_PS} -eo pcpu | ${BIN_AWK} 'NR>1' | ${BIN_AWK} '{tot=tot+$1} END {print tot}') / $(${BIN_CAT} /proc/cpuinfo | ${BIN_GREP} -c processor) | ${BIN_BC} )%"
+#echo -e "$GREEN Memory${WHITE}: $(${BIN_FREE} -m | ${BIN_HEAD} -n 2 | ${BIN_TAIL} -n 1 | ${BIN_AWK} {'print $3'})/$(${BIN_FREE} -m | ${BIN_HEAD} -n 2 | ${BIN_TAIL} -n 1 | ${BIN_AWK} {'print $2'})MB"
+#echo -e "$GREEN System Disk${WHITE}: $(${BIN_DF} -h / | tail -n 1 | ${BIN_AWK} {'print $3'})/$(${BIN_DF} -h / | ${BIN_TAIL} -n 1 | ${BIN_AWK} {'print $2'})"
 
- !important$EWHITE" 
+#echo -e "
+#  ${EWHITE}For other functions, please run: ${MAGENTA}commands
+#"
+#echo -e ""
 
-if ps ax | grep -v grep | grep irssi > /dev/null
+#sh /home/rolle/memoryprogress.sh
+#sh /home/rolle/spaceprogress.sh
+#sh /home/rolle/cpuprogress.sh
+#sh /home/rolle/trafficprogress.sh
+
+# Procseses
+
+if pgrep -x "jackett" >/dev/null
 then
-echo -e " \e[1;37mirssi             :$EGREEN active     $EWHITE tmux a"
+
 else
-echo -e " \e[1;37mirssi             :$ERED off        $EWHITE tmux"
+    echo -e "  ${WHITE}Jackett:         ${RED}stopped"
 fi
 
-if ps ax | grep -v grep | grep CouchPotato > /dev/null
+if pgrep -fl "Tautulli.py" >/dev/null
 then
-echo -e " \e[1;37mCouchPotatoServer :$EGREEN active     $EWHITE /home/rolle/CouchPotatoServer/CouchPotato.py --debug"
+
 else
-echo -e " \e[1;37mCouchPotatoServer :$ERED off        $EWHITE python /home/rolle/CouchPotatoServer/CouchPotato.py --debug"
+    echo -e "  ${WHITE}Tautulli:        ${RED}stopped"
 fi
 
-if ps ax | grep -v grep | grep dropbox > /dev/null
+if pgrep -fl "SickBeard.py" >/dev/null
 then
-echo -e " \e[1;37mDropbox           :$EGREEN active     $EWHITE ~/bin/dropbox.py"
+
 else
-echo -e " \e[1;37mDropbox           :$ERED off        $EWHITE ~/bin/dropbox.py start"
+    echo -e "  ${WHITE}SickChill:       ${RED}stopped"
 fi
 
-if ps ax | grep -v grep | grep denyhosts > /dev/null
+if pgrep -fl "watcher.py" >/dev/null
 then
-echo -e " \e[1;37mdenyhosts         :$EGREEN active     $EWHITE /etc/rc.d/denyhosts"
+
 else
-echo -e " \e[1;37mdenyhosts         :$ERED off        $EWHITE roottina: service denyhosts start"
+    echo -e "  ${WHITE}Watcher:         ${RED}stopped"
 fi
 
-if ps ax | grep -v grep | grep sysmonserver > /dev/null
-then
-echo -e " \e[1;37msysmonserver      :$EGREEN active     $EWHITE /var/sysmon-ws/sysmonserver.py"
+PLEXACTIVE=`systemctl show -p ActiveState plexmediaserver | sed 's/ActiveState=//g'`
+if [ "$str1" == "$str2" ]; then
+    echo -e "  ${WHITE}plexmediaserver: ${GREEN}$PLEXACTIVE${WHITE} (https://app.plex.tv)"
 else
-echo -e " \e[1;37msysmonserver      :$ERED off        $EWHITE python /var/sysmon-ws/sysmonserver.py >/dev/null&"
+   echo -e "   ${WHITE}plexmediaserver: ${RED}$PLEXACTIVE${WHITE}"
 fi
 
-if ps ax | grep -v grep | grep subsonic > /dev/null
-then
-echo -e " \e[1;37msubsonic          :$EGREEN active     $EWHITE sh /var/subsonic/subsonic.sh"
-else
-echo -e " \e[1;37msubsonic          :$ERED off        $EWHITE sh /var/subsonic/subsonic.sh"
-fi
-
-echo -e "$NO_COLOR"
+echo ''
