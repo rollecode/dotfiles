@@ -131,8 +131,15 @@ else
     echo -e "  ${WHITE}Watcher:         ${RED}stopped"
 fi
 
+SYNCACTIVE=`systemctl show -p ActiveState resilio-sync | sed 's/ActiveState=//g'`
+if [ "$SYNCACTIVE" == "active" ]; then
+
+else
+   echo -e "   ${WHITE}resilio-sync:    ${RED}$SYNCACTIVE${WHITE}"
+fi
+
 PLEXACTIVE=`systemctl show -p ActiveState plexmediaserver | sed 's/ActiveState=//g'`
-if [ "$str1" == "$str2" ]; then
+if [ "$PLEXACTIVE" == "active" ]; then
     echo -e "  ${WHITE}plexmediaserver: ${GREEN}$PLEXACTIVE${WHITE} (https://app.plex.tv)"
 else
    echo -e "   ${WHITE}plexmediaserver: ${RED}$PLEXACTIVE${WHITE}"
