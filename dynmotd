@@ -140,7 +140,7 @@ fi
 
 PLEXACTIVE=`systemctl show -p ActiveState plexmediaserver | sed 's/ActiveState=//g'`
 if [ "$PLEXACTIVE" == "active" ]; then
-    echo -e "  ${WHITE}plexmediaserver: ${GREEN}$PLEXACTIVE${WHITE} (https://app.plex.tv)"
+    echo -e "  ${WHITE}plexmediaserver: ${GREEN}$PLEXACTIVE${WHITE} - https://app.plex.tv"
 else
    echo -e "   ${WHITE}plexmediaserver: ${RED}$PLEXACTIVE${WHITE}"
 fi
