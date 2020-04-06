@@ -142,7 +142,7 @@ SYNCACTIVE=`systemctl show -p ActiveState resilio-sync | sed 's/ActiveState=//g'
 if [ "$SYNCACTIVE" == "active" ]; then
 
 else
-   echo -e "   ${WHITE}resilio-sync:    ${RED}$SYNCACTIVE${WHITE}"
+   echo -e "  ${WHITE}resilio-sync:    ${RED}$SYNCACTIVE${WHITE}"
 fi
 
 PLEXACTIVE=`systemctl show -p ActiveState plexmediaserver | sed 's/ActiveState=//g'`
@@ -151,6 +151,7 @@ if [ "$PLEXACTIVE" == "active" ]; then
 else
    echo -e "   ${WHITE}plexmediaserver: ${RED}$PLEXACTIVE${WHITE}"
 fi
+
 
 
 
