@@ -131,7 +131,7 @@ fi
 #    echo -e "  ${WHITE}CouchPotato:     ${RED}stopped"
 #fi
 
-if pgrep -fl "SickBeard.py" >/dev/null
+if pgrep -fl "SickChill.py" >/dev/null
 then
 
 else
