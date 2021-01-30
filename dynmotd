@@ -79,9 +79,9 @@ RELEASE=`cat /etc/redhat-release |head -1 |lolcat`
 #UPTIME=`cat /home/rolle/uptime.txt |lolcat`
 UPTIME=`uptime -p |lolcat`
 LOADAVG=`cat /proc/loadavg |lolcat`
-echo -e "  $RELEASE \c" |lolcat
-echo -e "  $UPTIME \c" |lolcat
-echo -e "  load average: $LOADAVG" |lolcat
+echo -e "\n  $RELEASE \c" |lolcat
+echo -e "\n  $UPTIME \c" |lolcat
+echo -e "\n  load average: $LOADAVG" |lolcat
 
 #echo -e "$GREEN Memory$WHITE: `cat /proc/meminfo | grep MemFree | awk {'print int($2/1000)'}` MB / `cat /proc/meminfo | grep MemTotal | awk {'print int($2/1000)'}` MB$NO_COLOR"
 #echo -e "$GREEN Processes$WHITE: `cat /proc/loadavg | cut -d"/" -f2| cut -d" " -f1`$NO_COLOR"
@@ -94,7 +94,7 @@ echo -e "  load average: $LOADAVG" |lolcat
 #echo -e "
 #  ${EWHITE}For other functions, please run: ${MAGENTA}commands
 #"
-#echo -e ""
+echo -e ""
 
 #sh /home/rolle/memoryprogress.sh
 #sh /home/rolle/spaceprogress.sh
