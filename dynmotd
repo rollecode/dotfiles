@@ -138,19 +138,19 @@ else
     echo -e "  ${WHITE}SickChill:       ${RED}stopped"
 fi
 
-if pgrep -fl "watcher.py" >/dev/null
-then
+#if pgrep -fl "watcher.py" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Watcher:         ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Watcher:         ${RED}stopped"
+#fi
 
-if pgrep -fl "rslsync" >/dev/null
-then
+#if pgrep -fl "rslsync" >/dev/null
+#then
 
-else
-   echo -e "  ${WHITE}resilio-sync:    ${RED}stopped${WHITE}"
-fi
+#else
+#   echo -e "  ${WHITE}resilio-sync:    ${RED}stopped${WHITE}"
+#fi
 
 PLEXACTIVE=`systemctl show -p ActiveState plexmediaserver | sed 's/ActiveState=//g'`
 if [ "$PLEXACTIVE" == "active" ]; then
