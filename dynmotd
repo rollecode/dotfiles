@@ -124,6 +124,20 @@ else
     echo -e "  ${WHITE}Lidarr:          ${RED}stopped"
 fi
 
+if pgrep -fl "Radarr.exe" >/dev/null
+then
+
+else
+    echo -e "  ${WHITE}Radarr:          ${RED}stopped"
+fi
+
+if pgrep -fl "/usr/local/bin/flood" >/dev/null
+then
+
+else
+    echo -e "  ${WHITE}Flood:           ${RED}stopped"
+fi
+
 #if pgrep -fl "CouchPotato.py" >/dev/null
 #then
 
