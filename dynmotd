@@ -131,6 +131,13 @@ else
     echo -e "  ${WHITE}Radarr:          ${RED}stopped"
 fi
 
+if pgrep -fl "Sonarr.exe" >/dev/null
+then
+
+else
+    echo -e "  ${WHITE}Sonarr:          ${RED}stopped"
+fi
+
 if pgrep -fl "/usr/local/bin/flood" >/dev/null
 then
 
@@ -145,12 +152,12 @@ fi
 #    echo -e "  ${WHITE}CouchPotato:     ${RED}stopped"
 #fi
 
-if pgrep -fl "SickChill.py" >/dev/null
-then
+#if pgrep -fl "SickChill.py" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}SickChill:       ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}SickChill:       ${RED}stopped"
+#fi
 
 #if pgrep -fl "watcher.py" >/dev/null
 #then
