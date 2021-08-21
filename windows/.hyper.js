@@ -54,7 +54,7 @@ module.exports = {
     borderColor: '#333',
 
     // custom CSS to embed in the main window
-    css: '.header_appTitle, .tab_textInner { display: none !important; }',
+    css: '.header_windowHeader .header_appTitle { opacity: 0; }',
 
     // custom CSS to embed in the terminal window
     termCSS: '',
@@ -146,10 +146,10 @@ module.exports = {
   //   `@company/project`
   //   `project#1.0.1`
   plugins: [
-        "hyper-city-lights",
+        // "hyper-city-lights",
         "hyper-systray",
         "hyper-opacity",
-        "hyper-material-theme",
+        // "hyper-material-theme",
         "hyper-window-size",
 	"hyperborder"
   ],
@@ -162,5 +162,9 @@ module.exports = {
   keymaps: {
     // Example
     // 'window:devtools': 'cmd+alt+o',
+    'window:home': 'ctrl+alt+a',
+    'window:end': 'ctrl+alt+e',
+    'editor:copy': 'ctrl+shift+v',
+    'editor:paste': 'ctrl+v',
   },
 };
