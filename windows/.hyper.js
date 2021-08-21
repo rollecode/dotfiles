@@ -151,7 +151,8 @@ module.exports = {
         "hyper-opacity",
         // "hyper-material-theme",
         "hyper-window-size",
-	"hyperborder"
+	"hyperborder",
+        "hyper-font-smoothing",
   ],
 
   // in development, you can create a directory under
