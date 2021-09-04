@@ -117,7 +117,7 @@ else
     echo -e "  ${WHITE}Tautulli:        ${RED}stopped"
 fi
 
-if pgrep -fl "Lidarr.exe" >/dev/null
+if pgrep -fl "Lidarr" >/dev/null
 then
 
 else
