@@ -103,47 +103,47 @@ echo -e ""
 
 # Procseses
 
-if pgrep -x "jackett" >/dev/null
-then
+#if pgrep -x "jackett" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Jackett:         ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Jackett:         ${RED}stopped"
+#fi
 
-if pgrep -fl "Tautulli.py" >/dev/null
-then
+#if pgrep -fl "Tautulli.py" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Tautulli:        ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Tautulli:        ${RED}stopped"
+#fi
 
-if pgrep -fl "Lidarr" >/dev/null
-then
+#if pgrep -fl "Lidarr" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Lidarr:          ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Lidarr:          ${RED}stopped"
+#fi
 
-if pgrep -fl "Radarr" >/dev/null
-then
+#if pgrep -fl "Radarr" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Radarr:          ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Radarr:          ${RED}stopped"
+#fi
 
-if pgrep -fl "Sonarr.exe" >/dev/null
-then
+#if pgrep -fl "Sonarr.exe" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Sonarr:          ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Sonarr:          ${RED}stopped"
+#fi
 
-if pgrep -fl "/usr/local/bin/flood" >/dev/null
-then
+#if pgrep -fl "/usr/local/bin/flood" >/dev/null
+#then
 
-else
-    echo -e "  ${WHITE}Flood:           ${RED}stopped"
-fi
+#else
+#    echo -e "  ${WHITE}Flood:           ${RED}stopped"
+#fi
 
 #if pgrep -fl "CouchPotato.py" >/dev/null
 #then
