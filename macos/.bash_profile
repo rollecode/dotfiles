@@ -1,32 +1,18 @@
+# Node version manager
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+
 # Silence Catalina zsh notification
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+# Gopath
+export GOPATH=/usr/local/go
+
 # Paths
-export PATH=~/.composer/vendor/bin:$PATH
-export PATH=/usr/local/sbin:$PATH
-export PATH=$PATH:~/Projects/phpcs/bin:$PATH
-export PATH=$PATH:~/Projects/phpcs/scripts:$PATH
-export PATH=$PATH:/usr/local:$PATH
-export PATH=$PATH:/usr/local/sbin:$PATH
-export PATH=$PATH:/usr/local/bin:$PATH
-export PATH=$PATH:/usr/sbin:$PATH
-export PATH=$PATH:/usr/bin:$PATH
+export PATH=$PATH:$GOPATH/bin:/usr/local/bin:/Users/rolle/.rvm/gems/ruby-2.6.3/bin:$PATH
 
-# Other exports
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
-
-# Locales
-export LC_CTYPE="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-export LC_CTYPE="fi_FI.UTF-8"
-export LC_TIME="fi_FI.UTF-8"
-export LESSCHARSET="utf-8"
-
-# MacPorts Installer addition on 2015-05-05_at_15:14:32: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-
-# Add `~/bin` to the `$PATH`
-export PATH="$HOME/bin:$PATH";
+# Editor
+export EDITOR=nano
 
 # Title bar - "user@host: ~"
 title="\u@\h: \w"
@@ -50,20 +36,24 @@ git_branch() {
 # Clear attributes
 clear_attributes="\[$(tput sgr0)\]"
 
-# Dracula bash prompt for regular user - "➜  ~ (master) "
-export PS1="${titlebar}${green}➜  ${blue}\W ${cyan}\$(git_branch)${clear_attributes}"
+# Dracula bash prompt for regular user
+export PS1="${titlebar}${green}$ ${blue}\W ${cyan}\$(git_branch)${clear_attributes}"
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
 
-# Add tab completion for many Bash commands
-if which brew > /dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
-    source "$(brew --prefix)/share/bash-completion/bash_completion";
-elif [ -f /etc/bash_completion ]; then
-    source /etc/bash_completion;
-fi;
-
 # Load other dotfiles
 source $HOME/.aliases_private
 source $HOME/.aliases
-source $HOME/.bashrc
+
+source $HOME/bash-wakatime/bash-wakatime.sh
+export PATH="/usr/local/opt/node@10/bin:$PATH"
+PATH="$HOME/.composer/vendor/bin:$PATH"
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+export PATH="/usr/local/opt/bison/bin:$PATH"
+export PATH="/usr/local/opt/gettext/bin:$PATH"
+
+export PATH="/usr/local/opt/php@7.4/bin:$PATH"
+export PATH="/usr/local/opt/php@7.4/sbin:$PATH"
+
