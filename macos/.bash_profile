@@ -1,3 +1,6 @@
+/Users/rolle/mementomori/mementomori -s m -b 1988-11-01
+alias mementomori='/Users/rolle/mementomori/mementomori -s m -b 1988-11-01'
+
 # Node version manager
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
@@ -56,4 +59,3 @@ export PATH="/usr/local/opt/gettext/bin:$PATH"
 
 export PATH="/usr/local/opt/php@7.4/bin:$PATH"
 export PATH="/usr/local/opt/php@7.4/sbin:$PATH"
-
