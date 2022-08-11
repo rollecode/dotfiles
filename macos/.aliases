@@ -1,4 +1,5 @@
 # Global aliases
+alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias nginx.start='sudo brew services start nginx'
 alias nginx.stop='sudo brew services stop nginx'
 alias nginx.restart='nginx.stop && nginx.start'
