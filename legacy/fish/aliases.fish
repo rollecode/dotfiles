@@ -12,7 +12,6 @@ alias mount_olohuone "sh /Users/rolle/mount_olohuone.sh"
 alias php_errors "tail -f error.log | color -l "\[error\]","\[notice\]""
 
 function imagesize() { convert "$@" -print "Size: %wx%h\n" /dev/null; }
-
 alias rst "vagrant reload && vagrant provision"
 alias passu "pwgen -ny 12 -1"
 alias randomword "gshuf -n1  /usr/share/dict/words"
@@ -22,7 +21,6 @@ alias a "git add --all"
 alias c "git commit -m"
 alias p "git push -u origin HEAD"
 alias quota "df -l -k -H"
-
 alias dnsreset "dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias grep "grep --color"
 function deploy() { dandelion --config "$@".yml deploy; }
