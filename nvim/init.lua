@@ -1,6 +1,10 @@
 -- luacheck: globals vim
--- Rolle's Neovim Configuration
+-- Rolle's Neovim configuration
 -- Modular setup with OS-specific configurations
+
+-- Compatibility: use vim.uv (new) or vim.loop (old)
+---@diagnostic disable-next-line: undefined-field
+local uv = vim.uv or vim.loop
 
 -- Add luarocks path for code-stats.nvim
 local rocks_path = vim.fn.expand("~/.local/share/nvim/rocks")
@@ -10,7 +14,7 @@ vim.opt.runtimepath:append(rocks_path .. "/lib/luarocks/rocks-5.1/code-stats.nvi
 
 -- Bootstrap lazy.nvim plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-local uv = vim.uv or vim.loop
+---@diagnostic disable-next-line: undefined-field
 if not uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -38,15 +42,15 @@ vim.cmd.colorscheme "catppuccin-mocha"
 require('shared.options')
 require('shared.keymaps')
 require('shared.functions')
-require('shared.codestats')  -- Code::Stats setup and tracking
+require('shared.codestats') -- Code::Stats setup and tracking
 require('shared.autocmds')
 
 -- Detect and load OS-specific configuration
-local uv = vim.uv or vim.loop
+---@diagnostic disable-next-line: undefined-field
 local os_name = uv.os_uname().sysname
 local os_configs = {
   Linux = 'os.linux',
-  Darwin = 'os.darwin',  -- macOS
+  Darwin = 'os.darwin', -- macOS
   Windows_NT = 'os.windows'
 }
 
