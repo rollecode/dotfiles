@@ -28,30 +28,81 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
 ```
 
-### Set up secrets
+### Quick Setup (One-liners)
 
+#### With Symlinks (Recommended)
+Changes to configs automatically update the repo:
+
+**Linux/macOS:**
 ```bash
-# Neovim secrets
-cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/.config/nvim/lua/secrets.lua
-# Edit and add your Code::Stats API key
-nvim ~/.config/nvim/lua/secrets.lua
+# WezTerm
+ln -sf ~/Projects/dotfiles/wezterm ~/.config/wezterm
+
+# Neovim
+ln -sf ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/Projects/dotfiles/nvim/lua/secrets.lua
 ```
 
-### Set up secrets and symlinks
+**Windows (PowerShell as Admin):**
+```powershell
+# WezTerm
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Projects\dotfiles\wezterm" -Force
 
+# Neovim
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\AppData\Local\nvim" -Target "$env:USERPROFILE\Projects\dotfiles\nvim" -Force; Copy-Item "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua.example" "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua"
+```
+
+#### Without Symlinks
+Copy files directly (requires manual updates):
+
+**Linux/macOS:**
 ```bash
-# Copy secrets template and add your API keys
-cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/Projects/dotfiles/nvim/lua/secrets.lua
+# WezTerm
+cp -r ~/Projects/dotfiles/wezterm ~/.config/wezterm
+
+# Neovim
+cp -r ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/.config/nvim/lua/secrets.lua
+```
+
+**Windows (PowerShell):**
+```powershell
+# WezTerm
+Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\wezterm" "$env:USERPROFILE\.config\wezterm"
+
+# Neovim
+Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\nvim" "$env:USERPROFILE\AppData\Local\nvim"; Copy-Item "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua.example" "$env:USERPROFILE\AppData\Local\nvim\lua\secrets.lua"
+```
+
+### Configure secrets
+
+Edit `secrets.lua` and add your Code::Stats API key:
+```bash
+# With symlinks
 nvim ~/Projects/dotfiles/nvim/lua/secrets.lua
 
-# Create symlinks (configs will point directly to repo)
-ln -sf ~/Projects/dotfiles/nvim ~/.config/nvim
-ln -sf ~/Projects/dotfiles/wezterm ~/.config/wezterm
+# Without symlinks (Linux/macOS)
+nvim ~/.config/nvim/lua/secrets.lua
+
+# Without symlinks (Windows - use your preferred editor)
+nvim ~/AppData/Local/nvim/lua/secrets.lua
 ```
 
 **With symlinks, any changes you make to your configs automatically update the repo!** Just commit and push when ready.
 
 Linter and formatter notifications appear automatically when you open files - nvim-lint will warn you if a linter is missing for that specific file type.
+
+## Remote Server Setup
+
+### Install Neovim (first time), oneliner
+
+```bash
+curl -L https://github.com/ronilaukkarinen/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim ~/.config/ && rm -rf dotfiles-master && echo "code_stats_api_key = 'SFxxxx'\ncodestats_username = 'rolle'" > ~/.config/nvim/lua/secrets.lua
+```
+
+### Update Neovim, oneliner
+
+```bash
+curl -L https://github.com/ronilaukkarinen/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim/* ~/.config/nvim/ && rm -rf dotfiles-master
+```
 
 ## Platform-specific notes
 
@@ -70,7 +121,25 @@ Linter and formatter notifications appear automatically when you open files - nv
 ### Windows
 
 - Uses system Python
+- **PowerShell as default shell** - Opens with PowerShell (`powershell.exe`) by default
+- **Git Bash available** - Press `Ctrl+Shift+B` to spawn Git Bash in a split pane
+- **Launch menu** - Access PowerShell, Git Bash, or CMD via the launcher (`Ctrl+K` → search "launcher")
 - Adjusted keybindings where needed
+
+#### Making "bash" command open Git Bash
+
+If typing `bash` in PowerShell opens WSL instead of Git Bash, add this to your PowerShell profile:
+
+```powershell
+# Override bash command to use Git Bash instead of WSL
+function bash {
+    & "C:\Program Files\Git\bin\bash.exe" -i -l
+}
+```
+
+Profile location: `C:\Users\YourUsername\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
+
+Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE` to apply changes.
 
 ## Installed plugins
 
@@ -115,14 +184,21 @@ Linter and formatter notifications appear automatically when you open files - nv
 
 ## Keybindings
 
-- `Ctrl+Shift+O` - Project switcher (WezTerm)
+### WezTerm
+- `Ctrl+Shift+O` - Project switcher
+- `Ctrl+K` - Command palette
+- `Ctrl+D` - Split pane vertically (side by side)
+- `Ctrl+Shift+D` - Split pane horizontally (top/bottom)
+- `Ctrl+Shift+B` - Spawn Git Bash in split pane (Windows only)
+- `Ctrl+W` - Close pane
+- `Ctrl+Alt+Arrows` - Navigate panes
+- `Ctrl+Shift+Arrows` - Resize panes
+- `Ctrl+Shift+R` - Reload configuration
+
+### Neovim
 - `Ctrl+P` - Telescope frecency
 - `Ctrl+Shift+P` - Command palette
-- `Ctrl+D` - Split pane vertically (WezTerm)
-- `Ctrl+Shift+D` - Split pane horizontally (WezTerm)
-- `Ctrl+W` - Close pane (WezTerm)
-- `Ctrl+Alt+Arrows` - Navigate panes (WezTerm)
-- `Ctrl+Shift+Arrows` - Resize panes (WezTerm)
+- See individual plugin docs for more keybindings
 
 ## Syncing gamify data
 
@@ -134,7 +210,22 @@ To sync your gamify streak and statistics across machines:
 
 ## Updates
 
+### With Symlinks
+Simply pull the latest changes:
 ```bash
-cd ~/Projects/dotfiles
-git pull
+cd ~/Projects/dotfiles && git pull
+```
+Reload WezTerm (`Ctrl+Shift+R`) and restart Neovim to apply changes.
+
+### Without Symlinks
+Pull and re-copy files:
+
+**Linux/macOS:**
+```bash
+cd ~/Projects/dotfiles && git pull && cp -r wezterm ~/.config/ && cp -r nvim ~/.config/
+```
+
+**Windows (PowerShell):**
+```powershell
+cd ~/Projects/dotfiles; git pull; Copy-Item -Recurse -Force wezterm "$env:USERPROFILE\.config\"; Copy-Item -Recurse -Force nvim "$env:USERPROFILE\AppData\Local\"
 ```
