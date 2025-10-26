@@ -210,9 +210,51 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 
 To sync your gamify streak and statistics across machines:
 
-1. Install Syncthing on all machines
-2. Set up a shared folder for `~/.local/share/nvim/gamify/`
-3. Syncthing will keep your streaks in sync automatically
+### Install Syncthing
+
+#### Linux
+
+```bash
+# Debian/Ubuntu
+sudo apt install syncthing
+
+# Arch Linux
+sudo pacman -S syncthing
+```
+
+#### macOS
+
+```bash
+brew install syncthing
+```
+
+### Enable auto-start
+
+#### Linux (systemd)
+
+```bash
+# Enable and start Syncthing service
+systemctl --user enable syncthing.service
+systemctl --user start syncthing.service
+```
+
+#### macOS
+
+```bash
+# Syncthing will auto-start after brew installation
+brew services start syncthing
+```
+
+### Set up syncing
+
+1. Open the web UI at `http://127.0.0.1:8384`
+2. **Set up GUI authentication** (Settings → GUI → Set username and password)
+3. Add a new folder pointing to `~/.local/share/nvim/gamify/` with Folder Label "nvim gamify"
+4. In folder settings, go to Advanced:
+   - Tick **Ignore Permissions**
+   - Set **Full Rescan Interval (s)** to `300` (5 minutes for faster sync)
+5. Share this folder with your other devices
+6. Syncthing will keep your streaks in sync automatically
 
 ## Updates
 
