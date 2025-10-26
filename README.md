@@ -248,13 +248,77 @@ brew services start syncthing
 ### Set up syncing
 
 1. Open the web UI at `http://127.0.0.1:8384`
-2. **Set up GUI authentication** (Settings → GUI → Set username and password)
+2. Set up GUI authentication (Settings → GUI → Set username and password)
 3. Add a new folder pointing to `~/.local/share/nvim/gamify/` with Folder Label "nvim gamify"
 4. In folder settings, go to Advanced:
-   - Tick **Ignore Permissions**
-   - Set **Full Rescan Interval (s)** to `300` (5 minutes for faster sync)
+   - Tick Ignore Permissions
+   - Set Full Rescan Interval (s) to `300` (5 minutes for faster sync)
 5. Share this folder with your other devices
 6. Syncthing will keep your streaks in sync automatically
+
+### Remote access via nginx reverse proxy (Linux only)
+
+To access Syncthing web UI from outside your network:
+
+#### Install nginx
+
+```bash
+# Debian/Ubuntu
+sudo apt install nginx
+
+# Arch Linux
+sudo pacman -S nginx
+```
+
+#### Create nginx reverse proxy configuration
+
+```bash
+sudo tee /etc/nginx/sites-available/syncthing > /dev/null << 'EOF'
+server {
+    listen 0.0.0.0:8385;
+    listen [::]:8385;
+    server_name your-domain.example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8384/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # by default nginx times out connections in one minute
+        proxy_read_timeout 1d;
+    }
+}
+EOF
+```
+
+Replace `your-domain.example.com` with your actual domain name.
+
+#### Enable the nginx site
+
+```bash
+sudo ln -s /etc/nginx/sites-available/syncthing /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl enable nginx
+sudo systemctl start nginx
+```
+
+#### Configure router port forwarding
+
+Set up port forwarding in your router:
+
+- External port: `8385`
+- Internal IP: Your server's local IP (e.g., `192.168.1.100`)
+- Internal port: `8385`
+- Protocol: `TCP`
+
+#### Access Syncthing remotely
+
+You can now access Syncthing from anywhere at `http://your-domain.example.com:8385/`
+
+Make sure you have GUI authentication enabled (step 2 in "Set up syncing" above).
 
 ## Updates
 
