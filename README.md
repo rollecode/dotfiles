@@ -4,6 +4,8 @@
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
+<img width="809" height="234" alt="image" src="https://github.com/user-attachments/assets/e50b7b07-338c-4744-87c3-261d6246044e" />
+
 ## Features
 
 🎯 **Modular structure** - Shared configs + OS-specific overrides<br>
