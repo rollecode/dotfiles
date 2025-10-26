@@ -14,6 +14,8 @@
 * Set Trouble and neo-tree to load on startup (not lazy-loaded)
 * Add luacheck compliance to keymaps configuration
 * Remove nodeadkeys (too used to Mac's tilde with space)
+* Update Hyprland config to use WezTerm instead of Ghostty (terminal variable, IRC autostart, restore-layout.sh)
+* Disable hyprsession in Hyprland config
 
 ### 2.0.0: 2025-10-26
 
