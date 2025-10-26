@@ -243,7 +243,7 @@ cd ~/Projects/dotfiles; git pull; Copy-Item -Recurse -Force wezterm "$env:USERPR
 
 My .bashrc changes depending on the system I'm on, but here are some useful lines to add.
 
-```toml
+```bash
 # Add trailing slash when tab-completing directories
 bind 'set mark-directories on'
 bind 'set mark-symlinked-directories on'
