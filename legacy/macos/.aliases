@@ -48,5 +48,4 @@ alias -- -="cd -"
 
 # Functions as aliases
 
-
 function imagesize() { convert "$@" -print "Size: %wx%h\n" /dev/null; }
