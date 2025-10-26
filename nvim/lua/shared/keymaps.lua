@@ -1,4 +1,18 @@
+-- luacheck: globals vim
 -- Keybindings (shared across all platforms)
+
+-- OS-specific modifier key (Cmd on macOS, Ctrl elsewhere)
+local mod = vim.fn.has('mac') == 1 and 'D' or 'C'
+
+-- File tree toggle (Ctrl+Shift+E or Cmd+Shift+E on macOS)
+vim.keymap.set('n', '<' .. mod .. '-S-e>', function()
+  vim.cmd('Neotree toggle')
+end, { silent = true, desc = 'Toggle file tree' })
+
+-- Trouble toggle (Ctrl+Shift+A or Cmd+Shift+A on macOS)
+vim.keymap.set('n', '<' .. mod .. '-S-a>', function()
+  require("trouble").toggle("diagnostics")
+end, { silent = true, desc = 'Toggle diagnostics panel' })
 
 -- Ctrl+A / Ctrl+E for beginning/end of line (like nano/bash)
 vim.keymap.set('i', '<C-a>', '<C-o>^', { desc = 'Go to beginning of line' })

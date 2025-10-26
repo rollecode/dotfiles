@@ -76,6 +76,7 @@ Linter and formatter notifications appear automatically when you open files - nv
 
 - [lazy.nvim](https://github.com/folke/lazy.nvim) - Plugin manager
 - [catppuccin](https://github.com/catppuccin/nvim) - Color scheme (Mocha variant)
+- [oklch-color-picker](https://github.com/eero-lehtinen/oklch-color-picker.nvim) - OKLCH color picker with graphical interface
 - [dashboard](https://github.com/nvimdev/dashboard-nvim) - Recent projects and files in start
 - [lualine](https://github.com/nvim-lualine/lualine.nvim) - Status bar
 - [persistence](https://github.com/folke/persistence.nvim) - Session management, automatically saves and restores nvim sessions

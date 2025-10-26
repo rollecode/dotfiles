@@ -26,6 +26,21 @@ return {
     },
   },
 
+  -- OKLCH Color Picker
+  {
+    "eero-lehtinen/oklch-color-picker.nvim",
+    event = "VeryLazy",
+    version = "*",
+    keys = {
+      {
+        "<leader>v",
+        function() require("oklch-color-picker").pick_under_cursor() end,
+        desc = "Color pick under cursor",
+      },
+    },
+    opts = {},
+  },
+
   -- Lualine (status bar)
   {
     "nvim-lualine/lualine.nvim",
@@ -295,6 +310,7 @@ return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
+    lazy = false,  -- Load on startup so custom keymaps work
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
@@ -337,10 +353,6 @@ return {
         },
       })
     end,
-    keys = {
-      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neo-tree" },
-      { "<leader>o", "<cmd>Neotree focus<cr>", desc = "Focus Neo-tree" },
-    },
   },
 
   -- Flash.nvim - Fast navigation with labels
@@ -582,6 +594,7 @@ return {
   -- Trouble - diagnostics panel (opens automatically)
   {
     "folke/trouble.nvim",
+    lazy = false,  -- Load on startup so custom keymaps work
     config = function()
       require("trouble").setup({
         modes = {

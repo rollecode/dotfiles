@@ -126,6 +126,18 @@ config.keys = {
     mods = 'CTRL|SHIFT',
     action = wezterm.action.DisableDefaultAssignment,
   },
+  -- Disable default Ctrl+Shift+A so nvim can use it for Trouble
+  {
+    key = 'A',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action.DisableDefaultAssignment,
+  },
+  -- Disable default Ctrl+Shift+E so nvim can use it for neo-tree
+  {
+    key = 'E',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action.DisableDefaultAssignment,
+  },
   -- Copy with Ctrl+Shift+C
   {
     key = 'C',
