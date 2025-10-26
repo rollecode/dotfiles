@@ -16,6 +16,9 @@
 * Remove nodeadkeys (too used to Mac's tilde with space)
 * Update Hyprland config to use WezTerm instead of Ghostty (terminal variable, IRC autostart, restore-layout.sh)
 * Disable hyprsession in Hyprland config
+* Simplify connect-irc.sh script (remove manual window positioning)
+* Remove redundant launch-ssh-tmux.sh script
+* Add bash tab completion with trailing slashes for directories
 
 ### 2.0.0: 2025-10-26
 

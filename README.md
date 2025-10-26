@@ -31,9 +31,10 @@ git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
 ### Quick Setup (One-liners)
 
 #### With Symlinks (Recommended)
+
 Changes to configs automatically update the repo:
 
-**Linux/macOS:**
+#### Linux/macOS
 ```bash
 # WezTerm
 ln -sf ~/Projects/dotfiles/wezterm ~/.config/wezterm
@@ -42,7 +43,8 @@ ln -sf ~/Projects/dotfiles/wezterm ~/.config/wezterm
 ln -sf ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/Projects/dotfiles/nvim/lua/secrets.lua
 ```
 
-**Windows (PowerShell as Admin):**
+#### Windows (PowerShell as Admin)
+
 ```powershell
 # WezTerm
 New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Projects\dotfiles\wezterm" -Force
@@ -52,9 +54,11 @@ New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\AppData\Local\nvim" -Tar
 ```
 
 #### Without Symlinks
+
 Copy files directly (requires manual updates):
 
-**Linux/macOS:**
+#### Linux/macOS
+
 ```bash
 # WezTerm
 cp -r ~/Projects/dotfiles/wezterm ~/.config/wezterm
@@ -63,7 +67,8 @@ cp -r ~/Projects/dotfiles/wezterm ~/.config/wezterm
 cp -r ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/.config/nvim/lua/secrets.lua
 ```
 
-**Windows (PowerShell):**
+#### Windows (PowerShell)
+
 ```powershell
 # WezTerm
 Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\wezterm" "$env:USERPROFILE\.config\wezterm"
@@ -75,6 +80,7 @@ Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\nvim" "$env:USERPR
 ### Configure secrets
 
 Edit `secrets.lua` and add your Code::Stats API key:
+
 ```bash
 # With symlinks
 nvim ~/Projects/dotfiles/nvim/lua/secrets.lua
@@ -218,14 +224,28 @@ cd ~/Projects/dotfiles && git pull
 Reload WezTerm (`Ctrl+Shift+R`) and restart Neovim to apply changes.
 
 ### Without Symlinks
+
 Pull and re-copy files:
 
-**Linux/macOS:**
+#### Linux/macOS
+
 ```bash
 cd ~/Projects/dotfiles && git pull && cp -r wezterm ~/.config/ && cp -r nvim ~/.config/
 ```
 
-**Windows (PowerShell):**
+#### Windows (PowerShell)
+
 ```powershell
 cd ~/Projects/dotfiles; git pull; Copy-Item -Recurse -Force wezterm "$env:USERPROFILE\.config\"; Copy-Item -Recurse -Force nvim "$env:USERPROFILE\AppData\Local\"
 ```
+
+### .bashrc
+
+My .bashrc changes depending on the system I'm on, but here are some useful lines to add.
+
+```toml
+# Add trailing slash when tab-completing directories
+bind 'set mark-directories on'
+bind 'set mark-symlinked-directories on'
+```
+
