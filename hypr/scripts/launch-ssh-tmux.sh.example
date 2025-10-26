@@ -1,0 +1,18 @@
+#!/bin/bash
+# Launch WezTerm with SSH/tmux and position it
+# Copy this to launch-ssh-tmux.sh and update paths
+
+# Launch WezTerm in background
+wezterm start -- /path/to/your/ssh-script.sh &
+WEZTERM_PID=$!
+
+# Wait for window to appear
+sleep 2
+
+# Find the window by PID and get its address
+WEZTERM_ADDR=$(hyprctl clients -j | jq -r ".[] | select(.pid==$WEZTERM_PID) | .address")
+
+if [ -n "$WEZTERM_ADDR" ]; then
+    hyprctl dispatch resizewindowpixel exact 750 1268,address:$WEZTERM_ADDR
+    hyprctl dispatch movewindowpixel exact 2680 56,address:$WEZTERM_ADDR
+fi

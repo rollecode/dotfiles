@@ -1,0 +1,5 @@
+#!/bin/bash
+# Auto-connect to irssi via tmux
+# Copy this to connect-irc.sh and update with your server details
+
+ssh -t YOUR_USERNAME@YOUR_SERVER "tmux attach || tmux new-session -s irssi irssi"

@@ -1,23 +1,15 @@
-# Secrets and API keys
 nvim/lua/secrets.lua
 wezterm/secrets.lua
-
-# Machine-specific configs
 nvim/lua/local.lua
 wezterm/local.lua
-
-# Lazy.nvim lockfile (optional - some prefer to commit this)
 nvim/lazy-lock.json
-
-# Syncthing data
 .stfolder
 .stversions
-
-# OS-specific
 .DS_Store
 Thumbs.db
-
-# Editor
 *.swp
 *.swo
 *~
+hypr/scripts/connect-irc.sh
+hypr/scripts/launch-ssh-tmux.sh
+hypr/scripts/restore-layout.sh

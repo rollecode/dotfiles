@@ -1,6 +1,8 @@
 ### 2.0.1: 2025-10-26
 
-* wezterm: Use dead keys like macOS (require space after ~ ¨ ^ etc.)
+* Add hyprland config
+* Add barbar for nvim
+* Remove nodeadkeys (too used to Mac's tilde with space)
 
 ### 2.0.0: 2025-10-26
 

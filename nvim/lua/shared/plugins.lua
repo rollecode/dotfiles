@@ -83,6 +83,69 @@ return {
     end,
   },
 
+  -- Barbar (buffer tabs)
+  {
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
+    config = function()
+      require('barbar').setup({
+        animation = true,
+        auto_hide = 1,  -- Hide tabline when only one buffer is open
+        icons = {
+          preset = 'default',
+          separator = { left = '', right = '' },
+          button = '',
+        },
+        hide = {
+          extensions = true,
+          inactive = false,
+        },
+        focus_on_close = 'left',
+        semantic_letters = true,
+        maximum_padding = 1,
+        minimum_padding = 1,
+        sidebar_filetypes = {
+          NvimTree = true,
+          ['neo-tree'] = { event = 'BufWipeout' },
+        },
+      })
+
+      -- Custom colors: dim grey background, purple bottom border for active tab
+      local dim_grey = '#1e1e2e'  -- Very dim grey
+      local purple = '#BE94F9'     -- Purple for active tab bottom border
+      local bg = '#11111b'         -- Darker background for tabline
+
+      -- Set custom highlights for barbar
+      vim.api.nvim_set_hl(0, 'BufferCurrent', { bg = dim_grey, fg = '#cdd6f4', underline = true, sp = purple })
+      vim.api.nvim_set_hl(0, 'BufferCurrentIndex', { bg = dim_grey, fg = purple, underline = true, sp = purple })
+      vim.api.nvim_set_hl(0, 'BufferCurrentMod', { bg = dim_grey, fg = '#f9e2af', underline = true, sp = purple })
+      vim.api.nvim_set_hl(0, 'BufferCurrentSign', { bg = dim_grey, fg = purple, underline = true, sp = purple })
+      vim.api.nvim_set_hl(0, 'BufferCurrentTarget', { bg = dim_grey, fg = '#f38ba8', underline = true, sp = purple })
+
+      vim.api.nvim_set_hl(0, 'BufferVisible', { bg = bg, fg = '#7f849c' })
+      vim.api.nvim_set_hl(0, 'BufferVisibleIndex', { bg = bg, fg = '#7f849c' })
+      vim.api.nvim_set_hl(0, 'BufferVisibleMod', { bg = bg, fg = '#f9e2af' })
+      vim.api.nvim_set_hl(0, 'BufferVisibleSign', { bg = bg, fg = '#7f849c' })
+      vim.api.nvim_set_hl(0, 'BufferVisibleTarget', { bg = bg, fg = '#f38ba8' })
+
+      vim.api.nvim_set_hl(0, 'BufferInactive', { bg = bg, fg = '#585b70' })
+      vim.api.nvim_set_hl(0, 'BufferInactiveIndex', { bg = bg, fg = '#585b70' })
+      vim.api.nvim_set_hl(0, 'BufferInactiveMod', { bg = bg, fg = '#f9e2af' })
+      vim.api.nvim_set_hl(0, 'BufferInactiveSign', { bg = bg, fg = '#585b70' })
+      vim.api.nvim_set_hl(0, 'BufferInactiveTarget', { bg = bg, fg = '#f38ba8' })
+
+      vim.api.nvim_set_hl(0, 'BufferTabpageFill', { bg = bg })
+      vim.api.nvim_set_hl(0, 'BufferTabpages', { bg = bg, fg = '#7f849c' })
+    end,
+    version = '^1.0.0',
+  },
+
   -- Session management - automatically saves and restores nvim sessions
   {
     "folke/persistence.nvim",
@@ -330,20 +393,6 @@ return {
     keys = {
       { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "Buffer Local Keymaps" },
     },
-  },
-
-  -- Minimap - code minimap sidebar
-  {
-    "wfxr/minimap.vim",
-    lazy = false,
-    build = "cargo install --locked code-minimap",
-    config = function()
-      vim.g.minimap_width = 10
-      vim.g.minimap_auto_start = 1
-      vim.g.minimap_auto_start_win_enter = 1
-      vim.g.minimap_highlight_range = 1
-      vim.g.minimap_git_colors = 1
-    end,
   },
 
   -- Discord Rich Presence

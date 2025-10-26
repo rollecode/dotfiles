@@ -1,0 +1,102 @@
+/* Hyprswitch custom styling with blur effect like Ghostty terminal */
+
+/* Main window - transparent background for blur effect */
+window {
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 10px;
+    border: none;
+    min-width: 400px;
+    max-width: 800px;
+}
+
+/* Force monitor containers to be compact */
+.monitor {
+    min-width: 400px;
+    max-width: 800px;
+}
+
+/* Monitor containers */
+.monitor {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px;
+}
+
+.monitor_active {
+    border: 2px solid rgba(182, 160, 218, 0.9);
+}
+
+/* Workspace styling */
+.workspace {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 8px;
+    margin: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.workspace:hover {
+    background-color: rgba(182, 160, 218, 0.25);
+}
+
+.workspace_active {
+    border: 2px solid rgba(182, 160, 218, 0.9);
+    background-color: rgba(182, 160, 218, 0.15);
+}
+
+.workspace_special {
+    border-color: rgba(219, 134, 186, 0.7);
+}
+
+/* Individual client/window items */
+.client {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.client:hover {
+    background-color: rgba(182, 160, 218, 0.25);
+    border-color: rgba(182, 160, 218, 0.5);
+    transform: scale(1.02);
+}
+
+/* Selected/active client */
+.client_active {
+    background-color: rgba(182, 160, 218, 0.35);
+    border: 2px solid rgba(182, 160, 218, 0.9);
+    box-shadow: 0 4px 15px rgba(182, 160, 218, 0.4);
+}
+
+/* Client preview image */
+.client-image {
+    margin-right: 10px;
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: 4px;
+}
+
+/* Index numbers */
+.index {
+    color: rgba(182, 160, 218, 0.9);
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 8px;
+    min-width: 20px;
+}
+
+/* All labels */
+label {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.client_active label {
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+}
