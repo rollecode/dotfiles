@@ -122,18 +122,18 @@ curl -L https://github.com/ronilaukkarinen/dotfiles/archive/refs/heads/master.ta
 
 - Uses system Python
 - **PowerShell as default shell** - Opens with PowerShell (`powershell.exe`) by default
-- **Git Bash available** - Press `Ctrl+Shift+B` to spawn Git Bash in a split pane
-- **Launch menu** - Access PowerShell, Git Bash, or CMD via the launcher (`Ctrl+K` → search "launcher")
+- **WSL Ubuntu 22.04** - Press `Ctrl+Shift+B` to spawn WSL Ubuntu in a split pane
+- **Launch menu** - Access PowerShell, WSL Ubuntu 22.04, Git Bash, or CMD via the launcher (`Ctrl+K` → search "launcher")
 - Adjusted keybindings where needed
 
-#### Making "bash" command open Git Bash
+#### Making "bash" command open WSL Ubuntu 22.04
 
-If typing `bash` in PowerShell opens WSL instead of Git Bash, add this to your PowerShell profile:
+To make typing `bash` in PowerShell open WSL Ubuntu 22.04, add this to your PowerShell profile:
 
 ```powershell
-# Override bash command to use Git Bash instead of WSL
+# Override bash command to use WSL Ubuntu 22.04
 function bash {
-    & "C:\Program Files\Git\bin\bash.exe" -i -l
+    wsl -d Ubuntu-22.04
 }
 ```
 
@@ -189,7 +189,7 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 - `Ctrl+K` - Command palette
 - `Ctrl+D` - Split pane vertically (side by side)
 - `Ctrl+Shift+D` - Split pane horizontally (top/bottom)
-- `Ctrl+Shift+B` - Spawn Git Bash in split pane (Windows only)
+- `Ctrl+Shift+B` - Spawn WSL Ubuntu 22.04 in split pane (Windows only)
 - `Ctrl+W` - Close pane
 - `Ctrl+Alt+Arrows` - Navigate panes
 - `Ctrl+Shift+Arrows` - Resize panes
