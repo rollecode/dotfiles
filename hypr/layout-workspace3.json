@@ -1,0 +1,182 @@
+[
+  {
+    "address": "0x55d7dca9d210",
+    "mapped": true,
+    "hidden": false,
+    "at": [
+      20,
+      82
+    ],
+    "size": [
+      732,
+      628
+    ],
+    "workspace": {
+      "id": 3,
+      "name": "3"
+    },
+    "floating": false,
+    "pseudo": false,
+    "monitor": 0,
+    "class": "com.mitchellh.ghostty",
+    "title": "claude",
+    "initialClass": "com.mitchellh.ghostty",
+    "initialTitle": "Ghostty",
+    "pid": 2129093,
+    "xwayland": false,
+    "pinned": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "grouped": [],
+    "tags": [],
+    "swallowing": "0x0",
+    "focusHistoryID": 4,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": ""
+  },
+  {
+    "address": "0x55d7dc9a54b0",
+    "mapped": true,
+    "hidden": false,
+    "at": [
+      2534,
+      82
+    ],
+    "size": [
+      886,
+      567
+    ],
+    "workspace": {
+      "id": 3,
+      "name": "3"
+    },
+    "floating": false,
+    "pseudo": false,
+    "monitor": 0,
+    "class": "com.mitchellh.ghostty",
+    "title": "rolle@botit: ~/.sopel",
+    "initialClass": "com.mitchellh.ghostty",
+    "initialTitle": "Ghostty",
+    "pid": 2129093,
+    "xwayland": false,
+    "pinned": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "grouped": [],
+    "tags": [],
+    "swallowing": "0x0",
+    "focusHistoryID": 3,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": ""
+  },
+  {
+    "address": "0x55d7dc77d4d0",
+    "mapped": true,
+    "hidden": false,
+    "at": [
+      2534,
+      677
+    ],
+    "size": [
+      886,
+      688
+    ],
+    "workspace": {
+      "id": 3,
+      "name": "3"
+    },
+    "floating": false,
+    "pseudo": false,
+    "monitor": 0,
+    "class": "com.mitchellh.ghostty",
+    "title": "irc",
+    "initialClass": "com.mitchellh.ghostty",
+    "initialTitle": "Ghostty",
+    "pid": 2129093,
+    "xwayland": false,
+    "pinned": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "grouped": [],
+    "tags": [],
+    "swallowing": "0x0",
+    "focusHistoryID": 2,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": ""
+  },
+  {
+    "address": "0x55d7dcae8780",
+    "mapped": true,
+    "hidden": false,
+    "at": [
+      762,
+      82
+    ],
+    "size": [
+      1762,
+      1283
+    ],
+    "workspace": {
+      "id": 3,
+      "name": "3"
+    },
+    "floating": false,
+    "pseudo": false,
+    "monitor": 0,
+    "class": "chromium",
+    "title": "Window Rules – Hyprland Wiki - Chromium",
+    "initialClass": "chromium",
+    "initialTitle": "api.open-meteo.com/v1/forecast?latitude= - Chromium",
+    "pid": 3000722,
+    "xwayland": false,
+    "pinned": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "grouped": [],
+    "tags": [],
+    "swallowing": "0x0",
+    "focusHistoryID": 1,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": ""
+  },
+  {
+    "address": "0x55d7dc6b1960",
+    "mapped": true,
+    "hidden": false,
+    "at": [
+      20,
+      738
+    ],
+    "size": [
+      732,
+      627
+    ],
+    "workspace": {
+      "id": 3,
+      "name": "3"
+    },
+    "floating": false,
+    "pseudo": false,
+    "monitor": 0,
+    "class": "com.mitchellh.ghostty",
+    "title": "claude ",
+    "initialClass": "com.mitchellh.ghostty",
+    "initialTitle": "Ghostty",
+    "pid": 2129093,
+    "xwayland": false,
+    "pinned": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "grouped": [],
+    "tags": [],
+    "swallowing": "0x0",
+    "focusHistoryID": 0,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": ""
+  }
+]

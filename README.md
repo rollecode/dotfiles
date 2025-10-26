@@ -87,7 +87,7 @@ Linter and formatter notifications appear automatically when you open files - nv
 - [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim) - File explorer
 - [flash](https://github.com/folke/flash.nvim) - Navigate your code with search labels
 - [which-key](https://github.com/folke/which-key.nvim) - Helps you remember your Neovim keymaps
-- [minimap.vim](https://github.com/wfxr/minimap.vim) - Code minimap sidebar
+- [barbar](https://github.com/romgrk/barbar.nvim) - Buffer tabline with icons and animations
 - [presence](https://github.com/andweeb/presence.nvim) - Discord live presence
 - [nvim-notify](https://github.com/rcarriga/nvim-notify) - Notifications
 - [nvim-lint](https://github.com/mfussenegger/nvim-lint) - Lint code, see errors in the current file

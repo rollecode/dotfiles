@@ -46,3 +46,30 @@ vim.keymap.set('n', '<C-S-p>', function()
     },
   }))
 end, { silent = true, desc = 'Command Palette' })
+
+-- Barbar buffer navigation
+vim.keymap.set('n', '<C-t>', '<Cmd>enew<CR>', { silent = true, desc = 'New tab' })
+vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', { silent = true, desc = 'Previous buffer' })
+vim.keymap.set('n', '<A-.>', '<Cmd>BufferNext<CR>', { silent = true, desc = 'Next buffer' })
+vim.keymap.set('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', { silent = true, desc = 'Move buffer left' })
+vim.keymap.set('n', '<A->>', '<Cmd>BufferMoveNext<CR>', { silent = true, desc = 'Move buffer right' })
+
+-- Jump to buffers 1-9
+vim.keymap.set('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', { silent = true, desc = 'Go to buffer 1' })
+vim.keymap.set('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', { silent = true, desc = 'Go to buffer 2' })
+vim.keymap.set('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', { silent = true, desc = 'Go to buffer 3' })
+vim.keymap.set('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', { silent = true, desc = 'Go to buffer 4' })
+vim.keymap.set('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', { silent = true, desc = 'Go to buffer 5' })
+vim.keymap.set('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', { silent = true, desc = 'Go to buffer 6' })
+vim.keymap.set('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', { silent = true, desc = 'Go to buffer 7' })
+vim.keymap.set('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', { silent = true, desc = 'Go to buffer 8' })
+vim.keymap.set('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', { silent = true, desc = 'Go to buffer 9' })
+vim.keymap.set('n', '<A-0>', '<Cmd>BufferLast<CR>', { silent = true, desc = 'Go to last buffer' })
+
+-- Buffer management
+vim.keymap.set('n', '<A-c>', '<Cmd>BufferClose<CR>', { silent = true, desc = 'Close buffer' })
+vim.keymap.set('n', '<A-p>', '<Cmd>BufferPin<CR>', { silent = true, desc = 'Pin/unpin buffer' })
+vim.keymap.set('n', '<A-s-c>', '<Cmd>BufferCloseAllButCurrentOrPinned<CR>', { silent = true, desc = 'Close all but current/pinned' })
+
+-- Buffer picking
+vim.keymap.set('n', '<C-s>', '<Cmd>BufferPick<CR>', { silent = true, desc = 'Pick buffer' })

@@ -12,9 +12,6 @@ function M.apply(config)
   -- Font size adjustment for Linux
   config.font_size = 12
 
-  -- Use dead keys like macOS (require space after ~ ¨ ^ etc.)
-  config.use_dead_keys = true
-
   -- Add any other Linux-specific settings here
 end
 
