@@ -1,25 +1,15 @@
 alias svgo_all "for f in *.svg; do svgo "$f"; done"
 alias shuffle "zomg -z /Volumes/Giant/levyt/*/*.mp3"
 
-
-
-
-
 alias air "cd /Users/rolle/Projects/dudetest/content/themes/air"
-
-
 alias dudetest "cd ~/Projects/dudetest"
 alias composer "composer -vvv"
-
-
-
 alias backup "wget --cache=off -U "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36" --cookies=on --glob=on --tries=3 --proxy=off -e robots=off -x -r --level=1 -p -H -k --quota=100m"
 alias mmkisat "mpv "rtmp://tebeo.e-declic.tv/tebeo_live/santos99""
 alias wpupdates "composer update && a && c "WP updates" && p && cap production deploy"
 alias tag "echo git tag -a v0.0.2 -m "Release version 0.0.2""
 alias mount_olohuone "sh /Users/rolle/mount_olohuone.sh"
 alias php_errors "tail -f error.log | color -l "\[error\]","\[notice\]""
-
 
 function imagesize() { convert "$@" -print "Size: %wx%h\n" /dev/null; }
 
@@ -36,8 +26,6 @@ alias quota "df -l -k -H"
 alias dnsreset "dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias grep "grep --color"
 function deploy() { dandelion --config "$@".yml deploy; }
-alias note "cat "/Users/rolle/Library/.Shae4aile0eishohshu7_dontremove" |grep -i"
-alias tunnarit "pico -w "/Users/rolle/Library/.Shae4aile0eishohshu7_dontremove""
 alias bashrc "pico -w ~/.bashrc"
 alias testcommand "echo $1 $2"
 alias updateversion "find ~/Projects/ -name composer.json -maxdepth 2 -exec sed -i "" "s/$1/$2/g" {} +"
