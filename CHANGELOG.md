@@ -1,3 +1,7 @@
+### 2.0.1: 2025-10-26
+
+* wezterm: Use dead keys like macOS (require space after ~ ¨ ^ etc.)
+
 ### 2.0.0: 2025-10-26
 
 * Revamp dotfiles after years of hiatus
