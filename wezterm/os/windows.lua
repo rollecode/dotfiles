@@ -19,6 +19,10 @@ function M.apply(config)
       args = { 'powershell.exe', '-NoLogo' },
     },
     {
+      label = 'WSL Ubuntu 22.04',
+      args = { 'wsl.exe', '-d', 'Ubuntu-22.04' },
+    },
+    {
       label = 'Git Bash',
       args = { 'C:\\Program Files\\Git\\bin\\bash.exe', '-i', '-l' },
     },
@@ -28,12 +32,12 @@ function M.apply(config)
     },
   }
 
-  -- Add keybinding to quickly spawn Git Bash in a new pane
+  -- Add keybinding to quickly spawn WSL Ubuntu 22.04 in a new pane
   table.insert(config.keys, {
     key = 'b',
     mods = 'CTRL|SHIFT',
     action = wezterm.action.SplitHorizontal {
-      args = { 'C:\\Program Files\\Git\\bin\\bash.exe', '-i', '-l' },
+      args = { 'wsl.exe', '-d', 'Ubuntu-22.04' },
     },
   })
 end
