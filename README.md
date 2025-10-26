@@ -1,16 +1,15 @@
 # Rolle's dotfiles
 
+![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+  
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
 ## Features
 
-- 🎯 Modular structure - Shared configs + OS-specific overrides
-- 🔐 Secrets management - API keys in gitignored files
-- 🌍 Cross-platform - Works on Linux, macOS, and Windows
-- ✅ Health checks - Automatic dependency checking
-- 📊 [Code::Stats](https://codestats.net/users/rolle) integration - Track your coding activity
-- 🎮 Gamification - [Gamify plugin](https://github.com/GrzegorzSzczepanek/gamify.nvim) with streak tracking
-- 🔄 Syncthing ready - Sync plugin data across machines
+🎯 **Modular structure** - Shared configs + OS-specific overrides<br>
+🔐 **Secrets management** - API keys in gitignored files<br>
+🌍 **Cross-platform** - Works on Linux, macOS, and Windows<br>
+🎮 **Gamification & stats** - [Code::Stats](https://codestats.net/users/rolle) and [gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim) with streak tracking
 
 ## Requirements
 
@@ -136,5 +135,3 @@ To sync your gamify streak and statistics across machines:
 cd ~/Projects/dotfiles
 git pull
 ```
-
-Then restart your terminal/Neovim or re-source configs.
