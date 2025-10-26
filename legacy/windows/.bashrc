@@ -14,10 +14,6 @@ alias s='git status'
 alias a='git add --all'
 alias c='git commit -m'
 alias p='git push -u origin master'
-
-
-
-
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
