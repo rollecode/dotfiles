@@ -605,6 +605,30 @@ return {
     },
   },
 
+  -- Treesitter - better syntax highlighting and code understanding
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "master", -- Must specify master branch
+    lazy = false,      -- Cannot be lazy-loaded
+    build = ":TSUpdate",
+    config = function()
+      -- Ensure parser directory exists (fixes "No such file or directory" error)
+      local parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+      vim.fn.mkdir(parser_dir, "p")
+
+      require("nvim-treesitter.configs").setup({
+        -- Minimal recommended parsers
+        ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+
+        -- Auto-install missing parsers when opening files
+        auto_install = true,
+
+        -- Enable treesitter highlighting
+        highlight = { enable = true },
+      })
+    end,
+  },
+
   -- Blink.cmp - completion plugin
   {
     'saghen/blink.cmp',

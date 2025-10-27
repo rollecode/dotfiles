@@ -20,7 +20,7 @@ function M.apply(config)
   config.font_size = 14
 
   -- Font spacing optimized for 13pt
-  config.line_height = 1.077
+  config.line_height = 1.085
   config.cell_width = 0.87
 
   -- Window padding optimized for macOS
@@ -28,7 +28,7 @@ function M.apply(config)
     left = '3cell',
     right = '3cell',
     top = '2.5cell',
-    bottom = '1.5cell',
+    bottom = '0.8cell',
   }
 
   -- Terminal size

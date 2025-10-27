@@ -100,7 +100,7 @@ Linter and formatter notifications appear automatically when you open files - nv
 
 ## Claude code integration
 
-Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you'll earn XP based on the number of characters written (1 XP per character).
+Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you'll earn XP and see a yellow ASCII box notification in WezTerm (1 XP per line written by Claude).
 
 ### Setup
 
@@ -265,6 +265,7 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 - [tiny-inline-diagnostic](https://github.com/rachartier/tiny-inline-diagnostic.nvim) - Like ErrorLens, UI for displaying the linter errors
 - [trouble](https://github.com/folke/trouble.nvim) - See errors across all files in the project
 - [dropbar](https://github.com/Bekaboo/dropbar.nvim) - VSCode-like breadcrumbs for nvim
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Better syntax highlighting and code understanding using Tree-sitter parsers
 - [blink.cmp](https://github.com/Saghen/blink.cmp) - Completion for definitions
 - [minuet-ai](https://github.com/milanglacier/minuet-ai.nvim) - AI code completion with Ollama
 - [hardtime](https://github.com/m4xshen/hardtime.nvim) - Break bad habits, master Vim motions

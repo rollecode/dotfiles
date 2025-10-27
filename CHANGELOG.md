@@ -1,9 +1,12 @@
 ### 2.0.2: 2025-10-27
 
+* Add nvim-treesitter plugin for better syntax highlighting and code understanding with auto-parser directory creation
+* Add Cmd+Click to open URLs in default browser on macOS (WezTerm)
+* Enable cursorline in nvim to highlight current line
 * Add Claude Code integration with automatic Code::Stats XP tracking via hooks
 * Add claude-code directory with codestats-hook.sh and secrets management
 * Add XP logging to ~/.claude/codestats-hook.log with timestamps
-* Add yellow colored XP notifications (+XP 123 format) for each file edit
+* Add yellow ASCII box WezTerm overlay notifications showing XP (1 XP per line written by Claude)
 * Add simple code-stats implementation for nvim without external dependencies
 * Add Cmd+V paste and Cmd+C copy keybindings for macOS in wezterm
 * Add Telescope search keymaps (<leader>s prefix for search operations)

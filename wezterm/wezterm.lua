@@ -402,4 +402,21 @@ config.mouse_bindings = {
   },
 }
 
+-- ========== OS-SPECIFIC MOUSE BINDINGS ==========
+-- Add platform-specific mouse bindings after the main table is created
+
+if wezterm.target_triple:find("darwin") then
+  -- macOS: CMD-Click opens hyperlinks (in addition to CTRL-Click)
+  table.insert(config.mouse_bindings, {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'SUPER',
+    action = wezterm.action.OpenLinkAtMouseCursor,
+  })
+  table.insert(config.mouse_bindings, {
+    event = { Down = { streak = 1, button = 'Left' } },
+    mods = 'SUPER',
+    action = wezterm.action.Nop,
+  })
+end
+
 return config

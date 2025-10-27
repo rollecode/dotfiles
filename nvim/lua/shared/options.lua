@@ -2,6 +2,7 @@
 
 vim.opt.number = true                   -- Show line numbers
 vim.opt.relativenumber = true           -- Show relative line numbers
+vim.opt.cursorline = true               -- Highlight current line
 vim.opt.mouse = 'a'                     -- Enable mouse support
 vim.opt.ignorecase = true               -- Case insensitive search
 vim.opt.smartcase = true                -- Unless you use capital letters
