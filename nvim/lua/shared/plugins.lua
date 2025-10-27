@@ -10,7 +10,7 @@ return {
         -- config
       }
     end,
-    dependencies = { {'nvim-tree/nvim-web-devicons'} }
+    dependencies = { { 'nvim-tree/nvim-web-devicons' } }
   },
 
   -- Catppuccin colorscheme
@@ -65,34 +65,34 @@ return {
         options = {
           theme = custom_theme,
           icons_enabled = true,
-          component_separators = { left = '', right = ''},
-          section_separators = { left = '', right = ''},
+          component_separators = { left = '', right = '' },
+          section_separators = { left = '', right = '' },
         },
         sections = {
-          lualine_a = {'mode'},
-          lualine_b = {'branch', 'diff', 'diagnostics'},
-          lualine_c = {'filename'},
+          lualine_a = { 'mode' },
+          lualine_b = { 'branch', 'diff', 'diagnostics' },
+          lualine_c = { 'filename' },
           lualine_x = {
             {
               function()
                 -- Code::Stats XP
                 return _G.CodeStatsXP()
               end,
-              color = { fg = '#F9E2AF', gui = 'bold' }  -- Modern yellow with bold
+              color = { fg = '#F9E2AF', gui = 'bold' } -- Modern yellow with bold
             },
             {
               function()
                 -- Gamify streak
                 return _G.GamifyStreak()
               end,
-              color = { fg = '#E4DDA3' }  -- Custom streak color (lighter)
+              color = { fg = '#E4DDA3' } -- Custom streak color (lighter)
             },
             'encoding',
             'fileformat',
             'filetype'
           },
-          lualine_y = {'progress'},
-          lualine_z = {'location'}
+          lualine_y = { 'progress' },
+          lualine_z = { 'location' }
         },
       })
     end,
@@ -111,7 +111,7 @@ return {
     config = function()
       require('barbar').setup({
         animation = true,
-        auto_hide = 1,  -- Hide tabline when only one buffer is open
+        auto_hide = 1, -- Hide tabline when only one buffer is open
         icons = {
           preset = 'default',
           separator = { left = '', right = '' },
@@ -132,9 +132,9 @@ return {
       })
 
       -- Custom colors: dim grey background, purple bottom border for active tab
-      local dim_grey = '#1e1e2e'  -- Very dim grey
-      local purple = '#BE94F9'     -- Purple for active tab bottom border
-      local bg = '#11111b'         -- Darker background for tabline
+      local dim_grey = '#1e1e2e' -- Very dim grey
+      local purple = '#BE94F9'   -- Purple for active tab bottom border
+      local bg = '#11111b'       -- Darker background for tabline
 
       -- Set custom highlights for barbar
       vim.api.nvim_set_hl(0, 'BufferCurrent', { bg = dim_grey, fg = '#cdd6f4', underline = true, sp = purple })
@@ -170,9 +170,9 @@ return {
       options = { "buffers", "curdir", "tabpages", "winsize" },
     },
     keys = {
-      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>qs", function() require("persistence").load() end,                desc = "Restore Session" },
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+      { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
     },
   },
 
@@ -204,8 +204,8 @@ return {
     end,
     keys = {
       { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
-      { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
-      { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+      { "<leader>fg", "<cmd>Telescope live_grep<cr>",  desc = "Live Grep" },
+      { "<leader>fb", "<cmd>Telescope buffers<cr>",    desc = "Buffers" },
     },
   },
 
@@ -237,6 +237,7 @@ return {
   -- Gamify.nvim - Gamifies coding with achievements
   {
     "GrzegorzSzczepanek/gamify.nvim",
+    lazy = false,
     config = function()
       require("gamify")
       -- Add streak to airline statusline
@@ -277,30 +278,32 @@ return {
             if vim.wo.diff then return ']c' end
             vim.schedule(function() gs.next_hunk() end)
             return '<Ignore>'
-          end, {expr=true, desc="Next hunk"})
+          end, { expr = true, desc = "Next hunk" })
 
           map('n', '[c', function()
             if vim.wo.diff then return '[c' end
             vim.schedule(function() gs.prev_hunk() end)
             return '<Ignore>'
-          end, {expr=true, desc="Previous hunk"})
+          end, { expr = true, desc = "Previous hunk" })
 
           -- Actions
-          map('n', '<leader>hs', gs.stage_hunk, {desc="Stage hunk"})
-          map('n', '<leader>hr', gs.reset_hunk, {desc="Reset hunk"})
-          map('v', '<leader>hs', function() gs.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, {desc="Stage hunk"})
-          map('v', '<leader>hr', function() gs.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, {desc="Reset hunk"})
-          map('n', '<leader>hS', gs.stage_buffer, {desc="Stage buffer"})
-          map('n', '<leader>hu', gs.undo_stage_hunk, {desc="Undo stage hunk"})
-          map('n', '<leader>hR', gs.reset_buffer, {desc="Reset buffer"})
-          map('n', '<leader>hp', gs.preview_hunk, {desc="Preview hunk"})
-          map('n', '<leader>hb', function() gs.blame_line{full=true} end, {desc="Blame line"})
-          map('n', '<leader>hd', gs.diffthis, {desc="Diff this"})
-          map('n', '<leader>hD', function() gs.diffthis('~') end, {desc="Diff this ~"})
-          map('n', '<leader>td', gs.toggle_deleted, {desc="Toggle deleted"})
+          map('n', '<leader>hs', gs.stage_hunk, { desc = "Stage hunk" })
+          map('n', '<leader>hr', gs.reset_hunk, { desc = "Reset hunk" })
+          map('v', '<leader>hs', function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, { desc =
+          "Stage hunk" })
+          map('v', '<leader>hr', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, { desc =
+          "Reset hunk" })
+          map('n', '<leader>hS', gs.stage_buffer, { desc = "Stage buffer" })
+          map('n', '<leader>hu', gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+          map('n', '<leader>hR', gs.reset_buffer, { desc = "Reset buffer" })
+          map('n', '<leader>hp', gs.preview_hunk, { desc = "Preview hunk" })
+          map('n', '<leader>hb', function() gs.blame_line { full = true } end, { desc = "Blame line" })
+          map('n', '<leader>hd', gs.diffthis, { desc = "Diff this" })
+          map('n', '<leader>hD', function() gs.diffthis('~') end, { desc = "Diff this ~" })
+          map('n', '<leader>td', gs.toggle_deleted, { desc = "Toggle deleted" })
 
           -- Text object
-          map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', {desc="Select hunk"})
+          map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = "Select hunk" })
         end
       })
     end,
@@ -310,7 +313,7 @@ return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
-    lazy = false,  -- Load on startup so custom keymaps work
+    lazy = false, -- Load on startup so custom keymaps work
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
@@ -353,20 +356,6 @@ return {
         },
       })
     end,
-  },
-
-  -- Flash.nvim - Fast navigation with labels
-  {
-    "folke/flash.nvim",
-    event = "VeryLazy",
-    opts = {},
-    keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-    },
   },
 
   -- Which-key - Shows keybindings
@@ -451,13 +440,13 @@ return {
       local lint = require('lint')
 
       lint.linters_by_ft = {
-        php = {'phpcs'},
-        css = {'stylelint'},
-        scss = {'stylelint'},
-        python = {'flake8'},
-        lua = {'luacheck'},
-        json = {'jsonlint'},
-        javascript = {'eslint'},
+        php = { 'phpcs' },
+        css = { 'stylelint' },
+        scss = { 'stylelint' },
+        python = { 'flake8' },
+        lua = { 'luacheck' },
+        json = { 'jsonlint' },
+        javascript = { 'eslint' },
       }
 
       -- Installation instructions for each linter
@@ -524,8 +513,8 @@ return {
     config = function()
       require("conform").setup({
         formatters_by_ft = {
-          css = { "stylelint", "prettier" },      -- Run stylelint --fix first, then prettier
-          scss = { "stylelint", "prettier" },     -- Run stylelint --fix first, then prettier
+          css = { "stylelint", "prettier" },  -- Run stylelint --fix first, then prettier
+          scss = { "stylelint", "prettier" }, -- Run stylelint --fix first, then prettier
           javascript = { "prettier" },
           typescript = { "prettier" },
           json = { "prettier" },
@@ -559,11 +548,11 @@ return {
     config = function()
       require("indentmini").setup({
         char = "│",
-        only_current = false,  -- Show all indent lines
+        only_current = false, -- Show all indent lines
       })
       -- Set highlight colors (Dracula purple theme with more subtle ghost lines)
-      vim.cmd.highlight('IndentLine guifg=#282a36')  -- Very dim ghost lines (more subtle)
-      vim.cmd.highlight('IndentLineCurrent guifg=#bd93f9')  -- Dracula purple for current scope
+      vim.cmd.highlight('IndentLine guifg=#282a36')        -- Very dim ghost lines (more subtle)
+      vim.cmd.highlight('IndentLineCurrent guifg=#bd93f9') -- Dracula purple for current scope
     end,
   },
 
@@ -594,13 +583,13 @@ return {
   -- Trouble - diagnostics panel (opens automatically)
   {
     "folke/trouble.nvim",
-    lazy = false,  -- Load on startup so custom keymaps work
+    lazy = false, -- Load on startup so custom keymaps work
     config = function()
       require("trouble").setup({
         modes = {
           diagnostics = {
-            auto_open = true,   -- Automatically open when there are diagnostics
-            auto_close = true,  -- Close when there are no more diagnostics
+            auto_open = true,  -- Automatically open when there are diagnostics
+            auto_close = true, -- Close when there are no more diagnostics
           },
         },
       })
@@ -669,7 +658,7 @@ return {
       require('minuet').setup({
         provider = 'openai_fim_compatible',
         n_completions = 1,
-        context_window = 8192,  -- Good for RTX 3080 16GB
+        context_window = 8192, -- Good for RTX 3080 16GB
         provider_options = {
           openai_fim_compatible = {
             api_key = 'TERM',
@@ -693,7 +682,7 @@ return {
     lazy = false,
     dependencies = { "MunifTanjim/nui.nvim" },
     opts = {
-      disable_mouse = false,  -- Allow mouse usage including scrolling
+      disable_mouse = false, -- Allow mouse usage including scrolling
     },
   },
 
@@ -712,12 +701,12 @@ return {
     config = function()
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "lua_ls",          -- Lua
-          "pyright",         -- Python
-          "ts_ls",           -- JavaScript/TypeScript
-          "cssls",           -- CSS
-          "jsonls",          -- JSON
-          "html",            -- HTML
+          "lua_ls",  -- Lua
+          "pyright", -- Python
+          "ts_ls",   -- JavaScript/TypeScript
+          "cssls",   -- CSS
+          "jsonls",  -- JSON
+          "html",    -- HTML
         },
         automatic_installation = true,
       })

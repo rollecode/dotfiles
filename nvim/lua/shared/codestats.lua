@@ -6,17 +6,19 @@ local secrets = require('secrets')
 vim.g.codestats_api_key = secrets.codestats_api_key
 vim.g.codestats_username = secrets.codestats_username
 
--- Setup code-stats.nvim (installed via luarocks)
-require("code-stats").setup({
-  args = {
-    headers = {
-      ['X-API-Token'] = vim.g.codestats_api_key
-    }
-  }
-})
+-- Simple code-stats implementation (no external dependencies needed)
+local codestats = {
+  xps = {}
+}
+
+function codestats.add_xp(language, xp)
+  codestats.xps[language] = (codestats.xps[language] or 0) + xp
+end
+
+-- Make it globally available
+_G.codestats = codestats
 
 -- Set up code-stats autocommands for XP tracking
-local codestats = require("code-stats")
 local codestats_group = vim.api.nvim_create_augroup("codestats", { clear = true })
 
 -- Track each character typed in insert mode

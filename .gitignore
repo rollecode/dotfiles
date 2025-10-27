@@ -2,6 +2,7 @@ nvim/lua/secrets.lua
 wezterm/secrets.lua
 nvim/lua/local.lua
 wezterm/local.lua
+claude-code/secrets.sh
 nvim/lazy-lock.json
 .stfolder
 .stversions

@@ -6,11 +6,8 @@
 ---@diagnostic disable-next-line: undefined-field
 local uv = vim.uv or vim.loop
 
--- Add luarocks path for code-stats.nvim
-local rocks_path = vim.fn.expand("~/.local/share/nvim/rocks")
-package.path = package.path .. ";" .. rocks_path .. "/share/lua/5.1/?.lua;" .. rocks_path .. "/share/lua/5.1/?/init.lua"
-package.cpath = package.cpath .. ";" .. rocks_path .. "/lib/lua/5.1/?.so"
-vim.opt.runtimepath:append(rocks_path .. "/lib/luarocks/rocks-5.1/code-stats.nvim/0.0.3-1")
+-- Set leader
+vim.g.mapleader = " "
 
 -- Bootstrap lazy.nvim plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

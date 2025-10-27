@@ -1,3 +1,18 @@
+### 2.0.2: 2025-10-27
+
+* Add Claude Code integration with automatic Code::Stats XP tracking via hooks
+* Add claude-code directory with codestats-hook.sh and secrets management
+* Add XP logging to ~/.claude/codestats-hook.log with timestamps
+* Add yellow colored XP notifications (+XP 123 format) for each file edit
+* Add simple code-stats implementation for nvim without external dependencies
+* Add Cmd+V paste and Cmd+C copy keybindings for macOS in wezterm
+* Add Telescope search keymaps (<leader>s prefix for search operations)
+* Fix gamify streak recalculation on nvim startup (handles Syncthing sync and DST transitions)
+* Set leader key to space in nvim
+* Increase bottom padding in wezterm for macOS (0.5cell → 1.5cell)
+* Update .gitignore to exclude claude-code/secrets.sh
+* Update starship.toml, show full path
+
 ### 2.0.1: 2025-10-26
 
 * Add hyprland config
