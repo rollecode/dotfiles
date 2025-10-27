@@ -118,7 +118,7 @@ ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codesta
 
 ### Configure Claude code hooks
 
-Add the following to your `~/.claude/settings.local.json` (or create it if it doesn't exist):
+Add the following to your `~/.claude/settings.json` (if you already have settings, just add the `hooks` section):
 
 ```json
 {
@@ -137,8 +137,6 @@ Add the following to your `~/.claude/settings.local.json` (or create it if it do
   }
 }
 ```
-
-If you already have a `settings.local.json` with other settings (like permissions), just add the `hooks` section to your existing JSON.
 
 ### How it works
 
@@ -166,7 +164,7 @@ nvim ~/Projects/dotfiles/claude-code/secrets.sh
 mkdir -p ~/.claude/hooks
 ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
 
-# Add hooks configuration to ~/.claude/settings.local.json
+# Add hooks configuration to ~/.claude/settings.json
 ```
 
 ### Setup on remote servers
@@ -186,7 +184,7 @@ chmod +x ~/Projects/dotfiles/claude-code/secrets.sh
 mkdir -p ~/.claude/hooks
 ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
 
-# Add hooks to ~/.claude/settings.local.json on the server
+# Add hooks to ~/.claude/settings.json on the server
 ```
 
 ## Remote server setup
