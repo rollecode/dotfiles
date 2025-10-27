@@ -22,6 +22,18 @@ vim.api.nvim_create_autocmd("VimEnter", {
   nested = true,
 })
 
+-- Recalculate gamify streak on startup (fixes Syncthing sync and DST issues)
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.defer_fn(function()
+      pcall(function()
+        _G.CheckStreakDST()
+        require('lualine').refresh()
+      end)
+    end, 500)
+  end,
+})
+
 -- Close Trouble when quitting the last buffer
 vim.api.nvim_create_autocmd("QuitPre", {
   callback = function()

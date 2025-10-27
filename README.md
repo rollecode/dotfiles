@@ -11,7 +11,8 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 🎯 **Modular structure** - Shared configs + OS-specific overrides<br>
 🔐 **Secrets management** - API keys in gitignored files<br>
 🌍 **Cross-platform** - Works on Linux, macOS, and Windows<br>
-🎮 **Gamification & stats** - [Code::Stats](https://codestats.net/users/rolle) and [gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim) with streak tracking
+🎮 **Gamification & stats** - [Code::Stats](https://codestats.net/users/rolle) and [gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim) with streak tracking<br>
+🤖 **Claude Code integration** - Automatic XP tracking for AI-assisted coding
 
 ## Requirements
 
@@ -19,6 +20,7 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 - [WezTerm](https://wezfurlong.org/wezterm/) - Terminal emulator
 - [Liga SFMono Nerd Font](https://github.com/shaunsingh/SFMono-Nerd-Font-Ligaturized) - Ligaturized SF Mono with Nerd Font icons
 - [Monaspace](https://monaspace.githubnext.com/) - Monaspace Krypton NF font
+- [Claude Code](https://claude.ai/download) - AI-assisted coding with Code::Stats integration
 
 ## Installation
 
@@ -96,7 +98,98 @@ nvim ~/AppData/Local/nvim/lua/secrets.lua
 
 Linter and formatter notifications appear automatically when you open files - nvim-lint will warn you if a linter is missing for that specific file type.
 
-## Remote Server Setup
+## Claude code integration
+
+Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you'll earn XP based on the number of characters written (1 XP per character).
+
+### Setup
+
+```bash
+# Copy the secrets example file and add your Code::Stats API key
+cp ~/Projects/dotfiles/claude-code/secrets.sh.example ~/Projects/dotfiles/claude-code/secrets.sh
+
+# Edit the secrets file and add your API key from https://codestats.net/my/machines
+nvim ~/Projects/dotfiles/claude-code/secrets.sh
+
+# Symlink the hook script to Claude Code's hooks directory
+mkdir -p ~/.claude/hooks
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+```
+
+### Configure Claude code hooks
+
+Add the following to your `~/.claude/settings.local.json` (or create it if it doesn't exist):
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/codestats-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+If you already have a `settings.local.json` with other settings (like permissions), just add the `hooks` section to your existing JSON.
+
+### How it works
+
+The hook automatically:
+- Detects file type from extension (JavaScript, Python, Markdown, Bash, etc.)
+- Calculates XP based on characters written (1 XP = 1 character)
+- Sends the XP to Code::Stats API after each file edit/write
+- Supports all file types that Claude Code can edit
+
+Now your AI-assisted coding will contribute to your Code::Stats profile!
+
+### Setup on other machines
+
+On any other machine where you use Claude Code:
+
+```bash
+# Clone your dotfiles (if not already done)
+git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
+
+# Copy and configure secrets
+cp ~/Projects/dotfiles/claude-code/secrets.sh.example ~/Projects/dotfiles/claude-code/secrets.sh
+nvim ~/Projects/dotfiles/claude-code/secrets.sh
+
+# Symlink the hook
+mkdir -p ~/.claude/hooks
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+
+# Add hooks configuration to ~/.claude/settings.local.json
+```
+
+### Setup on remote servers
+
+For remote servers where you use Claude Code via SSH:
+
+```bash
+# On the remote server, clone dotfiles
+git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
+
+# Create secrets file with your API key
+echo '#!/bin/bash
+export CODESTATS_API_KEY="YOUR_API_KEY_HERE"' > ~/Projects/dotfiles/claude-code/secrets.sh
+chmod +x ~/Projects/dotfiles/claude-code/secrets.sh
+
+# Symlink the hook
+mkdir -p ~/.claude/hooks
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+
+# Add hooks to ~/.claude/settings.local.json on the server
+```
+
+## Remote server setup
 
 ### Install Neovim (first time), oneliner
 

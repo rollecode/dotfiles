@@ -73,3 +73,42 @@ function _G.GamifyStreak()
   end
   return ''
 end
+
+-- Override gamify's check_streak to handle DST properly
+function _G.CheckStreakDST()
+  local ok, storage = pcall(require, 'gamify.storage')
+  if not ok then return end
+
+  local data = storage.load_data()
+  if not data or type(data.date) ~= 'table' or #data.date == 0 then
+    return
+  end
+
+  local dates = data.date
+  local streak = 1
+
+  -- Convert dates to timestamps
+  local timestamps = {}
+  for _, date in ipairs(dates) do
+    local year, month, day = date:match '(%d+)-(%d+)-(%d+)'
+    local time = os.time { year = year, month = month, day = day, hour = 12, min = 0, sec = 0 }
+    table.insert(timestamps, time)
+  end
+
+  -- Sort newest first
+  table.sort(timestamps, function(a, b) return a > b end)
+
+  -- Calculate streak (allowing for DST: 23-25 hour days)
+  for i = 2, #timestamps do
+    local difference = os.difftime(timestamps[i - 1], timestamps[i])
+    -- Check if difference is approximately 1 day (23-25 hours)
+    if difference >= 82800 and difference <= 90000 then
+      streak = streak + 1
+    else
+      break
+    end
+  end
+
+  data.day_streak = streak
+  storage.save_data(data)
+end
