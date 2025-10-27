@@ -14,11 +14,30 @@ vim.keymap.set('n', '<' .. mod .. '-S-a>', function()
   require("trouble").toggle("diagnostics")
 end, { silent = true, desc = 'Toggle diagnostics panel' })
 
--- Ctrl+A / Ctrl+E for beginning/end of line (like nano/bash)
-vim.keymap.set('i', '<C-a>', '<C-o>^', { desc = 'Go to beginning of line' })
+-- Select all keybindings
+if vim.fn.has('mac') == 1 then
+  -- macOS: Cmd+A for select all (WezTerm translates to Ctrl+Shift+A)
+  vim.keymap.set('n', '<C-S-a>', 'ggVG', { desc = 'Select all' })
+  vim.keymap.set('v', '<C-S-a>', '<Esc>ggVG', { desc = 'Select all' })
+  vim.keymap.set('i', '<C-S-a>', '<Esc>ggVG', { desc = 'Select all' })
+  -- macOS: Keep Ctrl+A for beginning of line
+  vim.keymap.set('i', '<C-a>', '<C-o>^', { desc = 'Go to beginning of line' })
+  vim.keymap.set('n', '<C-a>', '^', { desc = 'Go to beginning of line' })
+else
+  -- Linux/Windows: Ctrl+A for select all
+  vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select all' })
+  vim.keymap.set('v', '<C-a>', '<Esc>ggVG', { desc = 'Select all' })
+  vim.keymap.set('i', '<C-a>', '<Esc>ggVG', { desc = 'Select all' })
+end
+-- Ctrl+E for end of line (all platforms)
 vim.keymap.set('i', '<C-e>', '<C-o>$', { desc = 'Go to end of line' })
-vim.keymap.set('n', '<C-a>', '^', { desc = 'Go to beginning of line' })
 vim.keymap.set('n', '<C-e>', '$', { desc = 'Go to end of line' })
+
+-- Tab/Shift+Tab for indenting
+vim.keymap.set('v', '<Tab>', '>gv', { desc = 'Indent and reselect' })
+vim.keymap.set('v', '<S-Tab>', '<gv', { desc = 'Dedent and reselect' })
+vim.keymap.set('n', '<Tab>', '>>', { desc = 'Indent line' })
+vim.keymap.set('n', '<S-Tab>', '<<', { desc = 'Dedent line' })
 
 -- Diagnostic navigation
 vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end,

@@ -1,6 +1,9 @@
 ### 2.0.2: 2025-10-27
 
 * Add nvim-treesitter plugin for better syntax highlighting and code understanding with auto-parser directory creation
+* Add Cmd+A for select all in nvim on macOS (keeps Ctrl+A for beginning of line)
+* Add Ctrl+A for select all in nvim on Linux/Windows
+* Add Tab/Shift+Tab for indenting/dedenting in nvim (all platforms)
 * Add Cmd+Click to open URLs in default browser on macOS (WezTerm)
 * Enable cursorline in nvim to highlight current line
 * Add Claude Code integration with automatic Code::Stats XP tracking via hooks

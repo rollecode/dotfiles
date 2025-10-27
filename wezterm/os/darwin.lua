@@ -46,6 +46,15 @@ function M.apply(config)
     mods = 'SUPER',
     action = wezterm.action.CopyTo 'Clipboard',
   })
+  -- Send Cmd+A through to nvim as a key sequence it can recognize
+  table.insert(config.keys, {
+    key = 'a',
+    mods = 'SUPER',
+    action = wezterm.action.SendKey {
+      key = 'a',
+      mods = 'CTRL|SHIFT',
+    },
+  })
 end
 
 return M
