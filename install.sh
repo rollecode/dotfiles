@@ -63,20 +63,61 @@ install_dependencies() {
 
     case $DISTRO in
         ubuntu|debian)
-            if ! command_exists neovim; then
-                print_info "Installing Neovim..."
-                sudo apt update
-                sudo apt install -y neovim
+            # Check Neovim version and install/upgrade if needed
+            local needs_nvim_install=false
+            if ! command_exists nvim; then
+                needs_nvim_install=true
+            else
+                local nvim_version=$(nvim --version | head -n1 | grep -oP 'v\K[0-9]+\.[0-9]+' || echo "0.0")
+                local major=$(echo "$nvim_version" | cut -d. -f1)
+                local minor=$(echo "$nvim_version" | cut -d. -f2)
+
+                if [ "$major" -eq 0 ] && [ "$minor" -lt 10 ]; then
+                    print_warning "Neovim $nvim_version is too old (requires 0.10+)"
+                    print_info "Removing old Neovim and installing latest version..."
+                    sudo apt remove -y neovim
+                    needs_nvim_install=true
+                fi
             fi
+
+            if [ "$needs_nvim_install" = true ]; then
+                print_info "Installing latest Neovim from GitHub releases..."
+                curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+                sudo rm -rf /opt/nvim
+                sudo tar -C /opt -xzf nvim-linux64.tar.gz
+                rm nvim-linux64.tar.gz
+
+                # Add to PATH if not already there
+                if ! grep -q '/opt/nvim-linux64/bin' ~/.bashrc; then
+                    echo 'export PATH="/opt/nvim-linux64/bin:$PATH"' >> ~/.bashrc
+                    export PATH="/opt/nvim-linux64/bin:$PATH"
+                fi
+
+                # Create symlink for system-wide access
+                sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+
+                print_success "Latest Neovim installed"
+            fi
+
             if ! command_exists git; then
                 print_info "Installing Git..."
                 sudo apt install -y git
             fi
             ;;
         arch|manjaro)
-            if ! command_exists neovim; then
+            # Arch usually has latest versions, but check anyway
+            if ! command_exists nvim; then
                 print_info "Installing Neovim..."
                 sudo pacman -S --noconfirm neovim
+            else
+                local nvim_version=$(nvim --version | head -n1 | grep -oP 'v\K[0-9]+\.[0-9]+' || echo "0.0")
+                local major=$(echo "$nvim_version" | cut -d. -f1)
+                local minor=$(echo "$nvim_version" | cut -d. -f2)
+
+                if [ "$major" -eq 0 ] && [ "$minor" -lt 10 ]; then
+                    print_warning "Neovim $nvim_version is too old, upgrading..."
+                    sudo pacman -S --noconfirm neovim
+                fi
             fi
             if ! command_exists git; then
                 print_info "Installing Git..."
@@ -84,10 +125,42 @@ install_dependencies() {
             fi
             ;;
         fedora|rhel|centos)
-            if ! command_exists neovim; then
-                print_info "Installing Neovim..."
-                sudo dnf install -y neovim
+            # Check Neovim version and install/upgrade if needed
+            local needs_nvim_install=false
+            if ! command_exists nvim; then
+                needs_nvim_install=true
+            else
+                local nvim_version=$(nvim --version | head -n1 | grep -oP 'v\K[0-9]+\.[0-9]+' || echo "0.0")
+                local major=$(echo "$nvim_version" | cut -d. -f1)
+                local minor=$(echo "$nvim_version" | cut -d. -f2)
+
+                if [ "$major" -eq 0 ] && [ "$minor" -lt 10 ]; then
+                    print_warning "Neovim $nvim_version is too old (requires 0.10+)"
+                    print_info "Removing old Neovim and installing latest version..."
+                    sudo dnf remove -y neovim
+                    needs_nvim_install=true
+                fi
             fi
+
+            if [ "$needs_nvim_install" = true ]; then
+                print_info "Installing latest Neovim from GitHub releases..."
+                curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+                sudo rm -rf /opt/nvim
+                sudo tar -C /opt -xzf nvim-linux64.tar.gz
+                rm nvim-linux64.tar.gz
+
+                # Add to PATH if not already there
+                if ! grep -q '/opt/nvim-linux64/bin' ~/.bashrc; then
+                    echo 'export PATH="/opt/nvim-linux64/bin:$PATH"' >> ~/.bashrc
+                    export PATH="/opt/nvim-linux64/bin:$PATH"
+                fi
+
+                # Create symlink for system-wide access
+                sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+
+                print_success "Latest Neovim installed"
+            fi
+
             if ! command_exists git; then
                 print_info "Installing Git..."
                 sudo dnf install -y git
@@ -123,7 +196,7 @@ install_dependencies() {
 
 # Clone or update repository
 setup_repo() {
-    local repo_url="git@github.com:ronilaukkarinen/dotfiles.git"
+    local repo_url="https://github.com/ronilaukkarinen/dotfiles.git"
     local dotfiles_dir="$HOME/Projects/dotfiles"
 
     # Create Projects directory if it doesn't exist
@@ -175,10 +248,16 @@ setup_configs() {
     if [ -L "$WEZTERM_CONFIG_DIR" ]; then
         print_info "WezTerm config symlink already exists"
     elif [ -d "$WEZTERM_CONFIG_DIR" ]; then
-        print_warning "WezTerm config directory exists, backing up..."
-        mv "$WEZTERM_CONFIG_DIR" "${WEZTERM_CONFIG_DIR}.backup.$(date +%s)"
-        ln -sf "$dotfiles_dir/wezterm" "$WEZTERM_CONFIG_DIR"
-        print_success "WezTerm config symlinked (old config backed up)"
+        print_warning "WezTerm config directory exists at $WEZTERM_CONFIG_DIR"
+        print_info "Backup and replace with symlink? (y/N)"
+        read -r replace_wezterm
+        if [[ "$replace_wezterm" =~ ^[Yy]$ ]]; then
+            mv "$WEZTERM_CONFIG_DIR" "${WEZTERM_CONFIG_DIR}.backup.$(date +%s)"
+            ln -sf "$dotfiles_dir/wezterm" "$WEZTERM_CONFIG_DIR"
+            print_success "WezTerm config symlinked (old config backed up)"
+        else
+            print_info "Skipping WezTerm config"
+        fi
     else
         ln -sf "$dotfiles_dir/wezterm" "$WEZTERM_CONFIG_DIR"
         print_success "WezTerm config symlinked"
@@ -188,10 +267,16 @@ setup_configs() {
     if [ -L "$NVIM_CONFIG_DIR" ]; then
         print_info "Neovim config symlink already exists"
     elif [ -d "$NVIM_CONFIG_DIR" ]; then
-        print_warning "Neovim config directory exists, backing up..."
-        mv "$NVIM_CONFIG_DIR" "${NVIM_CONFIG_DIR}.backup.$(date +%s)"
-        ln -sf "$dotfiles_dir/nvim" "$NVIM_CONFIG_DIR"
-        print_success "Neovim config symlinked (old config backed up)"
+        print_warning "Neovim config directory exists at $NVIM_CONFIG_DIR"
+        print_info "Backup and replace with symlink? (y/N)"
+        read -r replace_nvim
+        if [[ "$replace_nvim" =~ ^[Yy]$ ]]; then
+            mv "$NVIM_CONFIG_DIR" "${NVIM_CONFIG_DIR}.backup.$(date +%s)"
+            ln -sf "$dotfiles_dir/nvim" "$NVIM_CONFIG_DIR"
+            print_success "Neovim config symlinked (old config backed up)"
+        else
+            print_info "Skipping Neovim config"
+        fi
     else
         # Create parent directory if needed
         mkdir -p "$(dirname "$NVIM_CONFIG_DIR")"
@@ -213,10 +298,16 @@ setup_configs() {
         if [ -L "$HOME/.hammerspoon" ]; then
             print_info "Hammerspoon config symlink already exists"
         elif [ -d "$HOME/.hammerspoon" ]; then
-            print_warning "Hammerspoon config directory exists, backing up..."
-            mv "$HOME/.hammerspoon" "${HOME}/.hammerspoon.backup.$(date +%s)"
-            ln -sf "$dotfiles_dir/hammerspoon" "$HOME/.hammerspoon"
-            print_success "Hammerspoon config symlinked (old config backed up)"
+            print_warning "Hammerspoon config directory exists at ~/.hammerspoon"
+            print_info "Backup and replace with symlink? (y/N)"
+            read -r replace_hammerspoon
+            if [[ "$replace_hammerspoon" =~ ^[Yy]$ ]]; then
+                mv "$HOME/.hammerspoon" "${HOME}/.hammerspoon.backup.$(date +%s)"
+                ln -sf "$dotfiles_dir/hammerspoon" "$HOME/.hammerspoon"
+                print_success "Hammerspoon config symlinked (old config backed up)"
+            else
+                print_info "Skipping Hammerspoon config"
+            fi
         else
             ln -sf "$dotfiles_dir/hammerspoon" "$HOME/.hammerspoon"
             print_success "Hammerspoon config symlinked"
