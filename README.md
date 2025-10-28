@@ -6,6 +6,12 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 
 <img width="813" height="240" alt="image" src="https://github.com/user-attachments/assets/928941fa-fde7-4c05-b9e2-cc81bc1fe2f5" />
 
+## Installation 
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
+```
+
 ## Features
 
 🎯 **Modular structure** - Shared configs + OS-specific overrides<br>
@@ -22,7 +28,9 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 - [Monaspace](https://monaspace.githubnext.com/) - Monaspace Krypton NF font
 - [Claude Code](https://claude.ai/download) - AI-assisted coding with Code::Stats integration
 
-## Installation
+## Manual installation
+
+For selective updates or if you prefer manual setup:
 
 ### Clone the repository
 
@@ -30,69 +38,45 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
 ```
 
-### Quick Setup (One-liners)
+### Symlink configs (Linux/macOS)
 
-#### With Symlinks (Recommended)
-
-Changes to configs automatically update the repo:
-
-#### Linux/macOS
 ```bash
 # WezTerm
 ln -sf ~/Projects/dotfiles/wezterm ~/.config/wezterm
 
 # Neovim
-ln -sf ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/Projects/dotfiles/nvim/lua/secrets.lua
+ln -sf ~/Projects/dotfiles/nvim ~/.config/nvim
+
+# Hammerspoon (macOS only)
+ln -sf ~/Projects/dotfiles/hammerspoon ~/.hammerspoon
 ```
 
-#### Windows (PowerShell as Admin)
+### Symlink configs (Windows - PowerShell as Admin)
 
 ```powershell
+# Clone repository
+git clone git@github.com:ronilaukkarinen/dotfiles.git $env:USERPROFILE\Projects\dotfiles
+
 # WezTerm
 New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Projects\dotfiles\wezterm" -Force
 
 # Neovim
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\AppData\Local\nvim" -Target "$env:USERPROFILE\Projects\dotfiles\nvim" -Force; Copy-Item "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua.example" "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua"
-```
-
-#### Without Symlinks
-
-Copy files directly (requires manual updates):
-
-#### Linux/macOS
-
-```bash
-# WezTerm
-cp -r ~/Projects/dotfiles/wezterm ~/.config/wezterm
-
-# Neovim
-cp -r ~/Projects/dotfiles/nvim ~/.config/nvim && cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/.config/nvim/lua/secrets.lua
-```
-
-#### Windows (PowerShell)
-
-```powershell
-# WezTerm
-Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\wezterm" "$env:USERPROFILE\.config\wezterm"
-
-# Neovim
-Copy-Item -Recurse -Force "$env:USERPROFILE\Projects\dotfiles\nvim" "$env:USERPROFILE\AppData\Local\nvim"; Copy-Item "$env:USERPROFILE\Projects\dotfiles\nvim\lua\secrets.lua.example" "$env:USERPROFILE\AppData\Local\nvim\lua\secrets.lua"
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\AppData\Local\nvim" -Target "$env:USERPROFILE\Projects\dotfiles\nvim" -Force
 ```
 
 ### Configure secrets
 
-Edit `secrets.lua` and add your Code::Stats API key:
-
 ```bash
-# With symlinks
+# Neovim
+cp ~/Projects/dotfiles/nvim/lua/secrets.lua.example ~/Projects/dotfiles/nvim/lua/secrets.lua
 nvim ~/Projects/dotfiles/nvim/lua/secrets.lua
 
-# Without symlinks (Linux/macOS)
-nvim ~/.config/nvim/lua/secrets.lua
-
-# Without symlinks (Windows - use your preferred editor)
-nvim ~/AppData/Local/nvim/lua/secrets.lua
+# Claude Code
+cp ~/Projects/dotfiles/claude-code/secrets.sh.example ~/Projects/dotfiles/claude-code/secrets.sh
+nvim ~/Projects/dotfiles/claude-code/secrets.sh
 ```
+
+Get your Code::Stats API key from https://codestats.net/my/machines
 
 **With symlinks, any changes you make to your configs automatically update the repo!** Just commit and push when ready.
 
@@ -102,19 +86,7 @@ Linter and formatter notifications appear automatically when you open files - nv
 
 Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you'll earn XP and see a yellow ASCII box notification in WezTerm (1 XP per line written by Claude).
 
-### Setup
-
-```bash
-# Copy the secrets example file and add your Code::Stats API key
-cp ~/Projects/dotfiles/claude-code/secrets.sh.example ~/Projects/dotfiles/claude-code/secrets.sh
-
-# Edit the secrets file and add your API key from https://codestats.net/my/machines
-nvim ~/Projects/dotfiles/claude-code/secrets.sh
-
-# Symlink the hook script to Claude Code's hooks directory
-mkdir -p ~/.claude/hooks
-ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
-```
+The install script sets up the hook symlink automatically. You just need to configure `~/.claude/settings.json`:
 
 ### Configure Claude code hooks
 
@@ -150,29 +122,26 @@ Now your AI-assisted coding will contribute to your Code::Stats profile!
 
 ### Setup on other machines
 
-On any other machine where you use Claude Code:
+On any other machine where you use Claude Code, just run the install script:
 
 ```bash
-# Clone your dotfiles (if not already done)
-git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
-
-# Copy and configure secrets
-cp ~/Projects/dotfiles/claude-code/secrets.sh.example ~/Projects/dotfiles/claude-code/secrets.sh
-nvim ~/Projects/dotfiles/claude-code/secrets.sh
-
-# Symlink the hook
-mkdir -p ~/.claude/hooks
-ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
-
-# Add hooks configuration to ~/.claude/settings.json
+bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
 ```
+
+Then configure your secrets and `~/.claude/settings.json` as instructed.
 
 ### Setup on remote servers
 
-For remote servers where you use Claude Code via SSH:
+For remote servers where you use Claude Code via SSH, run the install script:
 
 ```bash
-# On the remote server, clone dotfiles
+bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
+```
+
+Or for manual Claude Code hook setup only:
+
+```bash
+# Clone dotfiles
 git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
 
 # Create secrets file with your API key
@@ -184,7 +153,7 @@ chmod +x ~/Projects/dotfiles/claude-code/secrets.sh
 mkdir -p ~/.claude/hooks
 ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
 
-# Add hooks to ~/.claude/settings.json on the server
+# Add hooks to ~/.claude/settings.json on the server (see above)
 ```
 
 ## Remote server setup

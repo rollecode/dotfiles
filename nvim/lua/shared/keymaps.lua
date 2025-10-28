@@ -39,6 +39,16 @@ vim.keymap.set('v', '<S-Tab>', '<gv', { desc = 'Dedent and reselect' })
 vim.keymap.set('n', '<Tab>', '>>', { desc = 'Indent line' })
 vim.keymap.set('n', '<S-Tab>', '<<', { desc = 'Dedent line' })
 
+-- Comment/uncomment line (Cmd+Shift+7 on macOS, Ctrl+Shift+7 elsewhere)
+vim.keymap.set('n', '<' .. mod .. '-S-7>', function()
+  require('Comment.api').toggle.linewise.current()
+end, { silent = true, desc = 'Toggle comment' })
+vim.keymap.set('v', '<' .. mod .. '-S-7>', function()
+  local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
+  vim.api.nvim_feedkeys(esc, 'nx', false)
+  require('Comment.api').toggle.linewise(vim.fn.visualmode())
+end, { silent = true, desc = 'Toggle comment' })
+
 -- Diagnostic navigation
 vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end,
   { silent = true, desc = 'Next diagnostic' })

@@ -623,6 +623,11 @@ return {
         -- Auto-install missing parsers when opening files
         auto_install = true,
 
+        -- Deprecated fields (kept for compatibility)
+        sync_install = false,
+        ignore_install = {},
+        modules = {},
+
         -- Enable treesitter highlighting
         highlight = { enable = true },
       })
@@ -697,6 +702,14 @@ return {
           },
         },
       })
+    end,
+  },
+
+  -- Comment.nvim - toggle comments
+  {
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup()
     end,
   },
 
