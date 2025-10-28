@@ -1,3 +1,4 @@
+-- luacheck: globals hs clickHandler dragHandler cancelHandler
 -- Hammerspoon config for Cmd + Mouse window management
 -- Based on SkyRocket.spoon by David Balatero
 -- Cmd + Left Mouse: Move window
