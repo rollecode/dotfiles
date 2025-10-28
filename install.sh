@@ -341,13 +341,10 @@ print_final_instructions() {
 # Main installation flow
 main() {
     echo -e "${YELLOW}"
-    echo "╔══════════════════════════════════════════════════════════════════╗"
-    echo "║                                                                  ║"
-    echo "║              Rolle's dotfiles - auto installer                   ║"
-    echo "║                                                                  ║"
-    echo "╚══════════════════════════════════════════════════════════════════╝"
+    echo "┌──────────────────────────────┐"
+    echo "│ Rolle's dotfiles - Installer │"
+    echo "└──────────────────────────────┘"
     echo -e "${NC}"
-    echo ""
 
     detect_os
 
