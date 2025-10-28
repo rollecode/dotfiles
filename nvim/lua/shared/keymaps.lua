@@ -11,7 +11,12 @@ end, { silent = true, desc = 'Toggle file tree' })
 
 -- Trouble toggle (Ctrl+Shift+A or Cmd+Shift+A on macOS)
 vim.keymap.set('n', '<' .. mod .. '-S-a>', function()
-  require("trouble").toggle("diagnostics")
+  local ok, trouble = pcall(require, "trouble")
+  if ok then
+    trouble.toggle("diagnostics")
+  else
+    vim.notify("Trouble plugin is not loaded", vim.log.levels.WARN)
+  end
 end, { silent = true, desc = 'Toggle diagnostics panel' })
 
 -- Select all keybindings
@@ -41,12 +46,18 @@ vim.keymap.set('n', '<S-Tab>', '<<', { desc = 'Dedent line' })
 
 -- Comment/uncomment line (Cmd+Shift+7 on macOS, Ctrl+Shift+7 elsewhere)
 vim.keymap.set('n', '<' .. mod .. '-S-7>', function()
-  require('Comment.api').toggle.linewise.current()
+  local ok, comment_api = pcall(require, 'Comment.api')
+  if ok then
+    comment_api.toggle.linewise.current()
+  end
 end, { silent = true, desc = 'Toggle comment' })
 vim.keymap.set('v', '<' .. mod .. '-S-7>', function()
-  local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
-  vim.api.nvim_feedkeys(esc, 'nx', false)
-  require('Comment.api').toggle.linewise(vim.fn.visualmode())
+  local ok, comment_api = pcall(require, 'Comment.api')
+  if ok then
+    local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
+    vim.api.nvim_feedkeys(esc, 'nx', false)
+    comment_api.toggle.linewise(vim.fn.visualmode())
+  end
 end, { silent = true, desc = 'Toggle comment' })
 
 -- Diagnostic navigation
@@ -63,31 +74,39 @@ end, { silent = true, desc = 'Previous error' })
 
 -- VSCode-like keybindings for Telescope
 vim.keymap.set('n', '<C-p>', function()
-  require('telescope').extensions.frecency.frecency(require('telescope.themes').get_dropdown({
-    previewer = false,
-    sorting_strategy = 'ascending',
-    layout_config = {
-      width = 0.8,
-      height = 0.6,
-      anchor = 'N',
-      anchor_padding = 0,
-      prompt_position = 'top',
-    },
-  }))
+  local ok, telescope = pcall(require, 'telescope')
+  local ok2, themes = pcall(require, 'telescope.themes')
+  if ok and ok2 then
+    telescope.extensions.frecency.frecency(themes.get_dropdown({
+      previewer = false,
+      sorting_strategy = 'ascending',
+      layout_config = {
+        width = 0.8,
+        height = 0.6,
+        anchor = 'N',
+        anchor_padding = 0,
+        prompt_position = 'top',
+      },
+    }))
+  end
 end, { silent = true, desc = 'Find Files (Recent)' })
 
 vim.keymap.set('n', '<C-S-p>', function()
-  require('telescope.builtin').commands(require('telescope.themes').get_dropdown({
-    previewer = false,
-    sorting_strategy = 'ascending',
-    layout_config = {
-      width = 0.8,
-      height = 0.6,
-      anchor = 'N',
-      anchor_padding = 0,
-      prompt_position = 'top',
-    },
-  }))
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  local ok2, themes = pcall(require, 'telescope.themes')
+  if ok and ok2 then
+    builtin.commands(themes.get_dropdown({
+      previewer = false,
+      sorting_strategy = 'ascending',
+      layout_config = {
+        width = 0.8,
+        height = 0.6,
+        anchor = 'N',
+        anchor_padding = 0,
+        prompt_position = 'top',
+      },
+    }))
+  end
 end, { silent = true, desc = 'Command Palette' })
 
 -- Barbar buffer navigation

@@ -1,10 +1,17 @@
 -- Code::Stats configuration and setup
 
-local secrets = require('secrets')
+-- Try to load secrets (fail gracefully if it doesn't exist)
+local ok, secrets = pcall(require, 'secrets')
+if not ok then
+  secrets = {
+    codestats_api_key = '',
+    codestats_username = ''
+  }
+end
 
 -- Set global API key and username
-vim.g.codestats_api_key = secrets.codestats_api_key
-vim.g.codestats_username = secrets.codestats_username
+vim.g.codestats_api_key = secrets.codestats_api_key or ''
+vim.g.codestats_username = secrets.codestats_username or ''
 
 -- Simple code-stats implementation (no external dependencies needed)
 local codestats = {
