@@ -1,6 +1,6 @@
 ### 2.0.3: 2025-10-28
 
-* Make install.sh idempotent with prompts before backing up configs (WezTerm, Neovim, Hammerspoon), upgrading Neovim, and installing Git
+* Make install.sh idempotent with prompts before backing up configs (WezTerm, Neovim, Hammerspoon), building/upgrading Neovim, and installing Git
 * Add automatic Neovim version detection and upgrade to latest release (0.10+) in install.sh
 * Build Neovim from source on Ubuntu/Debian to avoid GLIBC compatibility issues
 * Use pre-built binaries for Fedora/RHEL/CentOS (newer GLIBC)
