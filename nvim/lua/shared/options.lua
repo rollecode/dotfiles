@@ -42,6 +42,9 @@ local function setup_clipboard()
       copy = {['+'] = copy, ['*'] = copy},
       paste = {['+'] = paste, ['*'] = paste},
     }
+
+    -- Enable clipboard integration
+    vim.opt.clipboard = 'unnamedplus'
   end
 end
 
