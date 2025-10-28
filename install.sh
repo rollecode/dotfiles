@@ -83,31 +83,36 @@ install_dependencies() {
             if [ "$needs_nvim_install" = true ]; then
                 print_info "Installing latest Neovim from GitHub releases..."
 
-                # Get the latest version tag
-                NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+                # Get latest release info from GitHub API
+                local release_info=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest)
+                local nvim_version=$(echo "$release_info" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+                local download_url=$(echo "$release_info" | grep "browser_download_url.*linux-x86_64.tar.gz" | cut -d '"' -f 4)
 
-                if [ -z "$NVIM_VERSION" ]; then
-                    print_error "Failed to fetch latest Neovim version"
+                if [ -z "$nvim_version" ] || [ -z "$download_url" ]; then
+                    print_error "Failed to fetch Neovim download information"
                     return 1
                 fi
 
-                print_info "Downloading Neovim $NVIM_VERSION..."
-                curl -Lo nvim-linux64.tar.gz "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz"
+                local filename=$(basename "$download_url")
+                local dirname=$(basename "$filename" .tar.gz)
 
-                sudo rm -rf /opt/nvim-linux64
-                sudo tar -C /opt -xzf nvim-linux64.tar.gz
-                rm nvim-linux64.tar.gz
+                print_info "Downloading Neovim $nvim_version..."
+                curl -fL -o "$filename" "$download_url"
+
+                sudo rm -rf "/opt/$dirname"
+                sudo tar -C /opt -xzf "$filename"
+                rm "$filename"
 
                 # Add to PATH if not already there
-                if ! grep -q '/opt/nvim-linux64/bin' ~/.bashrc; then
-                    echo 'export PATH="/opt/nvim-linux64/bin:$PATH"' >> ~/.bashrc
-                    export PATH="/opt/nvim-linux64/bin:$PATH"
+                if ! grep -q "/opt/$dirname/bin" ~/.bashrc; then
+                    echo "export PATH=\"/opt/$dirname/bin:\$PATH\"" >> ~/.bashrc
+                    export PATH="/opt/$dirname/bin:$PATH"
                 fi
 
                 # Create symlink for system-wide access
-                sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+                sudo ln -sf "/opt/$dirname/bin/nvim" /usr/local/bin/nvim
 
-                print_success "Neovim $NVIM_VERSION installed"
+                print_success "Neovim $nvim_version installed at /opt/$dirname"
             fi
 
             if ! command_exists git; then
@@ -170,31 +175,36 @@ install_dependencies() {
             if [ "$needs_nvim_install" = true ]; then
                 print_info "Installing latest Neovim from GitHub releases..."
 
-                # Get the latest version tag
-                NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+                # Get latest release info from GitHub API
+                local release_info=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest)
+                local nvim_version=$(echo "$release_info" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+                local download_url=$(echo "$release_info" | grep "browser_download_url.*linux-x86_64.tar.gz" | cut -d '"' -f 4)
 
-                if [ -z "$NVIM_VERSION" ]; then
-                    print_error "Failed to fetch latest Neovim version"
+                if [ -z "$nvim_version" ] || [ -z "$download_url" ]; then
+                    print_error "Failed to fetch Neovim download information"
                     return 1
                 fi
 
-                print_info "Downloading Neovim $NVIM_VERSION..."
-                curl -Lo nvim-linux64.tar.gz "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz"
+                local filename=$(basename "$download_url")
+                local dirname=$(basename "$filename" .tar.gz)
 
-                sudo rm -rf /opt/nvim-linux64
-                sudo tar -C /opt -xzf nvim-linux64.tar.gz
-                rm nvim-linux64.tar.gz
+                print_info "Downloading Neovim $nvim_version..."
+                curl -fL -o "$filename" "$download_url"
+
+                sudo rm -rf "/opt/$dirname"
+                sudo tar -C /opt -xzf "$filename"
+                rm "$filename"
 
                 # Add to PATH if not already there
-                if ! grep -q '/opt/nvim-linux64/bin' ~/.bashrc; then
-                    echo 'export PATH="/opt/nvim-linux64/bin:$PATH"' >> ~/.bashrc
-                    export PATH="/opt/nvim-linux64/bin:$PATH"
+                if ! grep -q "/opt/$dirname/bin" ~/.bashrc; then
+                    echo "export PATH=\"/opt/$dirname/bin:\$PATH\"" >> ~/.bashrc
+                    export PATH="/opt/$dirname/bin:$PATH"
                 fi
 
                 # Create symlink for system-wide access
-                sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+                sudo ln -sf "/opt/$dirname/bin/nvim" /usr/local/bin/nvim
 
-                print_success "Neovim $NVIM_VERSION installed"
+                print_success "Neovim $nvim_version installed at /opt/$dirname"
             fi
 
             if ! command_exists git; then
