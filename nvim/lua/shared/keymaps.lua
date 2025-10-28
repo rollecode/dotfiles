@@ -4,12 +4,8 @@
 -- OS-specific modifier key (Cmd on macOS, Ctrl elsewhere)
 local mod = vim.fn.has('mac') == 1 and 'D' or 'C'
 
--- Copy with Cmd+C (macOS) or Ctrl+C (Linux) in visual mode
-if vim.fn.has('mac') == 1 then
-  -- macOS: Cmd+C translates to Ctrl+Shift+C via WezTerm
-  vim.keymap.set('v', '<C-S-c>', '"+y', { silent = true, desc = 'Copy to clipboard' })
-else
-  -- Linux: Both Ctrl+C and Ctrl+Shift+C copy in visual mode
+-- Copy with Ctrl+C in visual mode (Linux only - macOS uses WezTerm's Cmd+C)
+if vim.fn.has('mac') ~= 1 then
   vim.keymap.set('v', '<C-c>', '"+y', { silent = true, desc = 'Copy to clipboard' })
   vim.keymap.set('v', '<C-S-c>', '"+y', { silent = true, desc = 'Copy to clipboard' })
 end

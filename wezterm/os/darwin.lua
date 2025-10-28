@@ -41,14 +41,10 @@ function M.apply(config)
     mods = 'SUPER',
     action = wezterm.action.PasteFrom 'Clipboard',
   })
-  -- Send Cmd+C through to nvim for copying in visual mode
   table.insert(config.keys, {
     key = 'c',
     mods = 'SUPER',
-    action = wezterm.action.SendKey {
-      key = 'c',
-      mods = 'CTRL|SHIFT',
-    },
+    action = wezterm.action.CopyTo 'Clipboard',
   })
   -- Send Cmd+A through to nvim as a key sequence it can recognize
   table.insert(config.keys, {
