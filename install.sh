@@ -74,45 +74,50 @@ install_dependencies() {
 
                 if [ "$major" -eq 0 ] && [ "$minor" -lt 10 ]; then
                     print_warning "Neovim $nvim_version is too old (requires 0.10+)"
-                    print_info "Removing old Neovim and installing latest version..."
-                    sudo apt remove -y neovim
-                    needs_nvim_install=true
+                    print_info "Remove old version and build latest Neovim from source? (Y/n)"
+                    read -r upgrade_nvim
+                    upgrade_nvim=${upgrade_nvim:-y}
+                    if [[ "$upgrade_nvim" =~ ^[Yy]$ ]]; then
+                        print_info "Removing old Neovim..."
+                        sudo apt remove -y neovim
+                        needs_nvim_install=true
+                    else
+                        print_warning "Keeping old Neovim (dotfiles config requires 0.10+)"
+                    fi
                 fi
             fi
 
             if [ "$needs_nvim_install" = true ]; then
-                print_info "Installing latest Neovim from GitHub releases..."
+                print_info "Building Neovim from source (this will take a few minutes)..."
 
-                # Get latest release info from GitHub API
-                local release_info=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest)
-                local nvim_version=$(echo "$release_info" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-                local download_url=$(echo "$release_info" | grep "browser_download_url.*linux-x86_64.tar.gz" | cut -d '"' -f 4)
+                # Install build dependencies
+                sudo apt update
+                sudo apt install -y ninja-build gettext cmake unzip curl build-essential
 
-                if [ -z "$nvim_version" ] || [ -z "$download_url" ]; then
-                    print_error "Failed to fetch Neovim download information"
+                # Get latest stable version
+                local nvim_version=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+                if [ -z "$nvim_version" ]; then
+                    print_error "Failed to fetch latest Neovim version"
                     return 1
                 fi
 
-                local filename=$(basename "$download_url")
-                local dirname=$(basename "$filename" .tar.gz)
+                print_info "Building Neovim $nvim_version..."
 
-                print_info "Downloading Neovim $nvim_version..."
-                curl -fL -o "$filename" "$download_url"
+                # Clone and build
+                cd /tmp
+                rm -rf neovim
+                git clone https://github.com/neovim/neovim.git
+                cd neovim
+                git checkout "$nvim_version"
 
-                sudo rm -rf "/opt/$dirname"
-                sudo tar -C /opt -xzf "$filename"
-                rm "$filename"
+                make CMAKE_BUILD_TYPE=Release
+                sudo make install
 
-                # Add to PATH if not already there
-                if ! grep -q "/opt/$dirname/bin" ~/.bashrc; then
-                    echo "export PATH=\"/opt/$dirname/bin:\$PATH\"" >> ~/.bashrc
-                    export PATH="/opt/$dirname/bin:$PATH"
-                fi
+                cd ~
+                rm -rf /tmp/neovim
 
-                # Create symlink for system-wide access
-                sudo ln -sf "/opt/$dirname/bin/nvim" /usr/local/bin/nvim
-
-                print_success "Neovim $nvim_version installed at /opt/$dirname"
+                print_success "Neovim $nvim_version built and installed from source to /usr/local"
             fi
 
             if ! command_exists git; then
@@ -166,9 +171,16 @@ install_dependencies() {
 
                 if [ "$major" -eq 0 ] && [ "$minor" -lt 10 ]; then
                     print_warning "Neovim $nvim_version is too old (requires 0.10+)"
-                    print_info "Removing old Neovim and installing latest version..."
-                    sudo dnf remove -y neovim
-                    needs_nvim_install=true
+                    print_info "Remove old version and install latest Neovim? (Y/n)"
+                    read -r upgrade_nvim
+                    upgrade_nvim=${upgrade_nvim:-y}
+                    if [[ "$upgrade_nvim" =~ ^[Yy]$ ]]; then
+                        print_info "Removing old Neovim..."
+                        sudo dnf remove -y neovim
+                        needs_nvim_install=true
+                    else
+                        print_warning "Keeping old Neovim (dotfiles config requires 0.10+)"
+                    fi
                 fi
             fi
 
@@ -468,19 +480,19 @@ print_final_instructions() {
     print_info "Next steps:"
     echo ""
     echo "1. Add your Code::Stats API key to Neovim secrets:"
-    echo "┌──────────────────────────────────────────────────────┐"
+    echo "┌────────────────────────────────────────────────┐"
     echo "│ nvim ~/Projects/dotfiles/nvim/lua/secrets.lua │"
-    echo "└──────────────────────────────────────────────────────┘"
+    echo "└────────────────────────────────────────────────┘"
     echo ""
     echo "2. Add your Code::Stats API key to Claude Code secrets:"
-    echo "┌─────────────────────────────────────────────────┐"
+    echo "┌──────────────────────────────────────────────────┐"
     echo "│ nvim ~/Projects/dotfiles/claude-code/secrets.sh │"
-    echo "└─────────────────────────────────────────────────┘"
+    echo "└──────────────────────────────────────────────────┘"
     echo ""
     echo "3. Configure Claude Code hooks:"
-    echo "┌─────────────────────────────────┐"
+    echo "┌──────────────────────────────┐"
     echo "│ nvim ~/.claude/settings.json │"
-    echo "└─────────────────────────────────┘"
+    echo "└──────────────────────────────┘"
     echo "See README.md section 'Configure Claude code hooks'"
     echo ""
     echo "4. Restart Neovim to install plugins"

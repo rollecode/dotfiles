@@ -1,8 +1,9 @@
 ### 2.0.3: 2025-10-28
 
-* Make install.sh idempotent with prompts before backing up existing configs (WezTerm, Neovim, Hammerspoon) and installing Git
-* Add automatic Neovim version detection and upgrade to latest release (0.10+) for Ubuntu/Debian/Fedora/RHEL/CentOS in install.sh
-* Fix Neovim download to dynamically extract download URL and filename from GitHub API (no hardcoded filenames)
+* Make install.sh idempotent with prompts before backing up configs (WezTerm, Neovim, Hammerspoon), upgrading Neovim, and installing Git
+* Add automatic Neovim version detection and upgrade to latest release (0.10+) in install.sh
+* Build Neovim from source on Ubuntu/Debian to avoid GLIBC compatibility issues
+* Use pre-built binaries for Fedora/RHEL/CentOS (newer GLIBC)
 * Change install.sh to use HTTPS for git clone instead of SSH for better remote server compatibility
 * Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
 * Add Hammerspoon configuration for macOS with Cmd + mouse window management
