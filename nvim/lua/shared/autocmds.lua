@@ -57,3 +57,29 @@ vim.api.nvim_create_autocmd("QuitPre", {
     end
   end,
 })
+
+-- Highlight yanked text briefly and show message
+vim.api.nvim_create_autocmd("TextYankPost", {
+  callback = function()
+    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
+
+    local event = vim.v.event
+    local lines = event.regcontents or {}
+    local regtype = event.regtype or ''
+
+    vim.schedule(function()
+      local msg
+      if regtype == 'v' then
+        -- Characterwise yank
+        local text = table.concat(lines, '\n')
+        local chars = vim.fn.strchars(text)
+        msg = chars .. " chars yanked"
+      elseif #lines == 1 then
+        msg = "1 line yanked"
+      else
+        msg = #lines .. " lines yanked"
+      end
+      print(msg)
+    end)
+  end,
+})

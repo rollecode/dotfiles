@@ -789,7 +789,7 @@ return {
       -- Configure language servers with blink.cmp capabilities
       vim.lsp.config('*', { capabilities = capabilities })
 
-      -- Configure lua_ls to recognize Neovim globals
+      -- Configure lua_ls to recognize Neovim and Hammerspoon globals
       vim.lsp.config('lua_ls', {
         settings = {
           Lua = {
@@ -797,7 +797,8 @@ return {
               version = 'LuaJIT',
             },
             diagnostics = {
-              globals = { 'vim' },
+              globals = { 'vim', 'hs', 'clickHandler', 'dragHandler', 'cancelHandler' },
+              disable = { 'lowercase-global' },
             },
             workspace = {
               library = vim.api.nvim_get_runtime_file("", true),
