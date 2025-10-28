@@ -88,6 +88,15 @@ install_dependencies() {
             fi
 
             if [ "$needs_nvim_install" = true ]; then
+                print_info "Build Neovim from source? This will install build dependencies and take a few minutes. (Y/n)"
+                read -r build_nvim
+                build_nvim=${build_nvim:-y}
+
+                if [[ ! "$build_nvim" =~ ^[Yy]$ ]]; then
+                    print_warning "Skipping Neovim installation (dotfiles config requires 0.10+)"
+                    return 0
+                fi
+
                 print_info "Building Neovim from source (this will take a few minutes)..."
 
                 # Install build dependencies
