@@ -1,3 +1,14 @@
+### 2.0.3: 2025-10-28
+
+* Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
+* Add Hammerspoon configuration for macOS with Cmd + mouse window management
+* Add Cmd + Left Mouse drag to move windows (similar to Hyprland's Super + left mouse)
+* Add Cmd + Right Mouse drag to resize windows (similar to Hyprland's Super + right mouse)
+* Add Hammerspoon setup to install.sh with automatic installation and symlinking
+* Add automatic config reloading when Hammerspoon files change
+* Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
+* Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
+
 ### 2.0.2: 2025-10-27
 
 * Add nvim-treesitter plugin for better syntax highlighting and code understanding with auto-parser directory creation

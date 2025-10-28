@@ -4,12 +4,15 @@
 # Sends XP to code::stats for every file written/edited by Claude
 
 # Get the directory where this script lives (follow symlinks)
-if [ -L "${BASH_SOURCE[0]}" ]; then
-    SCRIPT_PATH="$(readlink "${BASH_SOURCE[0]}")"
-else
-    SCRIPT_PATH="${BASH_SOURCE[0]}"
-fi
-SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+# More robust path resolution that works on macOS
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+    SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
+    # If SOURCE is relative, resolve it relative to the symlink directory
+    [[ $SOURCE != /* ]] && SOURCE="$SCRIPT_DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 
 # Source the secrets file
 if [ -f "$SCRIPT_DIR/secrets.sh" ]; then
@@ -30,9 +33,6 @@ DEBUG_LOG_FILE="$HOME/.claude/codestats-hook-debug.log"
 
 # Read the hook input from stdin
 INPUT=$(cat)
-
-# Log that hook was triggered
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Hook triggered" >> "$DEBUG_LOG_FILE"
 
 # Extract tool information
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
