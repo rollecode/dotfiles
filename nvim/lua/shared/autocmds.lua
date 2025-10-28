@@ -11,12 +11,26 @@ vim.api.nvim_create_autocmd({ "InsertCharPre", "BufWrite", "BufLeave" }, {
   end,
 })
 
--- Auto-restore session when opening nvim without arguments
+-- Auto-restore session when opening nvim without arguments (only if persistence is enabled)
 vim.api.nvim_create_autocmd("VimEnter", {
   group = vim.api.nvim_create_augroup("restore_session", { clear = true }),
   callback = function()
     if vim.fn.argc(-1) == 0 then
-      require("persistence").load()
+      -- Check if persistence is enabled
+      local local_config = {}
+      pcall(function() local_config = require('local') end)
+
+      local is_enabled = true
+      if local_config.enable_persistence ~= nil then
+        is_enabled = local_config.enable_persistence
+      end
+
+      if is_enabled then
+        local ok, persistence = pcall(require, "persistence")
+        if ok then
+          persistence.load()
+        end
+      end
     end
   end,
   nested = true,
