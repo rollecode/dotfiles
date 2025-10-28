@@ -82,8 +82,19 @@ install_dependencies() {
 
             if [ "$needs_nvim_install" = true ]; then
                 print_info "Installing latest Neovim from GitHub releases..."
-                curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-                sudo rm -rf /opt/nvim
+
+                # Get the latest version tag
+                NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+                if [ -z "$NVIM_VERSION" ]; then
+                    print_error "Failed to fetch latest Neovim version"
+                    return 1
+                fi
+
+                print_info "Downloading Neovim $NVIM_VERSION..."
+                curl -Lo nvim-linux64.tar.gz "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz"
+
+                sudo rm -rf /opt/nvim-linux64
                 sudo tar -C /opt -xzf nvim-linux64.tar.gz
                 rm nvim-linux64.tar.gz
 
@@ -96,12 +107,19 @@ install_dependencies() {
                 # Create symlink for system-wide access
                 sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
 
-                print_success "Latest Neovim installed"
+                print_success "Neovim $NVIM_VERSION installed"
             fi
 
             if ! command_exists git; then
-                print_info "Installing Git..."
-                sudo apt install -y git
+                print_info "Git is not installed. Install it? (Y/n)"
+                read -r install_git
+                install_git=${install_git:-y}
+                if [[ "$install_git" =~ ^[Yy]$ ]]; then
+                    print_info "Installing Git..."
+                    sudo apt install -y git
+                else
+                    print_warning "Skipping Git installation (required for dotfiles)"
+                fi
             fi
             ;;
         arch|manjaro)
@@ -120,8 +138,15 @@ install_dependencies() {
                 fi
             fi
             if ! command_exists git; then
-                print_info "Installing Git..."
-                sudo pacman -S --noconfirm git
+                print_info "Git is not installed. Install it? (Y/n)"
+                read -r install_git
+                install_git=${install_git:-y}
+                if [[ "$install_git" =~ ^[Yy]$ ]]; then
+                    print_info "Installing Git..."
+                    sudo pacman -S --noconfirm git
+                else
+                    print_warning "Skipping Git installation (required for dotfiles)"
+                fi
             fi
             ;;
         fedora|rhel|centos)
@@ -144,8 +169,19 @@ install_dependencies() {
 
             if [ "$needs_nvim_install" = true ]; then
                 print_info "Installing latest Neovim from GitHub releases..."
-                curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-                sudo rm -rf /opt/nvim
+
+                # Get the latest version tag
+                NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+                if [ -z "$NVIM_VERSION" ]; then
+                    print_error "Failed to fetch latest Neovim version"
+                    return 1
+                fi
+
+                print_info "Downloading Neovim $NVIM_VERSION..."
+                curl -Lo nvim-linux64.tar.gz "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz"
+
+                sudo rm -rf /opt/nvim-linux64
                 sudo tar -C /opt -xzf nvim-linux64.tar.gz
                 rm nvim-linux64.tar.gz
 
@@ -158,12 +194,19 @@ install_dependencies() {
                 # Create symlink for system-wide access
                 sudo ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
 
-                print_success "Latest Neovim installed"
+                print_success "Neovim $NVIM_VERSION installed"
             fi
 
             if ! command_exists git; then
-                print_info "Installing Git..."
-                sudo dnf install -y git
+                print_info "Git is not installed. Install it? (Y/n)"
+                read -r install_git
+                install_git=${install_git:-y}
+                if [[ "$install_git" =~ ^[Yy]$ ]]; then
+                    print_info "Installing Git..."
+                    sudo dnf install -y git
+                else
+                    print_warning "Skipping Git installation (required for dotfiles)"
+                fi
             fi
             ;;
         macos)
@@ -177,8 +220,15 @@ install_dependencies() {
                 brew install neovim
             fi
             if ! command_exists git; then
-                print_info "Installing Git..."
-                brew install git
+                print_info "Git is not installed. Install it? (Y/n)"
+                read -r install_git
+                install_git=${install_git:-y}
+                if [[ "$install_git" =~ ^[Yy]$ ]]; then
+                    print_info "Installing Git..."
+                    brew install git
+                else
+                    print_warning "Skipping Git installation (required for dotfiles)"
+                fi
             fi
             if [ ! -d "/Applications/Hammerspoon.app" ]; then
                 print_info "Installing Hammerspoon..."
