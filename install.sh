@@ -14,6 +14,20 @@ print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 print_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+# Check if running as root/with sudo
+if [ "$EUID" -eq 0 ] || [ "$(id -u)" -eq 0 ]; then
+    echo -e "${RED}[ERROR]${NC} Do not run this script with sudo or as root!"
+    echo ""
+    echo "This script creates symlinks in YOUR home directory ($HOME)."
+    echo "Running with sudo will create them in /root instead."
+    echo ""
+    echo "Run it normally:"
+    echo -e "  ${GREEN}bash install.sh${NC}"
+    echo ""
+    echo "The script will ask for sudo password when needed (for apt/dnf/pacman)."
+    exit 1
+fi
+
 # Detect OS and distribution
 detect_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -579,37 +593,37 @@ main() {
     echo ""
 
     print_info "AI & Completion:"
-    print_info "  Enable Ollama AI code completion? (requires GPU, y/N)"
+    echo "Enable Ollama AI code completion? (requires GPU, y/N)"
     read -r enable_ollama
     enable_ollama=${enable_ollama:-n}
 
     echo ""
     print_info "UI & Visual:"
-    print_info "  Enable OKLCH Color Picker? (requires GUI, y/N)"
+    echo "Enable OKLCH Color Picker? (requires GUI, y/N)"
     read -r enable_colorpicker
     enable_colorpicker=${enable_colorpicker:-n}
 
-    print_info "  Enable Dashboard start screen? (Y/n)"
+    echo "Enable Dashboard start screen? (Y/n)"
     read -r enable_dashboard
     enable_dashboard=${enable_dashboard:-y}
 
     echo ""
     print_info "Gamification & Social:"
-    print_info "  Enable Gamify plugin with achievements/streaks? (y/N)"
+    echo "Enable Gamify plugin with achievements/streaks? (y/N)"
     read -r enable_gamify
     enable_gamify=${enable_gamify:-n}
 
-    print_info "  Enable Discord Rich Presence? (y/N)"
+    echo "Enable Discord Rich Presence? (y/N)"
     read -r enable_discord
     enable_discord=${enable_discord:-n}
 
     echo ""
     print_info "Workflow:"
-    print_info "  Enable auto-restore sessions on startup? (Y/n)"
+    echo "Enable auto-restore sessions on startup? (Y/n)"
     read -r enable_persistence
     enable_persistence=${enable_persistence:-y}
 
-    print_info "  Enable Hardtime (enforces good Vim habits)? (y/N)"
+    echo "Enable Hardtime (enforces good Vim habits)? (y/N)"
     read -r enable_hardtime
     enable_hardtime=${enable_hardtime:-n}
 
