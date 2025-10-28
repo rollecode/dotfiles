@@ -1,8 +1,23 @@
 -- luacheck: globals vim
 -- Plugin definitions
+
+-- Load local config for feature flags (if exists)
+local local_config = {}
+pcall(function()
+  local_config = require('local')
+end)
+
+-- Helper to check if feature is enabled (default true for backward compatibility)
+local function is_enabled(feature)
+  if local_config[feature] == nil then
+    return true  -- Default enabled if not specified
+  end
+  return local_config[feature]
+end
+
 return {
-  -- Dashboard
-  {
+  -- Dashboard (optional)
+  is_enabled('enable_dashboard') and {
     'nvimdev/dashboard-nvim',
     event = 'VimEnter',
     config = function()
@@ -11,7 +26,7 @@ return {
       }
     end,
     dependencies = { { 'nvim-tree/nvim-web-devicons' } }
-  },
+  } or nil,
 
   -- Catppuccin colorscheme
   {
@@ -26,8 +41,8 @@ return {
     },
   },
 
-  -- OKLCH Color Picker
-  {
+  -- OKLCH Color Picker (optional, requires GUI)
+  is_enabled('enable_colorpicker') and {
     "eero-lehtinen/oklch-color-picker.nvim",
     event = "VeryLazy",
     version = "*",
@@ -39,7 +54,7 @@ return {
       },
     },
     opts = {},
-  },
+  } or nil,
 
   -- Lualine (status bar)
   {
@@ -161,8 +176,8 @@ return {
     version = '^1.0.0',
   },
 
-  -- Session management - automatically saves and restores nvim sessions
-  {
+  -- Session management - automatically saves and restores nvim sessions (optional)
+  is_enabled('enable_persistence') and {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = {
@@ -174,7 +189,7 @@ return {
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
       { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
     },
-  },
+  } or nil,
 
   -- Telescope fuzzy finder
   {
@@ -234,8 +249,8 @@ return {
     },
   },
 
-  -- Gamify.nvim - Gamifies coding with achievements
-  {
+  -- Gamify.nvim - Gamifies coding with achievements (optional)
+  is_enabled('enable_gamify') and {
     "GrzegorzSzczepanek/gamify.nvim",
     lazy = false,
     config = function()
@@ -243,7 +258,7 @@ return {
       -- Add streak to airline statusline
       vim.g.gamify_show_streak = 1
     end,
-  },
+  } or nil,
 
   -- Gitsigns - Git signs in gutter, inline blame, hunk actions
   {
@@ -396,8 +411,8 @@ return {
     },
   },
 
-  -- Discord Rich Presence
-  {
+  -- Discord Rich Presence (optional)
+  is_enabled('enable_discord') and {
     "andweeb/presence.nvim",
     config = function()
       require("presence").setup({
@@ -419,7 +434,7 @@ return {
         show_time = true,
       })
     end,
-  },
+  } or nil,
 
   -- Notification plugin
   {
@@ -639,29 +654,38 @@ return {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets' },
     version = '1.*',
-    opts = {
-      keymap = { preset = 'default' },
-      appearance = {
-        nerd_font_variant = 'mono'
-      },
-      completion = { documentation = { auto_show = true } },
-      sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'minuet' },
-        providers = {
-          minuet = {
-            name = 'minuet',
-            module = 'minuet.blink',
-            score_offset = 100,
-          },
+    opts = function()
+      local sources = { 'lsp', 'path', 'snippets', 'buffer' }
+      local providers = {}
+
+      -- Add minuet source if Ollama is enabled
+      if is_enabled('enable_ollama') then
+        table.insert(sources, 'minuet')
+        providers.minuet = {
+          name = 'minuet',
+          module = 'minuet.blink',
+          score_offset = 100,
+        }
+      end
+
+      return {
+        keymap = { preset = 'default' },
+        appearance = {
+          nerd_font_variant = 'mono'
         },
-      },
-      fuzzy = { implementation = "prefer_rust_with_warning" }
-    },
+        completion = { documentation = { auto_show = true } },
+        sources = {
+          default = sources,
+          providers = providers,
+        },
+        fuzzy = { implementation = "prefer_rust_with_warning" }
+      }
+    end,
     opts_extend = { "sources.default" }
   },
 
-  -- Minuet AI - AI completion with Ollama
-  {
+  -- Minuet AI - AI completion with Ollama (optional, requires GPU)
+  is_enabled('enable_ollama') and {
     'milanglacier/minuet-ai.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'rcarriga/nvim-notify' },
     config = function()
@@ -703,7 +727,7 @@ return {
         },
       })
     end,
-  },
+  } or nil,
 
   -- Comment.nvim - toggle comments
   {
@@ -713,15 +737,15 @@ return {
     end,
   },
 
-  -- Hardtime - learn better Vim motions
-  {
+  -- Hardtime - learn better Vim motions (optional)
+  is_enabled('enable_hardtime') and {
     "m4xshen/hardtime.nvim",
     lazy = false,
     dependencies = { "MunifTanjim/nui.nvim" },
     opts = {
       disable_mouse = false, -- Allow mouse usage including scrolling
     },
-  },
+  } or nil,
 
   -- Mason for managing LSP servers
   {

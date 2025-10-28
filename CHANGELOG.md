@@ -1,5 +1,8 @@
 ### 2.0.3: 2025-10-28
 
+* Add optional feature flags system with install.sh prompts for Ollama AI, Discord Rich Presence, and Gamify plugin
+* Create lua/local.lua (gitignored) with machine-specific feature flags
+* Make plugins conditionally load based on local.lua configuration (backward compatible - defaults to enabled)
 * Make install.sh idempotent with prompts before backing up configs (WezTerm, Neovim, Hammerspoon), building/upgrading Neovim, and installing Git
 * Add automatic Neovim version detection and upgrade to latest release (0.10+) in install.sh
 * Build Neovim from source on Ubuntu/Debian to avoid GLIBC compatibility issues

@@ -64,6 +64,13 @@ end
 
 -- Function to get gamify streak for statusline
 function _G.GamifyStreak()
+  -- Check if gamify is enabled
+  local local_config = {}
+  pcall(function() local_config = require('local') end)
+  if local_config.enable_gamify == false then
+    return ''
+  end
+
   local ok, storage = pcall(require, 'gamify.storage')
   if ok then
     local data = storage.load_data()
