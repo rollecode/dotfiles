@@ -22,18 +22,25 @@ local function setup_clipboard()
   if has_provider then
     -- Use system clipboard if available
     vim.opt.clipboard = 'unnamedplus'
-  elseif os.getenv('SSH_CONNECTION') then
-    -- On SSH, use OSC 52 to copy to local clipboard
+  else
+    -- Always use OSC 52 for clipboard (works over SSH)
+    local function paste()
+      return {vim.fn.getreg('"'), vim.fn.getregtype('"')}
+    end
+
+    local function copy(lines, regtype)
+      vim.fn.setreg('"', lines, regtype)
+      -- OSC 52 sequence: copy to system clipboard
+      local text = table.concat(lines, '\n')
+      -- Send OSC 52 escape sequence
+      local b64 = vim.base64.encode(text)
+      io.write(string.format('\027]52;c;%s\007', b64))
+    end
+
     vim.g.clipboard = {
-      name = 'OSC 52',
-      copy = {
-        ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-        ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-      },
-      paste = {
-        ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-        ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-      },
+      name = 'OSC52',
+      copy = {['+'] = copy, ['*'] = copy},
+      paste = {['+'] = paste, ['*'] = paste},
     }
   end
 end
