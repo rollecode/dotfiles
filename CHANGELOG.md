@@ -11,6 +11,8 @@
 * Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
 * Add Hammerspoon configuration for macOS with Cmd + Left/Right Mouse drag for window move/resize (Hyprland-style)
 * Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Click without drag passes through to apps
+* Remove Ctrl+D and Ctrl+Shift+D WezTerm split keybindings to restore default terminal behavior (close/terminate)
+* Fix lualine always showing (independent of gamify), CodeStats XP shown even when gamify disabled, better error handling
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 
