@@ -890,6 +890,13 @@ local plugins = {
         },
       })
 
+      -- Disable TypeScript LSP diagnostics (use ESLint instead)
+      vim.lsp.config('ts_ls', {
+        handlers = {
+          ['textDocument/publishDiagnostics'] = function() end,
+        },
+      })
+
       -- Enable language servers using modern vim.lsp.enable
       vim.lsp.enable('lua_ls')
       vim.lsp.enable('pyright')
