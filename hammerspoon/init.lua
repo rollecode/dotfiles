@@ -83,7 +83,7 @@ local function stopDragging()
   clickHandler:start()
 end
 
--- Handle mouse click to start operation
+-- Handle mouse click - prepare for potential drag but don't intercept yet
 clickHandler = hs.eventtap.new(
   {
     hs.eventtap.event.types.leftMouseDown,
@@ -105,7 +105,8 @@ clickHandler = hs.eventtap.new(
       local currentWindow = getWindowUnderMouse()
       if not currentWindow then return nil end
 
-      state.dragging = true
+      -- Store window and type, but DON'T start dragging yet
+      -- Only start when actual drag motion happens
       state.targetWindow = currentWindow
 
       if isMoving then
@@ -114,15 +115,12 @@ clickHandler = hs.eventtap.new(
         state.dragType = dragTypes.resize
       end
 
-      resizeCanvasToWindow()
-      state.windowCanvas:show()
-
+      -- Start handlers to catch drag/release
       cancelHandler:start()
       dragHandler:start()
-      clickHandler:stop()
 
-      currentWindow:focus()
-      return true
+      -- Let the click pass through to the app (don't consume it)
+      return nil
     else
       return nil
     end
@@ -136,6 +134,15 @@ dragHandler = hs.eventtap.new(
     hs.eventtap.event.types.rightMouseDragged,
   },
   function(event)
+    -- First drag event after click - initialize dragging
+    if not state.dragging and state.targetWindow and state.dragType then
+      state.dragging = true
+      resizeCanvasToWindow()
+      state.windowCanvas:show()
+      state.targetWindow:focus()
+      clickHandler:stop()
+    end
+
     if not state.dragging then return nil end
 
     local dx = event:getProperty(hs.eventtap.event.properties.mouseEventDeltaX)
@@ -168,15 +175,26 @@ cancelHandler = hs.eventtap.new(
     hs.eventtap.event.types.rightMouseUp,
   },
   function()
-    if not state.dragging then return end
-
-    if state.dragType == dragTypes.resize then
-      resizeWindowToCanvas()
-    else
-      moveWindowToCanvas()
+    -- If we were dragging, commit the changes
+    if state.dragging then
+      if state.dragType == dragTypes.resize then
+        resizeWindowToCanvas()
+      else
+        moveWindowToCanvas()
+      end
+      stopDragging()
+      return true
     end
 
-    stopDragging()
+    -- If we prepared for drag but never actually dragged, just clean up
+    if state.targetWindow then
+      state.targetWindow = nil
+      state.dragType = nil
+      dragHandler:stop()
+      cancelHandler:stop()
+    end
+
+    return nil
   end
 )
 

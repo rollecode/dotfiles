@@ -1,4 +1,4 @@
-### 2.0.3: 2025-10-28
+### 2.0.3: 2025-10-29
 
 * Add optional feature flags system with install.sh prompts for Ollama AI, Discord Rich Presence, and Gamify plugin
 * Create lua/local.lua (gitignored) with machine-specific feature flags
@@ -9,11 +9,8 @@
 * Use pre-built binaries for Fedora/RHEL/CentOS (newer GLIBC)
 * Change install.sh to use HTTPS for git clone instead of SSH for better remote server compatibility
 * Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
-* Add Hammerspoon configuration for macOS with Cmd + mouse window management
-* Add Cmd + Left Mouse drag to move windows (similar to Hyprland's Super + left mouse)
-* Add Cmd + Right Mouse drag to resize windows (similar to Hyprland's Super + right mouse)
-* Add Hammerspoon setup to install.sh with automatic installation and symlinking
-* Add automatic config reloading when Hammerspoon files change
+* Add Hammerspoon configuration for macOS with Cmd + Left/Right Mouse drag for window move/resize (Hyprland-style)
+* Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Click without drag passes through to apps
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 
