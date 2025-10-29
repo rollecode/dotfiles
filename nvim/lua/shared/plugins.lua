@@ -490,6 +490,12 @@ local plugins = {
         javascript = { 'eslint' },
       }
 
+      -- Configure eslint to use project-local installation
+      lint.linters.eslint.cmd = function()
+        local local_eslint = vim.fn.findfile('node_modules/.bin/eslint', '.;')
+        return local_eslint ~= '' and vim.fn.fnamemodify(local_eslint, ':p') or 'eslint'
+      end
+
       -- Installation instructions for each linter
       local linter_install_cmds = {
         phpcs = "composer global require squizlabs/php_codesniffer",
