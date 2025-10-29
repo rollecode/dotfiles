@@ -892,6 +892,10 @@ local plugins = {
 
       -- Disable TypeScript LSP diagnostics (use ESLint instead)
       vim.lsp.config('ts_ls', {
+        on_attach = function(client)
+          -- Disable all diagnostics from TypeScript LSP
+          client.server_capabilities.diagnosticProvider = false
+        end,
         handlers = {
           ['textDocument/publishDiagnostics'] = function() end,
         },
