@@ -201,18 +201,8 @@ config.keys = {
       )
     end),
   },
-  -- Split vertically (side by side)
-  {
-    key = 'd',
-    mods = 'CTRL',
-    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-  },
-  -- Split horizontally (top and bottom)
-  {
-    key = 'd',
-    mods = 'CTRL|SHIFT',
-    action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-  },
+  -- Split vertically (side by side) - removed Ctrl+D to keep default behavior
+  -- Split horizontally (top and bottom) - removed Ctrl+Shift+D to keep default behavior
   -- Close current pane
   {
     key = 'w',

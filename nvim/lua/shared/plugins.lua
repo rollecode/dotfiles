@@ -61,6 +61,14 @@ return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      -- Ensure functions are available before setup
+      if not _G.CodeStatsXP then
+        _G.CodeStatsXP = function() return '' end
+      end
+      if not _G.GamifyStreak then
+        _G.GamifyStreak = function() return '' end
+      end
+
       local custom_theme = require("lualine.themes.catppuccin")
 
       -- Set custom background color #42455A for all sections
@@ -76,40 +84,58 @@ return {
         custom_theme.normal.a.fg = '#1e1e2e'
       end
 
-      require('lualine').setup({
-        options = {
-          theme = custom_theme,
-          icons_enabled = true,
-          component_separators = { left = '', right = '' },
-          section_separators = { left = '', right = '' },
-        },
-        sections = {
-          lualine_a = { 'mode' },
-          lualine_b = { 'branch', 'diff', 'diagnostics' },
-          lualine_c = { 'filename' },
-          lualine_x = {
-            {
-              function()
-                -- Code::Stats XP
-                return _G.CodeStatsXP()
-              end,
-              color = { fg = '#F9E2AF', gui = 'bold' } -- Modern yellow with bold
-            },
-            {
-              function()
-                -- Gamify streak
-                return _G.GamifyStreak()
-              end,
-              color = { fg = '#E4DDA3' } -- Custom streak color (lighter)
-            },
-            'encoding',
-            'fileformat',
-            'filetype'
+      local ok, err = pcall(function()
+        require('lualine').setup({
+          options = {
+            theme = custom_theme,
+            icons_enabled = true,
+            component_separators = { left = '', right = '' },
+            section_separators = { left = '', right = '' },
           },
-          lualine_y = { 'progress' },
-          lualine_z = { 'location' }
-        },
-      })
+          sections = {
+            lualine_a = { 'mode' },
+            lualine_b = { 'branch', 'diff', 'diagnostics' },
+            lualine_c = { 'filename' },
+            lualine_x = (function()
+            local sections = {
+              {
+                function()
+                  -- Code::Stats XP (always enabled)
+                  local ok, result = pcall(_G.CodeStatsXP)
+                  return ok and result or ''
+                end,
+                color = { fg = '#F9E2AF', gui = 'bold' } -- Modern yellow with bold
+              },
+            }
+
+            -- Add Gamify streak only if enabled
+            local ok, local_config = pcall(require, 'local')
+            if not ok or local_config.enable_gamify ~= false then
+              table.insert(sections, {
+                function()
+                  local ok2, result = pcall(_G.GamifyStreak)
+                  return ok2 and result or ''
+                end,
+                color = { fg = '#E4DDA3' } -- Custom streak color (lighter)
+              })
+            end
+
+            -- Add standard components
+            table.insert(sections, 'encoding')
+            table.insert(sections, 'fileformat')
+            table.insert(sections, 'filetype')
+
+            return sections
+          end)(),
+            lualine_y = { 'progress' },
+            lualine_z = { 'location' }
+          },
+        })
+      end)
+
+      if not ok then
+        vim.notify('Lualine setup failed: ' .. tostring(err), vim.log.levels.ERROR)
+      end
     end,
   },
 

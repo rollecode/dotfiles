@@ -254,8 +254,6 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 ### WezTerm
 - `Ctrl+Shift+O` - Project switcher
 - `Ctrl+K` - Command palette
-- `Ctrl+D` - Split pane vertically (side by side)
-- `Ctrl+Shift+D` - Split pane horizontally (top/bottom)
 - `Ctrl+Shift+B` - Spawn WSL Ubuntu 22.04 in split pane (Windows only)
 - `Ctrl+W` - Close pane
 - `Ctrl+Alt+Arrows` - Navigate panes
