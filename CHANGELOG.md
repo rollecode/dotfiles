@@ -19,6 +19,7 @@
 * Fix plugins not loading when optional features disabled (filter out nil values from plugin table)
 * Fix project switcher not working on macOS (add Cmd+Shift+O keybinding)
 * Fix Cmd+P (file finder) and Cmd+Shift+P (command palette) not working in nvim on macOS
+* Add Cmd+Shift+F for live grep text search across all files in project
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 

@@ -73,6 +73,15 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
+  -- Send Cmd+Shift+F through to nvim as Ctrl+Shift+F (live grep search)
+  table.insert(config.keys, {
+    key = 'F',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action.SendKey {
+      key = 'F',
+      mods = 'CTRL|SHIFT',
+    },
+  })
   -- Cmd+Shift+O for project switcher (macOS uses Cmd instead of Ctrl)
   table.insert(config.keys, {
     key = 'o',
