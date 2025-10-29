@@ -22,6 +22,7 @@
 * Add Cmd+Shift+F for live grep text search across all files in project
 * Add ripgrep installation to install.sh (required for Telescope live_grep)
 * Fix nvim-lint ESLint to search from file location upward, use project-local installation with proper working directory for node_modules resolution
+* Disable TypeScript LSP diagnostics (use ESLint for JavaScript/TypeScript linting instead)
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 
