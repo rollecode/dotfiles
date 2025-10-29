@@ -13,6 +13,9 @@
 * Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Click without drag passes through to apps
 * Remove Ctrl+D and Ctrl+Shift+D WezTerm split keybindings to restore default terminal behavior (close/terminate)
 * Fix lualine always showing (independent of gamify), CodeStats XP shown even when gamify disabled, better error handling
+* Add backup of local.lua when re-running install.sh to preserve settings
+* Add version badge to README.md
+* Make install.sh explicitly state which existing config files are found and preserved (not overwritten)
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 
