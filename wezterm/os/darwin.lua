@@ -55,6 +55,24 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
+  -- Send Cmd+P through to nvim as Ctrl+P (file finder)
+  table.insert(config.keys, {
+    key = 'p',
+    mods = 'SUPER',
+    action = wezterm.action.SendKey {
+      key = 'p',
+      mods = 'CTRL',
+    },
+  })
+  -- Send Cmd+Shift+P through to nvim as Ctrl+Shift+P (command palette)
+  table.insert(config.keys, {
+    key = 'P',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action.SendKey {
+      key = 'P',
+      mods = 'CTRL|SHIFT',
+    },
+  })
   -- Cmd+Shift+O for project switcher (macOS uses Cmd instead of Ctrl)
   table.insert(config.keys, {
     key = 'o',
