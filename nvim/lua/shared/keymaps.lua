@@ -115,6 +115,13 @@ vim.keymap.set('n', '<C-S-p>', function()
   end
 end, { silent = true, desc = 'Command Palette' })
 
+vim.keymap.set('n', '<C-S-f>', function()
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  if ok then
+    builtin.live_grep()
+  end
+end, { silent = true, desc = 'Search text in all files (live grep)' })
+
 -- Barbar buffer navigation
 vim.keymap.set('n', '<C-t>', '<Cmd>enew<CR>', { silent = true, desc = 'New tab' })
 vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', { silent = true, desc = 'Previous buffer' })
