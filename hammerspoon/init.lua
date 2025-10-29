@@ -1,8 +1,8 @@
 -- luacheck: globals hs clickHandler dragHandler cancelHandler
--- Hammerspoon config for Cmd + Mouse window management
+-- Hammerspoon config for Cmd + Option + Mouse window management
 -- Based on SkyRocket.spoon by David Balatero
--- Cmd + Left Mouse: Move window
--- Cmd + Right Mouse: Resize window
+-- Cmd + Option + Left Mouse: Move window
+-- Cmd + Option + Right Mouse: Resize window
 
 local dragTypes = {
   move = 1,
@@ -95,11 +95,11 @@ clickHandler = hs.eventtap.new(
     local flags = event:getFlags()
     local eventType = event:getType()
 
-    -- Check for Cmd (no other modifiers)
+    -- Check for Cmd + Option (no other modifiers)
     local isMoving = eventType == hs.eventtap.event.types.leftMouseDown and
-                     flags.cmd and not flags.shift and not flags.alt and not flags.ctrl
+                     flags.cmd and flags.alt and not flags.shift and not flags.ctrl
     local isResizing = eventType == hs.eventtap.event.types.rightMouseDown and
-                       flags.cmd and not flags.shift and not flags.alt and not flags.ctrl
+                       flags.cmd and flags.alt and not flags.shift and not flags.ctrl
 
     if isMoving or isResizing then
       local currentWindow = getWindowUnderMouse()
@@ -205,7 +205,7 @@ clickHandler:start()
 -- Show notification
 hs.notify.new({
   title = "Hammerspoon",
-  informativeText = "Cmd+Mouse window management loaded\n\nCmd+LeftMouse: Move\nCmd+RightMouse: Resize"
+  informativeText = "Cmd+Option+Mouse window management loaded\n\nCmd+Option+LeftMouse: Move\nCmd+Option+RightMouse: Resize"
 }):send()
 
 -- Auto-reload config on changes
@@ -218,4 +218,4 @@ hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", function(files)
   end
 end):start()
 
-print("✓ Hammerspoon loaded: Cmd+LeftMouse=Move, Cmd+RightMouse=Resize")
+print("✓ Hammerspoon loaded: Cmd+Option+LeftMouse=Move, Cmd+Option+RightMouse=Resize")

@@ -9,8 +9,8 @@
 * Use pre-built binaries for Fedora/RHEL/CentOS (newer GLIBC)
 * Change install.sh to use HTTPS for git clone instead of SSH for better remote server compatibility
 * Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
-* Add Hammerspoon configuration for macOS with Cmd + Left/Right Mouse drag for window move/resize (Hyprland-style)
-* Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Click without drag passes through to apps
+* Add Hammerspoon configuration for macOS with Cmd+Option+Left/Right Mouse drag for window move/resize (Hyprland-style)
+* Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Option+Click without drag passes through to apps
 * Remove Ctrl+D and Ctrl+Shift+D WezTerm split keybindings to restore default terminal behavior (close/terminate)
 * Fix lualine always showing (independent of gamify), CodeStats XP shown even when gamify disabled, better error handling
 * Add backup of local.lua when re-running install.sh to preserve settings
@@ -22,7 +22,15 @@
 * Add Cmd+Shift+F for live grep text search across all files in project
 * Add ripgrep installation to install.sh (required for Telescope live_grep)
 * Fix nvim-lint ESLint to search from file location upward, use project-local installation with proper working directory for node_modules resolution
+* Fix ESLint notifications showing for non-JavaScript files (only run for JS/TS files)
+* Add phpcs project-local configuration (searches for vendor/bin/phpcs, auto-detects phpcs.xml and composer.json rules)
 * Disable TypeScript LSP diagnostics (use ESLint for JavaScript/TypeScript linting instead)
+* Replace persistence.nvim and project.nvim with neovim-project (VSCode Project Manager-like experience)
+* Remove WezTerm project switcher menu, pass Cmd+Shift+O to nvim for project management
+* Configure neovim-project to only show manually saved projects (no auto-discovery)
+* Add :SaveProject command (accessible via Cmd+Shift+P command palette) to save current directory to projects
+* Add LSP keybindings: gd (go-to-definition), K (hover), Ctrl+Click (go-to-definition), gr (references), etc.
+* Fix neo-tree to not create state files in project directories
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 

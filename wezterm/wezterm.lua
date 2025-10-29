@@ -168,38 +168,11 @@ config.keys = {
     mods = 'CTRL',
     action = wezterm.action.ActivateCommandPalette,
   },
-  -- Project switcher
+  -- Disable default Ctrl+Shift+O so nvim can use it for project switcher
   {
-    key = 'o',
+    key = 'O',
     mods = 'CTRL|SHIFT',
-    action = wezterm.action_callback(function(window, pane)
-      local projects = {}
-      local home = wezterm.home_dir
-
-      -- Scan ~/Projects directory
-      for _, dir in ipairs(wezterm.glob(home .. '/Projects/*')) do
-        local project_name = dir:match("([^/]+)$")
-        table.insert(projects, {
-          label = project_name,
-          id = dir,
-        })
-      end
-
-      -- Show project selection menu
-      window:perform_action(
-        wezterm.action.InputSelector {
-          title = 'Select Project',
-          choices = projects,
-          fuzzy = true,
-          action = wezterm.action_callback(function(_, inner_pane, id)
-            if id then
-              inner_pane:send_text('cd ' .. id .. '\nclear\nnvim\n')
-            end
-          end),
-        },
-        pane
-      )
-    end),
+    action = wezterm.action.DisableDefaultAssignment,
   },
   -- Split vertically (side by side) - removed Ctrl+D to keep default behavior
   -- Split horizontally (top and bottom) - removed Ctrl+Shift+D to keep default behavior
