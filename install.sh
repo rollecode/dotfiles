@@ -341,7 +341,7 @@ setup_configs() {
 
     # Setup WezTerm symlink
     if [ -L "$WEZTERM_CONFIG_DIR" ]; then
-        print_info "WezTerm config symlink already exists"
+        print_success "✓ Found existing WezTerm config symlink - preserving"
     elif [ -d "$WEZTERM_CONFIG_DIR" ]; then
         print_warning "WezTerm config directory exists at $WEZTERM_CONFIG_DIR"
         print_info "Backup and replace with symlink? (y/N)"
@@ -360,7 +360,7 @@ setup_configs() {
 
     # Setup Neovim symlink
     if [ -L "$NVIM_CONFIG_DIR" ]; then
-        print_info "Neovim config symlink already exists"
+        print_success "✓ Found existing Neovim config symlink - preserving"
     elif [ -d "$NVIM_CONFIG_DIR" ]; then
         print_warning "Neovim config directory exists at $NVIM_CONFIG_DIR"
         print_info "Backup and replace with symlink? (y/N)"
@@ -385,13 +385,13 @@ setup_configs() {
         cp "$dotfiles_dir/nvim/lua/secrets.lua.example" "$dotfiles_dir/nvim/lua/secrets.lua"
         print_warning "Please edit ~/Projects/dotfiles/nvim/lua/secrets.lua and add your Code::Stats API key"
     else
-        print_info "secrets.lua already exists"
+        print_success "✓ Found existing secrets.lua - preserving (not overwriting)"
     fi
 
     # Setup Hammerspoon symlink (macOS only)
     if [ "$OS" = "macos" ]; then
         if [ -L "$HOME/.hammerspoon" ]; then
-            print_info "Hammerspoon config symlink already exists"
+            print_success "✓ Found existing Hammerspoon config symlink - preserving"
         elif [ -d "$HOME/.hammerspoon" ]; then
             print_warning "Hammerspoon config directory exists at ~/.hammerspoon"
             print_info "Backup and replace with symlink? (y/N)"
@@ -422,7 +422,7 @@ setup_claude_code() {
 
     # Setup hook symlink
     if [ -L "$claude_hooks_dir/codestats-hook.sh" ]; then
-        print_info "Claude Code hook symlink already exists"
+        print_success "✓ Found existing Claude Code hook symlink - preserving"
     else
         ln -sf "$dotfiles_dir/claude-code/codestats-hook.sh" "$claude_hooks_dir/codestats-hook.sh"
         print_success "Claude Code hook symlinked"
@@ -434,14 +434,14 @@ setup_claude_code() {
         cp "$dotfiles_dir/claude-code/secrets.sh.example" "$dotfiles_dir/claude-code/secrets.sh"
         print_warning "Please edit ~/Projects/dotfiles/claude-code/secrets.sh and add your Code::Stats API key"
     else
-        print_info "Claude Code secrets.sh already exists"
+        print_success "✓ Found existing Claude Code secrets.sh - preserving (not overwriting)"
     fi
 
     # Check if settings.json needs updating
     local settings_file="$HOME/.claude/settings.json"
     if [ -f "$settings_file" ]; then
         if grep -q "codestats-hook.sh" "$settings_file"; then
-            print_info "Claude Code settings.json already configured"
+            print_success "✓ Found existing Claude Code settings.json - already configured"
         else
             print_warning "Please add the hooks configuration to ~/.claude/settings.json"
             print_info "See README.md section 'Configure Claude code hooks' for details"
@@ -506,6 +506,13 @@ create_local_config() {
     local enable_hardtime=$7
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
+
+    # Check if local.lua already exists
+    if [ -f "$local_config" ]; then
+        local backup_name="local.lua.backup.$(date +%s)"
+        print_warning "✓ Found existing local.lua - backing up to $backup_name"
+        cp "$local_config" "$local_config.backup.$(date +%s)"
+    fi
 
     print_info "Creating local config with feature flags..."
 
