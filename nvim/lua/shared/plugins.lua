@@ -15,7 +15,7 @@ local function is_enabled(feature)
   return local_config[feature]
 end
 
-return {
+local plugins = {
   -- Dashboard (optional)
   is_enabled('enable_dashboard') and {
     'nvimdev/dashboard-nvim',
@@ -847,3 +847,13 @@ return {
     end,
   },
 }
+
+-- Filter out nil values (from disabled optional features)
+local filtered = {}
+for _, plugin in pairs(plugins) do
+  if plugin ~= nil then
+    table.insert(filtered, plugin)
+  end
+end
+
+return filtered
