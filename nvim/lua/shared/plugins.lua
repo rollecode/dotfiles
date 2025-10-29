@@ -490,10 +490,54 @@ local plugins = {
         javascript = { 'eslint' },
       }
 
-      -- Configure eslint to use project-local installation
-      lint.linters.eslint.cmd = function()
-        local local_eslint = vim.fn.findfile('node_modules/.bin/eslint', '.;')
-        return local_eslint ~= '' and vim.fn.fnamemodify(local_eslint, ':p') or 'eslint'
+      -- Track which ESLint we notified about per project to avoid spam
+      local notified_eslint = {}
+
+      -- Dynamically update ESLint command before linting
+      local function update_eslint_cmd()
+        -- Only check if we have an actual file buffer
+        local buffer_file = vim.fn.expand('%:p')
+        if buffer_file == '' or vim.fn.filereadable(buffer_file) ~= 1 then
+          return
+        end
+
+        -- Start search from current buffer's directory, not cwd
+        local buffer_dir = vim.fn.expand('%:p:h')
+        local search_path = buffer_dir .. ';'
+        local local_eslint = vim.fn.findfile('node_modules/.bin/eslint', search_path)
+
+        if local_eslint ~= '' then
+          -- Found project-local ESLint
+          local eslint_path = vim.fn.fnamemodify(local_eslint, ':p')
+
+          -- Get the project root (where node_modules is)
+          local project_root = vim.fn.fnamemodify(eslint_path, ':h:h:h')
+
+          -- Set command and working directory
+          lint.linters.eslint.cmd = eslint_path
+          lint.linters.eslint.cwd = project_root
+
+          if not notified_eslint[project_root] then
+            vim.notify(
+              'Using project-local ESLint from: ' .. project_root,
+              vim.log.levels.INFO,
+              { title = 'ESLint' }
+            )
+            notified_eslint[project_root] = 'local'
+          end
+        else
+          -- Fallback to global ESLint
+          lint.linters.eslint.cmd = 'eslint'
+          lint.linters.eslint.cwd = vim.fn.getcwd()
+          if notified_eslint[buffer_dir] ~= 'global' then
+            vim.notify(
+              'No project-local ESLint found for this file\nUsing global installation',
+              vim.log.levels.WARN,
+              { title = 'ESLint' }
+            )
+            notified_eslint[buffer_dir] = 'global'
+          end
+        end
       end
 
       -- Installation instructions for each linter
@@ -512,6 +556,9 @@ local plugins = {
       -- Override try_lint to suppress error messages and show notifications instead
       local original_try_lint = lint.try_lint
       lint.try_lint = function(...)
+        -- Update ESLint command to use project-local if available
+        update_eslint_cmd()
+
         -- Temporarily override vim.notify to intercept nvim-lint errors
         local original_notify = vim.notify
         local captured_error = nil
