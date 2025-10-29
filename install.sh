@@ -527,8 +527,7 @@ create_local_config() {
     local enable_gamify=$3
     local enable_colorpicker=$4
     local enable_dashboard=$5
-    local enable_persistence=$6
-    local enable_hardtime=$7
+    local enable_hardtime=$6
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
 
@@ -558,7 +557,6 @@ return {
     enable_discord = $([ "$enable_discord" = "y" ] && echo "true" || echo "false"),
 
     -- Workflow
-    enable_persistence = $([ "$enable_persistence" = "y" ] && echo "true" || echo "false"),
     enable_hardtime = $([ "$enable_hardtime" = "y" ] && echo "true" || echo "false"),
 }
 EOF
@@ -651,10 +649,6 @@ main() {
 
     echo ""
     print_info "Workflow:"
-    echo "Enable auto-restore sessions on startup? (Y/n)"
-    read -r enable_persistence
-    enable_persistence=${enable_persistence:-y}
-
     echo "Enable Hardtime (enforces good Vim habits)? (y/N)"
     read -r enable_hardtime
     enable_hardtime=${enable_hardtime:-n}
@@ -670,7 +664,7 @@ main() {
     setup_configs
 
     # Create local.lua with feature flags
-    create_local_config "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_persistence" "$enable_hardtime"
+    create_local_config "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime"
 
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code

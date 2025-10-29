@@ -202,20 +202,29 @@ local plugins = {
     version = '^1.0.0',
   },
 
-  -- Session management - automatically saves and restores nvim sessions (optional)
-  is_enabled('enable_persistence') and {
-    "folke/persistence.nvim",
-    event = "BufReadPre",
+  -- Neovim Project Manager - like VSCode Project Manager
+  {
+    "coffebar/neovim-project",
     opts = {
-      dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"),
-      options = { "buffers", "curdir", "tabpages", "winsize" },
+      projects = {}, -- Empty - only manually saved projects
+      picker = { type = "telescope" },
+      last_session_on_startup = true, -- Auto-restore last session
+      session_manager_opts = {
+        autosave_last_session = true, -- Auto-save on exit
+        autosave_ignore_not_normal = false,
+      },
     },
-    keys = {
-      { "<leader>qs", function() require("persistence").load() end,                desc = "Restore Session" },
-      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
+    init = function()
+      vim.opt.sessionoptions:append("globals")
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+      "Shatur/neovim-session-manager",
     },
-  } or nil,
+    lazy = false,
+    priority = 100,
+  },
 
   -- Telescope fuzzy finder
   {
@@ -257,24 +266,6 @@ local plugins = {
   },
 
   -- Project management
-  {
-    "ahmedkhalf/project.nvim",
-    config = function()
-      require("project_nvim").setup({
-        detection_methods = { "pattern" },
-        patterns = { ".git", "package.json", "Makefile", "composer.json", "*.csproj" },
-        manual_mode = false,
-        -- Scan ~/Projects directory
-        scope_chdir = 'tab',
-        datapath = vim.fn.stdpath("data"),
-      })
-      require("telescope").load_extension("projects")
-    end,
-    keys = {
-      { "<leader>fp", "<cmd>Telescope projects<cr>", desc = "Projects" },
-    },
-  },
-
   -- Gamify.nvim - Gamifies coding with achievements (optional)
   is_enabled('enable_gamify') and {
     "GrzegorzSzczepanek/gamify.nvim",
@@ -366,6 +357,16 @@ local plugins = {
         popup_border_style = "rounded",
         enable_git_status = true,
         enable_diagnostics = true,
+        -- Save state in nvim data directory, not project root
+        event_handlers = {
+          {
+            event = "neo_tree_buffer_enter",
+            handler = function()
+              vim.opt_local.relativenumber = false
+              vim.opt_local.number = false
+            end,
+          },
+        },
         default_component_configs = {
           indent = {
             indent_size = 2,
@@ -394,6 +395,9 @@ local plugins = {
             enabled = true,
           },
           use_libuv_file_watcher = true,
+          -- Don't create state files in project directories
+          bind_to_cwd = false,
+          hijack_netrw_behavior = "open_default",
         },
       })
     end,
@@ -495,6 +499,12 @@ local plugins = {
 
       -- Dynamically update ESLint command before linting
       local function update_eslint_cmd()
+        -- Only run for JavaScript/TypeScript files
+        local ft = vim.bo.filetype
+        if ft ~= 'javascript' and ft ~= 'typescript' and ft ~= 'javascriptreact' and ft ~= 'typescriptreact' then
+          return
+        end
+
         -- Only check if we have an actual file buffer
         local buffer_file = vim.fn.expand('%:p')
         if buffer_file == '' or vim.fn.filereadable(buffer_file) ~= 1 then
@@ -540,6 +550,62 @@ local plugins = {
         end
       end
 
+      -- Track which phpcs we notified about per project to avoid spam
+      local notified_phpcs = {}
+
+      -- Dynamically update phpcs command before linting
+      local function update_phpcs_cmd()
+        -- Only run for PHP files
+        local ft = vim.bo.filetype
+        if ft ~= 'php' then
+          return
+        end
+
+        -- Only check if we have an actual file buffer
+        local buffer_file = vim.fn.expand('%:p')
+        if buffer_file == '' or vim.fn.filereadable(buffer_file) ~= 1 then
+          return
+        end
+
+        -- Start search from current buffer's directory
+        local buffer_dir = vim.fn.expand('%:p:h')
+        local search_path = buffer_dir .. ';'
+        local local_phpcs = vim.fn.findfile('vendor/bin/phpcs', search_path)
+
+        if local_phpcs ~= '' then
+          -- Found project-local phpcs (composer-installed)
+          local phpcs_path = vim.fn.fnamemodify(local_phpcs, ':p')
+
+          -- Get the project root (where vendor/ is)
+          local project_root = vim.fn.fnamemodify(phpcs_path, ':h:h:h')
+
+          -- Set command and working directory
+          lint.linters.phpcs.cmd = phpcs_path
+          lint.linters.phpcs.cwd = project_root
+
+          if not notified_phpcs[project_root] then
+            vim.notify(
+              'Using project-local phpcs from: ' .. project_root,
+              vim.log.levels.INFO,
+              { title = 'phpcs' }
+            )
+            notified_phpcs[project_root] = 'local'
+          end
+        else
+          -- Fallback to global phpcs
+          lint.linters.phpcs.cmd = 'phpcs'
+          lint.linters.phpcs.cwd = vim.fn.getcwd()
+          if notified_phpcs[buffer_dir] ~= 'global' then
+            vim.notify(
+              'No project-local phpcs found\nUsing global installation (phpcs.xml will be auto-detected)',
+              vim.log.levels.INFO,
+              { title = 'phpcs' }
+            )
+            notified_phpcs[buffer_dir] = 'global'
+          end
+        end
+      end
+
       -- Installation instructions for each linter
       local linter_install_cmds = {
         phpcs = "composer global require squizlabs/php_codesniffer",
@@ -558,6 +624,8 @@ local plugins = {
       lint.try_lint = function(...)
         -- Update ESLint command to use project-local if available
         update_eslint_cmd()
+        -- Update phpcs command to use project-local if available
+        update_phpcs_cmd()
 
         -- Temporarily override vim.notify to intercept nvim-lint errors
         local original_notify = vim.notify
