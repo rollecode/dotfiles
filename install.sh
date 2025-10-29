@@ -154,6 +154,12 @@ install_dependencies() {
                     print_warning "Skipping Git installation (required for dotfiles)"
                 fi
             fi
+
+            # Install ripgrep for Telescope live_grep
+            if ! command_exists rg; then
+                print_info "Installing ripgrep (required for text search in nvim)..."
+                sudo apt install -y ripgrep
+            fi
             ;;
         arch|manjaro)
             # Arch usually has latest versions, but check anyway
@@ -180,6 +186,12 @@ install_dependencies() {
                 else
                     print_warning "Skipping Git installation (required for dotfiles)"
                 fi
+            fi
+
+            # Install ripgrep for Telescope live_grep
+            if ! command_exists rg; then
+                print_info "Installing ripgrep (required for text search in nvim)..."
+                sudo pacman -S --noconfirm ripgrep
             fi
             ;;
         fedora|rhel|centos)
@@ -253,6 +265,12 @@ install_dependencies() {
                     print_warning "Skipping Git installation (required for dotfiles)"
                 fi
             fi
+
+            # Install ripgrep for Telescope live_grep
+            if ! command_exists rg; then
+                print_info "Installing ripgrep (required for text search in nvim)..."
+                sudo dnf install -y ripgrep
+            fi
             ;;
         macos)
             if ! command_exists brew; then
@@ -275,6 +293,13 @@ install_dependencies() {
                     print_warning "Skipping Git installation (required for dotfiles)"
                 fi
             fi
+
+            # Install ripgrep for Telescope live_grep
+            if ! command_exists rg; then
+                print_info "Installing ripgrep (required for text search in nvim)..."
+                brew install ripgrep
+            fi
+
             if [ ! -d "/Applications/Hammerspoon.app" ]; then
                 print_info "Installing Hammerspoon..."
                 brew install --cask hammerspoon
