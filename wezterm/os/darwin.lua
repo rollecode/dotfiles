@@ -55,6 +55,39 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
+  -- Cmd+Shift+O for project switcher (macOS uses Cmd instead of Ctrl)
+  table.insert(config.keys, {
+    key = 'o',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action_callback(function(window, pane)
+      local projects = {}
+      local home = wezterm.home_dir
+
+      -- Scan ~/Projects directory
+      for _, dir in ipairs(wezterm.glob(home .. '/Projects/*')) do
+        local project_name = dir:match("([^/]+)$")
+        table.insert(projects, {
+          label = project_name,
+          id = dir,
+        })
+      end
+
+      -- Show project selection menu
+      window:perform_action(
+        wezterm.action.InputSelector {
+          title = 'Select Project',
+          choices = projects,
+          fuzzy = true,
+          action = wezterm.action_callback(function(_, inner_pane, id)
+            if id then
+              inner_pane:send_text('cd ' .. id .. '\nclear\nnvim\n')
+            end
+          end),
+        },
+        pane
+      )
+    end),
+  })
 end
 
 return M

@@ -17,6 +17,7 @@
 * Add version badge to README.md
 * Make install.sh explicitly state which existing config files are found and preserved (not overwritten)
 * Fix plugins not loading when optional features disabled (filter out nil values from plugin table)
+* Fix project switcher not working on macOS (add Cmd+Shift+O keybinding)
 * Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
 * Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
 
