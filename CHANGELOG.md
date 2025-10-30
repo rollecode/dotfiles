@@ -13,6 +13,7 @@
 * Sessions auto-save on exit and restore when switching projects (no empty buffer tabs)
 * Fix all Cmd+Shift keybindings on macOS (E for neo-tree, O for projects) - match WezTerm Ctrl translations
 * Auto-refresh neo-tree when switching projects via cd-project hook
+* Disable Kitty keyboard protocol in WezTerm to prevent escape sequences in copied text
 * Configure dashboard to show recent projects with hyper theme
 * Add Cmd+Shift+S to prepare for screenshots (sets opacity to 100% for 5 seconds, macOS only)
 * Projects stored in ~/.config/nvim/cd-project.nvim.json (manually editable)
