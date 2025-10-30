@@ -1,3 +1,11 @@
+### 2.0.4: 2025-10-30
+
+* Add LSP (Language Server Protocol) as optional feature with explanation in install.sh
+* Make Mason and LSP plugins optional with enable_lsp flag (defaults to enabled)
+* Install Node.js via nvm when LSP enabled (no sudo required, per-user installation)
+* Explain LSP features: autocomplete, go-to-definition, error checking, hover docs
+* Show LSP requirements during install: Node.js/npm (~100MB), language servers (~50-200MB)
+
 ### 2.0.3: 2025-10-29
 
 * Add optional feature flags system with install.sh prompts for Ollama AI, Discord Rich Presence, and Gamify plugin

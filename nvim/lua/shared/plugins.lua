@@ -894,16 +894,16 @@ local plugins = {
     },
   } or nil,
 
-  -- Mason for managing LSP servers
-  {
+  -- Mason for managing LSP servers (optional - requires Node.js/npm)
+  is_enabled('enable_lsp') and {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
     end,
-  },
+  } or nil,
 
-  -- Mason-lspconfig bridge
-  {
+  -- Mason-lspconfig bridge (optional - requires Node.js/npm)
+  is_enabled('enable_lsp') and {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
     config = function()
@@ -919,10 +919,10 @@ local plugins = {
         automatic_installation = true,
       })
     end,
-  },
+  } or nil,
 
   -- LSP Configuration (using modern Neovim 0.11+ API)
-  {
+  is_enabled('enable_lsp') and {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
@@ -977,7 +977,7 @@ local plugins = {
       vim.lsp.enable('jsonls')
       vim.lsp.enable('html')
     end,
-  },
+  } or nil,
 }
 
 -- Filter out nil values (from disabled optional features)
