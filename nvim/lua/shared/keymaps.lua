@@ -179,3 +179,8 @@ vim.keymap.set('n', '<C-LeftMouse>', '<LeftMouse><cmd>lua vim.lsp.buf.definition
 -- No need to manually "save" - just work and the project will appear in history
 vim.keymap.set('n', '<' .. mod .. '-S-o>', '<cmd>NeovimProjectHistory<CR>', { silent = true, desc = 'Open Project' })
 vim.keymap.set('n', '<leader>pp', '<cmd>NeovimProjectHistory<CR>', { desc = 'Projects' })
+
+-- Add "Open Project" to command palette (Cmd+Shift+P)
+vim.api.nvim_create_user_command('OpenProject', function()
+  vim.cmd('NeovimProjectHistory')
+end, { desc = 'Open project from history' })
