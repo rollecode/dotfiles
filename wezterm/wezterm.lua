@@ -110,6 +110,9 @@ config.audible_bell = "Disabled"
 -- Scrollback buffer
 config.scrollback_lines = 1000000
 
+-- Disable Kitty keyboard protocol to prevent escape sequences in copied text
+config.enable_kitty_keyboard = false
+
 -- Disable all default mouse bindings so we have full control
 config.disable_default_mouse_bindings = true
 
