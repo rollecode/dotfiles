@@ -10,8 +10,8 @@ if vim.fn.has('mac') ~= 1 then
   vim.keymap.set('v', '<C-S-c>', '"+y', { silent = true, desc = 'Copy to clipboard' })
 end
 
--- File tree toggle (Ctrl+Shift+E or Cmd+Shift+E on macOS)
-vim.keymap.set('n', '<' .. mod .. '-S-e>', function()
+-- File tree toggle (Ctrl+Shift+E - WezTerm translates Cmd to Ctrl on macOS)
+vim.keymap.set('n', '<C-S-e>', function()
   vim.cmd('Neotree toggle')
 end, { silent = true, desc = 'Toggle file tree' })
 
@@ -183,7 +183,7 @@ vim.api.nvim_create_user_command('OpenProject', function()
   vim.cmd('CdProject')
 end, { desc = 'Open saved project' })
 
--- Project management - Cmd+Shift+O on macOS, Ctrl+Shift+O elsewhere
+-- Project management - Ctrl+Shift+O (WezTerm translates Cmd to Ctrl on macOS)
 -- Works like VSCode Project Manager: manually save projects, then switch between them
-vim.keymap.set('n', '<' .. mod .. '-S-o>', '<cmd>OpenProject<CR>', { silent = true, desc = 'Open Project' })
+vim.keymap.set('n', '<C-S-o>', '<cmd>OpenProject<CR>', { silent = true, desc = 'Open Project' })
 vim.keymap.set('n', '<leader>pp', '<cmd>OpenProject<CR>', { desc = 'Projects' })

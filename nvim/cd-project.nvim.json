@@ -1,13 +1,24 @@
 [
   {
+    "id": "20251030143239_9322",
+    "last_file": "nvim/cd-project.nvim.json",
+    "last_position": [
+      16,
+      6
+    ],
+    "name": "dotfiles",
+    "path": "/Users/rolle/Projects/dotfiles",
+    "visited_at": 1761828904
+  },
+  {
     "id": "20251030142946_9981",
     "last_file": "composer.json",
     "last_position": [
-      12,
+      1,
       0
     ],
     "name": "radiomedia-public-voting",
     "path": "/Users/rolle/Projects/radiomedia-public-voting",
-    "visited_at": 1761827478
+    "visited_at": 1761828899
   }
 ]
