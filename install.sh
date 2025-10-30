@@ -522,12 +522,13 @@ install_syncthing() {
 
 # Create local.lua with feature flags
 create_local_config() {
-    local enable_ollama=$1
-    local enable_discord=$2
-    local enable_gamify=$3
-    local enable_colorpicker=$4
-    local enable_dashboard=$5
-    local enable_hardtime=$6
+    local enable_lsp=$1
+    local enable_ollama=$2
+    local enable_discord=$3
+    local enable_gamify=$4
+    local enable_colorpicker=$5
+    local enable_dashboard=$6
+    local enable_hardtime=$7
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
 
@@ -545,6 +546,9 @@ create_local_config() {
 -- This file is gitignored and machine-specific
 
 return {
+    -- Development & LSP
+    enable_lsp = $([ "$enable_lsp" = "y" ] && echo "true" || echo "false"),
+
     -- AI & Completion
     enable_ollama = $([ "$enable_ollama" = "y" ] && echo "true" || echo "false"),
 
@@ -562,6 +566,43 @@ return {
 EOF
 
     print_success "Local config created at $local_config"
+}
+
+# Install Node.js via nvm for LSP servers
+install_nodejs() {
+    print_info "Checking Node.js installation for LSP support..."
+
+    # Check if Node.js is already available
+    if command -v node &> /dev/null; then
+        print_success "✓ Node.js already installed ($(node --version))"
+        return 0
+    fi
+
+    # Install nvm if not present
+    if [ ! -d "$HOME/.nvm" ]; then
+        print_info "Installing nvm (Node Version Manager)..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+        # Source nvm for current session
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+        print_success "✓ nvm installed"
+    else
+        # Source nvm if already installed
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        print_success "✓ nvm already installed"
+    fi
+
+    # Install Node.js LTS via nvm
+    print_info "Installing Node.js LTS via nvm..."
+    nvm install --lts
+    nvm use --lts
+    nvm alias default 'lts/*'
+
+    print_success "✓ Node.js installed ($(node --version))"
+    print_info "Note: Restart your shell or run 'source ~/.bashrc' (or ~/.zshrc) to use Node.js"
 }
 
 # Print final instructions
@@ -622,6 +663,14 @@ main() {
     print_info "=== Optional Features ==="
     echo ""
 
+    print_info "Development & LSP:"
+    echo "Enable LSP (Language Server Protocol)? (Y/n)"
+    echo "  Provides IDE features: autocomplete, go-to-definition, error checking"
+    echo "  Requires: Node.js/npm (~100MB), downloads language servers (~50-200MB)"
+    read -r enable_lsp
+    enable_lsp=${enable_lsp:-y}
+
+    echo ""
     print_info "AI & Completion:"
     echo "Enable Ollama AI code completion? (requires GPU, y/N)"
     read -r enable_ollama
@@ -663,8 +712,13 @@ main() {
     setup_repo
     setup_configs
 
+    # Install Node.js/npm if LSP is enabled
+    if [[ "$enable_lsp" =~ ^[Yy]$ ]]; then
+        install_nodejs
+    fi
+
     # Create local.lua with feature flags
-    create_local_config "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime"
+    create_local_config "$enable_lsp" "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime"
 
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code
