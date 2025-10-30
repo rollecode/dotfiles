@@ -10,7 +10,7 @@ function M.apply(config)
   config.macos_window_background_blur = 60
 
   -- Opacity (less transparent than Linux)
-  config.window_background_opacity = 0.50
+  config.window_background_opacity = 0.70
 
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
@@ -82,14 +82,52 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
-  -- Send Cmd+Shift+O through to nvim (project switcher)
+  -- Cmd+Shift+O: WezTerm project switcher (reads from cd-project.nvim.json)
   table.insert(config.keys, {
     key = 'O',
     mods = 'SUPER|SHIFT',
-    action = wezterm.action.SendKey {
-      key = 'O',
-      mods = 'CTRL|SHIFT',
-    },
+    action = wezterm.action_callback(function(window, pane)
+      local home = wezterm.home_dir
+      local projects_file = home .. '/.config/nvim/cd-project.nvim.json'
+
+      -- Read and parse JSON file
+      local success, projects_json = pcall(function()
+        local f = io.open(projects_file, 'r')
+        if not f then return nil end
+        local content = f:read('*all')
+        f:close()
+        return wezterm.json_parse(content)
+      end)
+
+      if not success or not projects_json or #projects_json == 0 then
+        window:toast_notification('WezTerm', 'No projects found in ' .. projects_file, nil, 4000)
+        return
+      end
+
+      -- Build choices from projects
+      local choices = {}
+      for _, project in ipairs(projects_json) do
+        table.insert(choices, {
+          label = project.name or project.path:match("([^/]+)$"),
+          id = project.path,
+        })
+      end
+
+      -- Show project picker
+      window:perform_action(
+        wezterm.action.InputSelector {
+          title = 'Open Project',
+          choices = choices,
+          fuzzy = true,
+          action = wezterm.action_callback(function(_, inner_pane, id)
+            if id then
+              inner_pane:send_text('cd ' .. id .. '\nclear\nnvim .\n')
+            end
+          end),
+        },
+        pane
+      )
+    end),
   })
   -- Send Cmd+Shift+E through to nvim (neo-tree toggle)
   table.insert(config.keys, {
@@ -99,6 +137,22 @@ function M.apply(config)
       key = 'E',
       mods = 'CTRL|SHIFT',
     },
+  })
+
+  -- Cmd+Shift+S: Prepare for screenshot (set opacity to 100% for 5 seconds)
+  table.insert(config.keys, {
+    key = 's',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action_callback(function(window, pane)
+      -- Set opacity to 100% for clean screenshot
+      window:set_config_overrides({ window_background_opacity = 1.0 })
+      window:toast_notification('WezTerm', 'Screenshot mode: 100% opacity for 5 seconds', nil, 2000)
+
+      -- Restore original opacity after 5 seconds
+      wezterm.time.call_after(5, function()
+        window:set_config_overrides({ window_background_opacity = 0.70 })
+      end)
+    end),
   })
 end
 
