@@ -174,13 +174,16 @@ vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code action
 -- Ctrl+Click for go-to-definition (cross-platform)
 vim.keymap.set('n', '<C-LeftMouse>', '<LeftMouse><cmd>lua vim.lsp.buf.definition()<CR>', { desc = 'Go to definition (Ctrl+Click)' })
 
--- Project management - Cmd+Shift+O on macOS, Ctrl+Shift+O elsewhere
--- Sessions are automatically saved when you work in a directory
--- No need to manually "save" - just work and the project will appear in history
-vim.keymap.set('n', '<' .. mod .. '-S-o>', '<cmd>NeovimProjectHistory<CR>', { silent = true, desc = 'Open Project' })
-vim.keymap.set('n', '<leader>pp', '<cmd>NeovimProjectHistory<CR>', { desc = 'Projects' })
+-- Add commands to Cmd+Shift+P palette (define first)
+vim.api.nvim_create_user_command('SaveProject', function()
+  vim.cmd('CdProjectAdd')
+end, { desc = 'Save current directory as project' })
 
--- Add "Open Project" to command palette (Cmd+Shift+P)
 vim.api.nvim_create_user_command('OpenProject', function()
-  vim.cmd('NeovimProjectHistory')
-end, { desc = 'Open project from history' })
+  vim.cmd('CdProject')
+end, { desc = 'Open saved project' })
+
+-- Project management - Cmd+Shift+O on macOS, Ctrl+Shift+O elsewhere
+-- Works like VSCode Project Manager: manually save projects, then switch between them
+vim.keymap.set('n', '<' .. mod .. '-S-o>', '<cmd>OpenProject<CR>', { silent = true, desc = 'Open Project' })
+vim.keymap.set('n', '<leader>pp', '<cmd>OpenProject<CR>', { desc = 'Projects' })
