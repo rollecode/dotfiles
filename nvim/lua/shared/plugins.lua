@@ -202,28 +202,37 @@ local plugins = {
     version = '^1.0.0',
   },
 
-  -- Neovim Project Manager - like VSCode Project Manager
+  -- Auto-session - auto-save and auto-restore sessions per directory
   {
-    "coffebar/neovim-project",
+    "rmagatti/auto-session",
+    lazy = false,
     opts = {
-      projects = {}, -- Empty - only manually saved projects
-      picker = { type = "telescope" },
-      last_session_on_startup = true, -- Auto-restore last session
-      session_manager_opts = {
-        autosave_last_session = true, -- Auto-save on exit
-        autosave_ignore_not_normal = false,
+      suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" }, -- Don't create sessions in these dirs
+      auto_save = true, -- Auto-save session on exit
+      auto_restore = true, -- Auto-restore session on startup
+      auto_create = false, -- Don't auto-create session (only save when you have files open)
+      session_lens = {
+        load_on_setup = false, -- Don't load session-lens picker
       },
     },
     init = function()
-      vim.opt.sessionoptions:append("globals")
+      -- Recommended sessionoptions for auto-session (without blank to avoid empty buffers)
+      vim.o.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
     end,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-      "Shatur/neovim-session-manager",
-    },
-    lazy = false,
-    priority = 100,
+  },
+
+  -- cd-project.nvim - VSCode-like project manager with manual project saving
+  {
+    "LintaoAmons/cd-project.nvim",
+    config = function()
+      require("cd-project").setup({
+        projects_config_filepath = vim.fn.stdpath("config") .. "/cd-project.nvim.json",
+        project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod", "composer.json" },
+        choice_format = "both", -- Show both name and path
+        projects_picker = "telescope",
+        auto_register_project = false, -- Only manually saved projects
+      })
+    end,
   },
 
   -- Telescope fuzzy finder
