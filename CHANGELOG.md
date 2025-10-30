@@ -6,7 +6,13 @@
 * Explain LSP features: autocomplete, go-to-definition, error checking, hover docs
 * Show LSP requirements during install: Node.js/npm (~100MB), language servers (~50-200MB)
 * Add leap.nvim for quick motion jumping (s/S to jump forward/backward)
-* Remove SaveProject command - neovim-project auto-saves sessions when you work in any directory
+* Replace broken session plugins with auto-session + cd-project.nvim for VSCode Project Manager workflow
+* SaveProject command saves current directory to projects (prompts for optional name)
+* OpenProject/Cmd+Shift+O opens saved projects picker
+* Sessions auto-save on exit and auto-restore on startup per directory
+* Fix Cmd+Shift+E not toggling neo-tree on macOS (add WezTerm passthrough)
+* Configure dashboard to show recent projects with hyper theme
+* Projects stored in ~/.config/nvim/cd-project.nvim.json (manually editable)
 
 ### 2.0.3: 2025-10-29
 

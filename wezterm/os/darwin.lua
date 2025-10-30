@@ -91,6 +91,15 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
+  -- Send Cmd+Shift+E through to nvim (neo-tree toggle)
+  table.insert(config.keys, {
+    key = 'E',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action.SendKey {
+      key = 'E',
+      mods = 'CTRL|SHIFT',
+    },
+  })
 end
 
 return M
