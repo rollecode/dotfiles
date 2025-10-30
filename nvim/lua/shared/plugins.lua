@@ -239,11 +239,12 @@ local plugins = {
     opts = {
       suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" }, -- Don't create sessions in these dirs
       auto_save = true, -- Auto-save session on exit
-      auto_restore = true, -- Auto-restore session on startup
+      auto_restore = false, -- Disable auto-restore to prevent conflicts with cd-project
       auto_create = false, -- Don't auto-create session (only save when you have files open)
       session_lens = {
         load_on_setup = false, -- Don't load session-lens picker
       },
+      cwd_change_handling = false, -- Disable to avoid conflicts with cd-project position restoration
     },
     init = function()
       -- Recommended sessionoptions for auto-session (without blank to avoid empty buffers)
@@ -261,16 +262,18 @@ local plugins = {
         choice_format = "both", -- Show both name and path
         projects_picker = "telescope",
         auto_register_project = false, -- Only manually saved projects
+        -- Disable position restoration to avoid barbar conflicts
+        use_file_history_after_cd = false,
         hooks = {
           {
             callback = function(dir)
-              -- Refresh neo-tree when switching projects
-              vim.schedule(function()
-                local ok, _ = pcall(vim.cmd, 'Neotree reveal')
-                if not ok then
-                  vim.cmd('Neotree show')
-                end
-              end)
+              vim.defer_fn(function()
+                pcall(function()
+                  -- Just refresh neo-tree to new directory
+                  vim.cmd('Neotree close')
+                  vim.cmd('Neotree show dir=' .. dir)
+                end)
+              end, 100)
             end
           }
         }
