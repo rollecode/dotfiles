@@ -239,12 +239,29 @@ local plugins = {
     opts = {
       suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" }, -- Don't create sessions in these dirs
       auto_save = true, -- Auto-save session on exit
-      auto_restore = false, -- Disable auto-restore to prevent conflicts with cd-project
+      auto_restore = true, -- Auto-restore session when opening nvim in a project dir
       auto_create = false, -- Don't auto-create session (only save when you have files open)
       session_lens = {
         load_on_setup = false, -- Don't load session-lens picker
       },
       cwd_change_handling = false, -- Disable to avoid conflicts with cd-project position restoration
+      post_restore_cmds = {
+        -- Close empty/unnamed buffers after restoring session
+        function()
+          vim.schedule(function()
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_loaded(buf) then
+                local name = vim.api.nvim_buf_get_name(buf)
+                local buftype = vim.api.nvim_get_option_value('buftype', { buf = buf })
+                -- Delete if it's an empty unnamed buffer
+                if name == '' and buftype == '' then
+                  vim.api.nvim_buf_delete(buf, { force = true })
+                end
+              end
+            end
+          end)
+        end
+      },
     },
     init = function()
       -- Recommended sessionoptions for auto-session (without blank to avoid empty buffers)
