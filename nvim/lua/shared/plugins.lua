@@ -246,6 +246,27 @@ local plugins = {
       },
       cwd_change_handling = false, -- Disable to avoid conflicts with cd-project position restoration
     },
+    config = function(_, opts)
+      require("auto-session").setup(opts)
+
+      -- Clean up empty unnamed buffers after session restore
+      vim.api.nvim_create_autocmd("SessionLoadPost", {
+        callback = function()
+          vim.defer_fn(function()
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              local ok, name = pcall(vim.api.nvim_buf_get_name, buf)
+              if ok and vim.api.nvim_buf_is_loaded(buf) and name == '' then
+                local ok2, buftype = pcall(vim.api.nvim_get_option_value, 'buftype', { buf = buf })
+                local ok3, ft = pcall(vim.api.nvim_get_option_value, 'filetype', { buf = buf })
+                if ok2 and ok3 and buftype == '' and ft == '' then
+                  pcall(vim.api.nvim_buf_delete, buf, { force = false })
+                end
+              end
+            end
+          end, 100)
+        end,
+      })
+    end,
     init = function()
       -- Recommended sessionoptions for auto-session (without blank to avoid empty buffers)
       vim.o.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
@@ -264,19 +285,6 @@ local plugins = {
         auto_register_project = false, -- Only manually saved projects
         -- Disable position restoration to avoid barbar conflicts
         use_file_history_after_cd = false,
-        hooks = {
-          {
-            callback = function(dir)
-              vim.defer_fn(function()
-                pcall(function()
-                  -- Just refresh neo-tree to new directory
-                  vim.cmd('Neotree close')
-                  vim.cmd('Neotree show dir=' .. dir)
-                end)
-              end, 100)
-            end
-          }
-        }
       })
     end,
   },
