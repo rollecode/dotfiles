@@ -175,14 +175,7 @@ vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code action
 vim.keymap.set('n', '<C-LeftMouse>', '<LeftMouse><cmd>lua vim.lsp.buf.definition()<CR>', { desc = 'Go to definition (Ctrl+Click)' })
 
 -- Project management - Cmd+Shift+O on macOS, Ctrl+Shift+O elsewhere
+-- Sessions are automatically saved when you work in a directory
+-- No need to manually "save" - just work and the project will appear in history
 vim.keymap.set('n', '<' .. mod .. '-S-o>', '<cmd>NeovimProjectHistory<CR>', { silent = true, desc = 'Open Project' })
 vim.keymap.set('n', '<leader>pp', '<cmd>NeovimProjectHistory<CR>', { desc = 'Projects' })
-
--- Create custom "Save Project" command
-vim.api.nvim_create_user_command('SaveProject', function()
-  local project = require("neovim-project.project")
-  local cwd = vim.fn.getcwd()
-  -- Add current directory to projects
-  project.add_project(cwd)
-  vim.notify('Project saved: ' .. cwd, vim.log.levels.INFO)
-end, { desc = 'Save current directory as project' })
