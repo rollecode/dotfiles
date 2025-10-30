@@ -253,9 +253,11 @@ local plugins = {
               if vim.api.nvim_buf_is_loaded(buf) then
                 local name = vim.api.nvim_buf_get_name(buf)
                 local buftype = vim.api.nvim_get_option_value('buftype', { buf = buf })
-                -- Delete if it's an empty unnamed buffer
-                if name == '' and buftype == '' then
-                  vim.api.nvim_buf_delete(buf, { force = true })
+                local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
+                local modifiable = vim.api.nvim_get_option_value('modifiable', { buf = buf })
+                -- Delete if it's an empty unnamed modifiable buffer (but not neo-tree or other special buffers)
+                if name == '' and buftype == '' and filetype ~= 'neo-tree' and modifiable then
+                  pcall(vim.api.nvim_buf_delete, buf, { force = true })
                 end
               end
             end
