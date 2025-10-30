@@ -8,9 +8,10 @@
 * Add leap.nvim for quick motion jumping (s/S to jump forward/backward)
 * Replace broken session plugins with auto-session + cd-project.nvim for VSCode Project Manager workflow
 * SaveProject command saves current directory to projects (prompts for optional name)
-* OpenProject/Cmd+Shift+O opens saved projects picker
-* Sessions auto-save on exit and auto-restore on startup per directory
-* Fix Cmd+Shift+E not toggling neo-tree on macOS (add WezTerm passthrough)
+* OpenProject/Cmd+Shift+O opens saved projects picker to browse and switch
+* Sessions auto-save on exit and auto-restore on startup per directory (no empty buffer tabs)
+* Fix all Cmd+Shift keybindings on macOS (E for neo-tree, O for projects) - match WezTerm Ctrl translations
+* Auto-refresh neo-tree when switching projects via cd-project hook
 * Configure dashboard to show recent projects with hyper theme
 * Projects stored in ~/.config/nvim/cd-project.nvim.json (manually editable)
 
