@@ -5,6 +5,7 @@
 * Install Node.js via nvm when LSP enabled (no sudo required, per-user installation)
 * Explain LSP features: autocomplete, go-to-definition, error checking, hover docs
 * Show LSP requirements during install: Node.js/npm (~100MB), language servers (~50-200MB)
+* Add leap.nvim for quick motion jumping (s/S to jump forward/backward)
 
 ### 2.0.3: 2025-10-29
 

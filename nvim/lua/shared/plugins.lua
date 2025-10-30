@@ -884,6 +884,16 @@ local plugins = {
     end,
   },
 
+  -- Leap.nvim - jump to any location with 2-4 keystrokes
+  {
+    "ggandor/leap.nvim",
+    config = function()
+      -- Set up keymaps (s to leap, S to leap from any window)
+      vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
+      vim.keymap.set('n', 'S', '<Plug>(leap-from-window)')
+    end,
+  },
+
   -- Hardtime - learn better Vim motions (optional)
   is_enabled('enable_hardtime') and {
     "m4xshen/hardtime.nvim",
