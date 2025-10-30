@@ -245,25 +245,6 @@ local plugins = {
         load_on_setup = false, -- Don't load session-lens picker
       },
       cwd_change_handling = false, -- Disable to avoid conflicts with cd-project position restoration
-      post_restore_cmds = {
-        -- Close empty/unnamed buffers after restoring session
-        function()
-          vim.schedule(function()
-            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-              if vim.api.nvim_buf_is_loaded(buf) then
-                local name = vim.api.nvim_buf_get_name(buf)
-                local buftype = vim.api.nvim_get_option_value('buftype', { buf = buf })
-                local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
-                local modifiable = vim.api.nvim_get_option_value('modifiable', { buf = buf })
-                -- Delete if it's an empty unnamed modifiable buffer (but not neo-tree or other special buffers)
-                if name == '' and buftype == '' and filetype ~= 'neo-tree' and modifiable then
-                  pcall(vim.api.nvim_buf_delete, buf, { force = true })
-                end
-              end
-            end
-          end)
-        end
-      },
     },
     init = function()
       -- Recommended sessionoptions for auto-session (without blank to avoid empty buffers)
