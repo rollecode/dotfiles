@@ -530,116 +530,49 @@ local plugins = {
         lint.linters_by_ft.javascript = { 'eslint' }
       end
 
-      -- Track which ESLint we notified about per project to avoid spam
-      local notified_eslint = {}
-
-      -- Dynamically update ESLint command before linting
-      local function update_eslint_cmd()
-        -- Only run for JavaScript/TypeScript files
-        local ft = vim.bo.filetype
-        if ft ~= 'javascript' and ft ~= 'typescript' and ft ~= 'javascriptreact' and ft ~= 'typescriptreact' then
-          return
-        end
-
-        -- Only check if we have an actual file buffer
-        local buffer_file = vim.fn.expand('%:p')
-        if buffer_file == '' or vim.fn.filereadable(buffer_file) ~= 1 then
-          return
-        end
-
-        -- Start search from current buffer's directory, not cwd
-        local buffer_dir = vim.fn.expand('%:p:h')
-        local search_path = buffer_dir .. ';'
-        local local_eslint = vim.fn.findfile('node_modules/.bin/eslint', search_path)
-
-        if local_eslint ~= '' then
-          -- Found project-local ESLint
-          local eslint_path = vim.fn.fnamemodify(local_eslint, ':p')
-
-          -- Get the project root (where node_modules is)
-          local project_root = vim.fn.fnamemodify(eslint_path, ':h:h:h')
-
-          -- Set command and working directory
-          lint.linters.eslint.cmd = eslint_path
-          lint.linters.eslint.cwd = project_root
-
-          if not notified_eslint[project_root] then
-            vim.notify(
-              'Using project-local ESLint from: ' .. project_root,
-              vim.log.levels.INFO,
-              { title = 'ESLint' }
-            )
-            notified_eslint[project_root] = 'local'
+      -- Helper function to find project root
+      local function find_project_root(start_path, markers)
+        local path = start_path
+        while path ~= '/' do
+          for _, marker in ipairs(markers) do
+            local full_path = path .. '/' .. marker
+            if vim.fn.filereadable(full_path) == 1 or vim.fn.isdirectory(full_path) == 1 then
+              return path
+            end
           end
-        else
-          -- Fallback to global ESLint
-          lint.linters.eslint.cmd = 'eslint'
-          lint.linters.eslint.cwd = vim.fn.getcwd()
-          if notified_eslint[buffer_dir] ~= 'global' then
-            vim.notify(
-              'No project-local ESLint found for this file\nUsing global installation',
-              vim.log.levels.WARN,
-              { title = 'ESLint' }
-            )
-            notified_eslint[buffer_dir] = 'global'
-          end
+          path = vim.fn.fnamemodify(path, ':h')
         end
+        return nil
       end
 
-      -- Track which phpcs we notified about per project to avoid spam
-      local notified_phpcs = {}
+      -- Wrap linting to set proper working directory
+      local original_try_lint_before_wrap = lint.try_lint
+      lint.try_lint = function(...)
+        -- Save current directory
+        local saved_cwd = vim.fn.getcwd()
 
-      -- Dynamically update phpcs command before linting
-      local function update_phpcs_cmd()
-        -- Only run for PHP files
-        local ft = vim.bo.filetype
-        if ft ~= 'php' then
-          return
-        end
-
-        -- Only check if we have an actual file buffer
-        local buffer_file = vim.fn.expand('%:p')
-        if buffer_file == '' or vim.fn.filereadable(buffer_file) ~= 1 then
-          return
-        end
-
-        -- Start search from current buffer's directory
+        -- Try to find project root and change to it
         local buffer_dir = vim.fn.expand('%:p:h')
-        local search_path = buffer_dir .. ';'
-        local local_phpcs = vim.fn.findfile('vendor/bin/phpcs', search_path)
+        local ft = vim.bo.filetype
 
-        if local_phpcs ~= '' then
-          -- Found project-local phpcs (composer-installed)
-          local phpcs_path = vim.fn.fnamemodify(local_phpcs, ':p')
-
-          -- Get the project root (where vendor/ is)
-          local project_root = vim.fn.fnamemodify(phpcs_path, ':h:h:h')
-
-          -- Set command and working directory
-          lint.linters.phpcs.cmd = phpcs_path
-          lint.linters.phpcs.cwd = project_root
-
-          if not notified_phpcs[project_root] then
-            vim.notify(
-              'Using project-local phpcs from: ' .. project_root,
-              vim.log.levels.INFO,
-              { title = 'phpcs' }
-            )
-            notified_phpcs[project_root] = 'local'
+        if ft == 'php' and is_enabled('enable_phpcs') then
+          local project_root = find_project_root(buffer_dir, {'phpcs.xml', 'phpcs.xml.dist', 'vendor'})
+          if project_root then
+            vim.cmd('cd ' .. vim.fn.fnameescape(project_root))
           end
-        else
-          -- Fallback to global phpcs
-          lint.linters.phpcs.cmd = 'phpcs'
-          lint.linters.phpcs.cwd = vim.fn.getcwd()
-          if notified_phpcs[buffer_dir] ~= 'global' then
-            vim.notify(
-              'No project-local phpcs found\nUsing global installation (phpcs.xml will be auto-detected)',
-              vim.log.levels.INFO,
-              { title = 'phpcs' }
-            )
-            notified_phpcs[buffer_dir] = 'global'
+        elseif (ft == 'javascript' or ft == 'typescript' or ft == 'javascriptreact' or ft == 'typescriptreact')
+               and is_enabled('enable_eslint') then
+          local project_root = find_project_root(buffer_dir, {'node_modules', 'package.json'})
+          if project_root then
+            vim.cmd('cd ' .. vim.fn.fnameescape(project_root))
           end
         end
+
+        -- Call original try_lint
+        original_try_lint_before_wrap(...)
+
+        -- Restore directory
+        vim.cmd('cd ' .. vim.fn.fnameescape(saved_cwd))
       end
 
       -- Installation instructions for each linter
@@ -658,10 +591,6 @@ local plugins = {
       -- Override try_lint to suppress error messages and show notifications instead
       local original_try_lint = lint.try_lint
       lint.try_lint = function(...)
-        -- Update ESLint command to use project-local if available
-        update_eslint_cmd()
-        -- Update phpcs command to use project-local if available
-        update_phpcs_cmd()
 
         -- Temporarily override vim.notify to intercept nvim-lint errors
         local original_notify = vim.notify

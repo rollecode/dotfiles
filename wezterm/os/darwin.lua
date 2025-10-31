@@ -28,7 +28,7 @@ function M.apply(config)
     left = '3cell',
     right = '3cell',
     top = '2.5cell',
-    bottom = '0.8cell',
+    bottom = '1.5cell',
   }
 
   -- Terminal size
@@ -143,7 +143,7 @@ function M.apply(config)
   table.insert(config.keys, {
     key = 's',
     mods = 'SUPER|SHIFT',
-    action = wezterm.action_callback(function(window, pane)
+    action = wezterm.action_callback(function(window, _pane)
       -- Set opacity to 100% for clean screenshot
       window:set_config_overrides({ window_background_opacity = 1.0 })
       window:toast_notification('WezTerm', 'Screenshot mode: 100% opacity for 5 seconds', nil, 2000)

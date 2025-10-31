@@ -8,6 +8,11 @@
 * Fix Ctrl+W and Ctrl+K not working in nano on SSH servers by changing WezTerm shortcuts to Alt+W and Alt+K
 * Fix Ctrl+P to search all files in project instead of only recent files
 * Replace heavy neo-tree with lightweight mini.files file explorer
+* Fix phpcs and eslint to always use project-local vendor/bin or node_modules/.bin executables when available
+* Fix phpcs to automatically detect and use phpcs.xml or phpcs.xml.dist from project root
+* Fix linters to set correct working directory for project-specific configurations
+* Fix nvim-lint invalid args error by using directory-change wrapper instead of modifying linter configs
+* Fix unused local variable warning in darwin.lua by prefixing with underscore
 
 ### 2.0.4: 2025-10-30
 
