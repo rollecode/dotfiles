@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.0.3-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.0.5-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -155,6 +155,88 @@ ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codesta
 
 # Add hooks to ~/.claude/settings.json on the server (see above)
 ```
+
+## Linters
+
+The install script asks which linters you want to activate. You can enable/disable individual linters for different languages. Each linter checks code quality and shows errors/warnings inline as you type.
+
+### Available linters
+
+- **phpcs** - PHP Code Sniffer for PHP files
+- **stylelint** - CSS/SCSS linter
+- **flake8** - Python linter
+- **luacheck** - Lua linter
+- **jsonlint** - JSON linter
+- **eslint** - JavaScript linter
+
+### Manual activation
+
+To manually enable/disable linters after installation, edit `~/Projects/dotfiles/nvim/lua/local.lua`:
+
+```lua
+return {
+    -- ... other settings ...
+
+    -- Linters (set to true to enable, false to disable)
+    enable_phpcs = true,      -- PHP linter
+    enable_stylelint = true,  -- CSS/SCSS linter
+    enable_flake8 = true,     -- Python linter
+    enable_luacheck = true,   -- Lua linter
+    enable_jsonlint = true,   -- JSON linter
+    enable_eslint = true,     -- JavaScript linter
+}
+```
+
+After editing, restart Neovim for changes to take effect.
+
+### Installing linters
+
+If a linter is enabled but not installed, nvim-lint will show a notification with installation instructions when you open a file of that type.
+
+#### PHP (phpcs)
+
+```bash
+composer global require squizlabs/php_codesniffer
+```
+
+#### CSS/SCSS (stylelint)
+
+```bash
+npm install -g stylelint
+```
+
+#### Python (flake8)
+
+```bash
+pip install flake8
+```
+
+#### Lua (luacheck)
+
+```bash
+luarocks install luacheck
+```
+
+#### JSON (jsonlint)
+
+```bash
+npm install -g jsonlint
+```
+
+#### JavaScript (eslint)
+
+```bash
+npm install -g eslint
+```
+
+### Project-specific linters
+
+For JavaScript/PHP projects, nvim-lint will automatically detect and use project-local linters:
+
+- **JavaScript**: Uses `node_modules/.bin/eslint` if available in your project
+- **PHP**: Uses `vendor/bin/phpcs` if available in your project
+
+This ensures project-specific rules and configurations are respected.
 
 ## Remote server setup
 

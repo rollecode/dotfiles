@@ -547,15 +547,33 @@ local plugins = {
     config = function()
       local lint = require('lint')
 
-      lint.linters_by_ft = {
-        php = { 'phpcs' },
-        css = { 'stylelint' },
-        scss = { 'stylelint' },
-        python = { 'flake8' },
-        lua = { 'luacheck' },
-        json = { 'jsonlint' },
-        javascript = { 'eslint' },
-      }
+      -- Build linters_by_ft dynamically based on enabled linters
+      lint.linters_by_ft = {}
+
+      if is_enabled('enable_phpcs') then
+        lint.linters_by_ft.php = { 'phpcs' }
+      end
+
+      if is_enabled('enable_stylelint') then
+        lint.linters_by_ft.css = { 'stylelint' }
+        lint.linters_by_ft.scss = { 'stylelint' }
+      end
+
+      if is_enabled('enable_flake8') then
+        lint.linters_by_ft.python = { 'flake8' }
+      end
+
+      if is_enabled('enable_luacheck') then
+        lint.linters_by_ft.lua = { 'luacheck' }
+      end
+
+      if is_enabled('enable_jsonlint') then
+        lint.linters_by_ft.json = { 'jsonlint' }
+      end
+
+      if is_enabled('enable_eslint') then
+        lint.linters_by_ft.javascript = { 'eslint' }
+      end
 
       -- Track which ESLint we notified about per project to avoid spam
       local notified_eslint = {}
@@ -723,12 +741,18 @@ local plugins = {
         end
       end
 
-      -- Run linter on file open, edit, and save
-      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "TextChanged", "TextChangedI" }, {
-        callback = function()
-          lint.try_lint()
-        end,
-      })
+      -- Run linter on file open, edit, and save (only if at least one linter is enabled)
+      local has_any_linter = is_enabled('enable_phpcs') or is_enabled('enable_stylelint') or
+                              is_enabled('enable_flake8') or is_enabled('enable_luacheck') or
+                              is_enabled('enable_jsonlint') or is_enabled('enable_eslint')
+
+      if has_any_linter then
+        vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "TextChanged", "TextChangedI" }, {
+          callback = function()
+            lint.try_lint()
+          end,
+        })
+      end
     end,
   },
 

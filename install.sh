@@ -529,6 +529,12 @@ create_local_config() {
     local enable_colorpicker=$5
     local enable_dashboard=$6
     local enable_hardtime=$7
+    local enable_phpcs=$8
+    local enable_stylelint=$9
+    local enable_flake8=${10}
+    local enable_luacheck=${11}
+    local enable_jsonlint=${12}
+    local enable_eslint=${13}
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
 
@@ -562,6 +568,14 @@ return {
 
     -- Workflow
     enable_hardtime = $([ "$enable_hardtime" = "y" ] && echo "true" || echo "false"),
+
+    -- Linters
+    enable_phpcs = $([ "$enable_phpcs" = "y" ] && echo "true" || echo "false"),
+    enable_stylelint = $([ "$enable_stylelint" = "y" ] && echo "true" || echo "false"),
+    enable_flake8 = $([ "$enable_flake8" = "y" ] && echo "true" || echo "false"),
+    enable_luacheck = $([ "$enable_luacheck" = "y" ] && echo "true" || echo "false"),
+    enable_jsonlint = $([ "$enable_jsonlint" = "y" ] && echo "true" || echo "false"),
+    enable_eslint = $([ "$enable_eslint" = "y" ] && echo "true" || echo "false"),
 }
 EOF
 
@@ -703,6 +717,32 @@ main() {
     enable_hardtime=${enable_hardtime:-n}
 
     echo ""
+    print_info "Linters (code quality checkers):"
+    echo "Enable phpcs linter for PHP? (y/N)"
+    read -r enable_phpcs
+    enable_phpcs=${enable_phpcs:-n}
+
+    echo "Enable stylelint linter for CSS/SCSS? (y/N)"
+    read -r enable_stylelint
+    enable_stylelint=${enable_stylelint:-n}
+
+    echo "Enable flake8 linter for Python? (y/N)"
+    read -r enable_flake8
+    enable_flake8=${enable_flake8:-n}
+
+    echo "Enable luacheck linter for Lua? (y/N)"
+    read -r enable_luacheck
+    enable_luacheck=${enable_luacheck:-n}
+
+    echo "Enable jsonlint linter for JSON? (y/N)"
+    read -r enable_jsonlint
+    enable_jsonlint=${enable_jsonlint:-n}
+
+    echo "Enable eslint linter for JavaScript? (y/N)"
+    read -r enable_eslint
+    enable_eslint=${enable_eslint:-n}
+
+    echo ""
 
     # Run installation steps
     if [[ "$install_deps" =~ ^[Yy]$ ]]; then
@@ -718,7 +758,7 @@ main() {
     fi
 
     # Create local.lua with feature flags
-    create_local_config "$enable_lsp" "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime"
+    create_local_config "$enable_lsp" "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime" "$enable_phpcs" "$enable_stylelint" "$enable_flake8" "$enable_luacheck" "$enable_jsonlint" "$enable_eslint"
 
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code
