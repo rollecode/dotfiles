@@ -45,7 +45,7 @@ config.window_padding = {
   left = '4cell',
   right = '4cell',
   top = '2cell',
-  bottom = '1.5cell',
+  bottom = '2cell',
 }
 
 -- Enable ligatures
