@@ -3,6 +3,8 @@
 * Add CodeCompanion AI chat plugin for asking Neovim questions with <Space>nv hotkey (uses OpenRouter auto-router)
 * Add "Open Link" and "Open in Incognito" options to WezTerm right-click context menu for URLs (incognito Linux-only, uses chromium)
 * Add automatic URL detection and selection on right-click in WezTerm
+* Add selected URL/text preview as first item in WezTerm right-click context menu
+* Improve URL detection to recognize domains without protocol (example.com, github.io, etc.)
 * Fix right-click menu losing selection by preserving existing selection before showing menu
 * Add auto-restart capability to clipboard-notify.sh with systemd service integration
 * Move clipboard-notify from hyprland.conf exec-once to systemd service for better reliability
