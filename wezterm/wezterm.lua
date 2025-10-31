@@ -316,15 +316,47 @@ config.mouse_bindings = {
     event = { Up = { streak = 1, button = 'Right' } },
     mods = 'NONE',
     action = wezterm.action_callback(function(window, pane)
-      local has_selection = window:get_selection_text_for_pane(pane) ~= ""
+      -- Get current selection (if any)
+      local selection = window:get_selection_text_for_pane(pane)
+      local has_selection = selection and selection ~= ""
+
+      -- If no selection, try to select word under cursor
+      if not has_selection then
+        window:perform_action(wezterm.action.SelectTextAtMouseCursor('Word'), pane)
+        -- Give it a moment to select, then get the new selection
+        selection = window:get_selection_text_for_pane(pane)
+        has_selection = selection and selection ~= ""
+      end
+
+      -- Check if the selection is a URL
+      local is_url = false
+      if has_selection then
+        is_url = selection:match("^https?://") or
+                 selection:match("^www%.") or
+                 selection:match("^ftp://") or
+                 selection:match("%.com") or
+                 selection:match("%.org") or
+                 selection:match("%.net")
+      end
 
       local choices = {}
 
       if has_selection then
         table.insert(choices, { id = 'copy', label = '📋 Copy' })
-        table.insert(choices, { id = 'search', label = '🔍 Search in browser' })
+
+        if is_url then
+          table.insert(choices, { id = 'open_link', label = '🔗 Open Link' })
+          -- Only show incognito option on Linux
+          if wezterm.target_triple:find("linux") then
+            table.insert(choices, { id = 'open_incognito', label = '🕵️ Open in Incognito' })
+          end
+          table.insert(choices, { id = 'copy_link', label = '📎 Copy Link' })
+        else
+          table.insert(choices, { id = 'search', label = '🔍 Search in browser' })
+        end
       end
 
+      table.insert(choices, { id = 'paste', label = '📄 Paste' })
       table.insert(choices, { id = 'split_h', label = '⬌ Split Horizontal' })
       table.insert(choices, { id = 'split_v', label = '⬍ Split Vertical' })
 
@@ -340,6 +372,12 @@ config.mouse_bindings = {
             if id == 'copy' then
               inner_window:perform_action(wezterm.action.CopyTo('ClipboardAndPrimarySelection'), inner_pane)
               inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
+            elseif id == 'copy_link' then
+              -- Copy the link without clearing selection
+              inner_window:perform_action(wezterm.action.CopyTo('ClipboardAndPrimarySelection'), inner_pane)
+              inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
+            elseif id == 'paste' then
+              inner_window:perform_action(wezterm.action.PasteFrom('Clipboard'), inner_pane)
             elseif id == 'search' then
               local selection = inner_window:get_selection_text_for_pane(inner_pane)
               -- URL encode the selection properly
@@ -349,6 +387,44 @@ config.mouse_bindings = {
               local url = 'https://www.google.com/search?q=' .. encoded
               -- Open in browser
               os.execute('xdg-open "' .. url .. '" &')
+              inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
+            elseif id == 'open_link' then
+              local selection = inner_window:get_selection_text_for_pane(inner_pane)
+              inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
+
+              if selection and selection ~= "" then
+                -- Clean up the URL - trim whitespace and newlines
+                local url = selection:gsub("^%s+", ""):gsub("%s+$", ""):gsub("\n", ""):gsub("\r", "")
+
+                -- Add https:// if missing
+                if not url:match("^https?://") and not url:match("^ftp://") then
+                  url = "https://" .. url
+                end
+
+                -- Use wezterm.open_with instead of os.execute for better reliability
+                wezterm.log_info("Opening URL: " .. url)
+                wezterm.open_with(url)
+              end
+            elseif id == 'open_incognito' then
+              local selection = inner_window:get_selection_text_for_pane(inner_pane)
+              inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
+
+              if selection and selection ~= "" then
+                -- Clean up the URL - trim whitespace and newlines
+                local url = selection:gsub("^%s+", ""):gsub("%s+$", ""):gsub("\n", ""):gsub("\r", "")
+
+                -- Add https:// if missing
+                if not url:match("^https?://") and not url:match("^ftp://") then
+                  url = "https://" .. url
+                end
+
+                -- Escape single quotes for shell
+                url = url:gsub("'", "'\\''")
+
+                -- Open in chromium incognito mode (Linux only)
+                wezterm.log_info("Opening URL in chromium incognito: " .. url)
+                os.execute("chromium --incognito --new-window '" .. url .. "' >/dev/null 2>&1 &")
+              end
             elseif id == 'split_h' then
               inner_window:perform_action(wezterm.action.SplitHorizontal({ domain = 'CurrentPaneDomain' }), inner_pane)
             elseif id == 'split_v' then
