@@ -1,5 +1,12 @@
 ### 2.0.5: 2025-10-31
 
+* Add CodeCompanion AI chat plugin for asking Neovim questions with <Space>nv hotkey (uses OpenRouter auto-router)
+* Add "Open Link" and "Open in Incognito" options to WezTerm right-click context menu for URLs (incognito Linux-only, uses chromium)
+* Add automatic URL detection and selection on right-click in WezTerm
+* Fix right-click menu losing selection by preserving existing selection before showing menu
+* Add auto-restart capability to clipboard-notify.sh with systemd service integration
+* Move clipboard-notify from hyprland.conf exec-once to systemd service for better reliability
+* Add documentation for auto-saving Claude Code conversations with claude-conversation-saver plugin
 * Add individual linter activation prompts in install.sh for phpcs, stylelint, flake8, luacheck, jsonlint, and eslint
 * Add linter feature flags to local.lua configuration file
 * Make nvim-lint conditionally enable linters based on flags in local.lua
@@ -13,6 +20,7 @@
 * Fix linters to set correct working directory for project-specific configurations
 * Fix nvim-lint invalid args error by using directory-change wrapper instead of modifying linter configs
 * Fix unused local variable warning in darwin.lua by prefixing with underscore
+* Add Super+Shift+C keybind to center windows on current workspace in Hyprland (fixes windows appearing outside screen)
 
 ### 2.0.4: 2025-10-30
 

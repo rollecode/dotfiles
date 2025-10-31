@@ -524,17 +524,18 @@ install_syncthing() {
 create_local_config() {
     local enable_lsp=$1
     local enable_ollama=$2
-    local enable_discord=$3
-    local enable_gamify=$4
-    local enable_colorpicker=$5
-    local enable_dashboard=$6
-    local enable_hardtime=$7
-    local enable_phpcs=$8
-    local enable_stylelint=$9
-    local enable_flake8=${10}
-    local enable_luacheck=${11}
-    local enable_jsonlint=${12}
-    local enable_eslint=${13}
+    local enable_codecompanion=$3
+    local enable_discord=$4
+    local enable_gamify=$5
+    local enable_colorpicker=$6
+    local enable_dashboard=$7
+    local enable_hardtime=$8
+    local enable_phpcs=$9
+    local enable_stylelint=${10}
+    local enable_flake8=${11}
+    local enable_luacheck=${12}
+    local enable_jsonlint=${13}
+    local enable_eslint=${14}
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
 
@@ -557,6 +558,7 @@ return {
 
     -- AI & Completion
     enable_ollama = $([ "$enable_ollama" = "y" ] && echo "true" || echo "false"),
+    enable_codecompanion = $([ "$enable_codecompanion" = "y" ] && echo "true" || echo "false"),
 
     -- UI & Visual
     enable_colorpicker = $([ "$enable_colorpicker" = "y" ] && echo "true" || echo "false"),
@@ -690,6 +692,12 @@ main() {
     read -r enable_ollama
     enable_ollama=${enable_ollama:-n}
 
+    echo "Enable CodeCompanion AI chat for Neovim help? (Y/n)"
+    echo "  Ask AI about Neovim commands/features with <Space>nv"
+    echo "  Requires: OpenRouter API key (uses OpenRouter auto-router for fastest/cheapest model)"
+    read -r enable_codecompanion
+    enable_codecompanion=${enable_codecompanion:-y}
+
     echo ""
     print_info "UI & Visual:"
     echo "Enable OKLCH Color Picker? (requires GUI, y/N)"
@@ -758,7 +766,7 @@ main() {
     fi
 
     # Create local.lua with feature flags
-    create_local_config "$enable_lsp" "$enable_ollama" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime" "$enable_phpcs" "$enable_stylelint" "$enable_flake8" "$enable_luacheck" "$enable_jsonlint" "$enable_eslint"
+    create_local_config "$enable_lsp" "$enable_ollama" "$enable_codecompanion" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime" "$enable_phpcs" "$enable_stylelint" "$enable_flake8" "$enable_luacheck" "$enable_jsonlint" "$enable_eslint"
 
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code

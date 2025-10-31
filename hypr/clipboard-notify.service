@@ -1,0 +1,13 @@
+[Unit]
+Description=Clipboard notification service
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/rolle/.local/bin/clipboard-notify.sh
+Restart=always
+RestartSec=5
+Environment=DISPLAY=:0
+
+[Install]
+WantedBy=default.target

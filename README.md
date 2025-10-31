@@ -120,6 +120,52 @@ The hook automatically:
 
 Now your AI-assisted coding will contribute to your Code::Stats profile!
 
+### Auto-save conversations
+
+Automatically save and archive all your Claude Code conversations with searchable markdown transcripts. This uses the [claude-conversation-saver](https://github.com/sirkitree/claude-conversation-saver) plugin wrapping the [conversation-logger](https://github.com/sirkitree/claude-conversation-saver) skill. Read more at [Jerad Bitner's blog post](https://jeradbitner.com/blog/claude-code-auto-save-conversations).
+
+Run this command in Claude Code:
+
+```
+/plugin marketplace add https://github.com/sirkitree/claude-conversation-saver
+```
+
+Then restart Claude Code. The plugin will automatically save conversations after each response to `~/.claude/conversation-logs/` with markdown transcripts, JSONL raw data, and session metadata.
+
+The plugin needs these tools (likely already installed):
+
+- `git` - for cloning the skill
+- `jq` - JSON processor for parsing data
+- `python3` - for markdown conversion
+
+Install missing dependencies:
+
+Arch Linux:
+
+```bash
+sudo pacman -S git jq python
+```
+
+Debian/Ubuntu:
+
+```bash
+sudo apt install git jq python3
+```
+
+macOS:
+
+```bash
+brew install git jq python3
+```
+
+After installation, conversations are automatically saved. Use these slash commands:
+
+- `/convo-search <query>` - search across all saved conversations
+- `/convo-list` - list all saved conversations
+- `/convo-recent` - show recent conversations
+
+This ensures you never lose important conversations and can search through your entire Claude Code history!
+
 ### Setup on other machines
 
 On any other machine where you use Claude Code, just run the install script:
