@@ -12,10 +12,10 @@
   },
   {
     "id": "20251030143239_9322",
-    "last_file": "nvim/cd-project.nvim.json",
+    "last_file": "CHANGELOG.md",
     "last_position": [
-      24,
-      0
+      5,
+      11
     ],
     "name": "dotfiles",
     "path": "/Users/rolle/Projects/dotfiles",
