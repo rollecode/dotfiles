@@ -12,7 +12,10 @@ end
 
 -- File tree toggle (Ctrl+Shift+E - WezTerm translates Cmd to Ctrl on macOS)
 vim.keymap.set('n', '<C-S-e>', function()
-  vim.cmd('Neotree toggle')
+  local MiniFiles = require('mini.files')
+  if not MiniFiles.close() then
+    MiniFiles.open()
+  end
 end, { silent = true, desc = 'Toggle file tree' })
 
 -- Trouble toggle (Ctrl+Shift+A or Cmd+Shift+A on macOS)
@@ -80,10 +83,10 @@ end, { silent = true, desc = 'Previous error' })
 
 -- VSCode-like keybindings for Telescope
 vim.keymap.set('n', '<C-p>', function()
-  local ok, telescope = pcall(require, 'telescope')
+  local ok, builtin = pcall(require, 'telescope.builtin')
   local ok2, themes = pcall(require, 'telescope.themes')
   if ok and ok2 then
-    telescope.extensions.frecency.frecency(themes.get_dropdown({
+    builtin.find_files(themes.get_dropdown({
       previewer = false,
       sorting_strategy = 'ascending',
       layout_config = {
@@ -95,7 +98,7 @@ vim.keymap.set('n', '<C-p>', function()
       },
     }))
   end
-end, { silent = true, desc = 'Find Files (Recent)' })
+end, { silent = true, desc = 'Find all files in project' })
 
 vim.keymap.set('n', '<C-S-p>', function()
   local ok, builtin = pcall(require, 'telescope.builtin')

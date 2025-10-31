@@ -197,8 +197,7 @@ local plugins = {
         maximum_padding = 1,
         minimum_padding = 1,
         sidebar_filetypes = {
-          NvimTree = true,
-          ['neo-tree'] = { event = 'BufWipeout' },
+          ['mini-files'] = true,
         },
       })
 
@@ -404,63 +403,19 @@ local plugins = {
     end,
   },
 
-  -- Neo-tree - File explorer
+  -- mini.files - Lightweight file explorer
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    lazy = false, -- Load on startup so custom keymaps work
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-    },
+    'echasnovski/mini.files',
+    version = '*',
     config = function()
-      require("neo-tree").setup({
-        close_if_last_window = false,
-        popup_border_style = "rounded",
-        enable_git_status = true,
-        enable_diagnostics = true,
-        -- Save state in nvim data directory, not project root
-        event_handlers = {
-          {
-            event = "neo_tree_buffer_enter",
-            handler = function()
-              vim.opt_local.relativenumber = false
-              vim.opt_local.number = false
-            end,
-          },
+      require('mini.files').setup({
+        windows = {
+          preview = true,
+          width_focus = 30,
+          width_preview = 30,
         },
-        default_component_configs = {
-          indent = {
-            indent_size = 2,
-            padding = 1,
-            with_markers = true,
-            indent_marker = "│",
-            last_indent_marker = "└",
-            with_expanders = true,
-          },
-        },
-        window = {
-          position = "left",
-          width = 30,
-          mapping_options = {
-            noremap = true,
-            nowait = true,
-          },
-        },
-        filesystem = {
-          filtered_items = {
-            visible = false,
-            hide_dotfiles = false,
-            hide_gitignored = false,
-          },
-          follow_current_file = {
-            enabled = true,
-          },
-          use_libuv_file_watcher = true,
-          -- Don't create state files in project directories
-          bind_to_cwd = false,
-          hijack_netrw_behavior = "open_default",
+        options = {
+          use_as_default_explorer = true,
         },
       })
     end,

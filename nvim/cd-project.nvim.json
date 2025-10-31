@@ -1,10 +1,10 @@
 [
   {
     "id": "20251030142946_9981",
-    "last_file": "composer.json",
+    "last_file": "config/application.php",
     "last_position": [
-      29,
-      14
+      40,
+      0
     ],
     "name": "radiomedia-public-voting",
     "path": "/Users/rolle/Projects/radiomedia-public-voting",
