@@ -331,21 +331,50 @@ config.mouse_bindings = {
       -- Check if the selection is a URL
       local is_url = false
       if has_selection then
-        is_url = selection:match("^https?://") or
-                 selection:match("^www%.") or
-                 selection:match("^ftp://") or
-                 selection:match("%.com") or
-                 selection:match("%.org") or
-                 selection:match("%.net")
+        -- Remove whitespace for checking
+        local trimmed = selection:gsub("^%s+", ""):gsub("%s+$", "")
+
+        -- Match URLs with protocol
+        is_url = trimmed:match("^https?://") or
+                 trimmed:match("^ftp://") or
+                 -- Match domains starting with www
+                 trimmed:match("^www%.%w+%.%w+") or
+                 -- Match domain.tld pattern (something.something)
+                 trimmed:match("^[%w%-]+%.[%w%.]+$") or
+                 -- Match common TLDs anywhere in string if it looks like a domain
+                 (trimmed:match("^[%w%-%.]+$") and (
+                   trimmed:match("%.com$") or
+                   trimmed:match("%.org$") or
+                   trimmed:match("%.net$") or
+                   trimmed:match("%.io$") or
+                   trimmed:match("%.dev$") or
+                   trimmed:match("%.ai$") or
+                   trimmed:match("%.co$") or
+                   trimmed:match("%.app$")
+                 ))
       end
 
       local choices = {}
+
+      -- Add preview as first item (non-selectable label)
+      if has_selection then
+        local preview = selection:gsub("\n", " "):gsub("\r", "")
+        if #preview > 50 then
+          preview = preview:sub(1, 50) .. "..."
+        end
+
+        if is_url then
+          table.insert(choices, { id = 'header', label = '🔗 ' .. preview })
+        else
+          table.insert(choices, { id = 'header', label = '📝 ' .. preview })
+        end
+      end
 
       if has_selection then
         table.insert(choices, { id = 'copy', label = '📋 Copy' })
 
         if is_url then
-          table.insert(choices, { id = 'open_link', label = '🔗 Open Link' })
+          table.insert(choices, { id = 'open_link', label = '🌐 Open Link' })
           -- Only show incognito option on Linux
           if wezterm.target_triple:find("linux") then
             table.insert(choices, { id = 'open_incognito', label = '🕵️ Open in Incognito' })
@@ -367,7 +396,7 @@ config.mouse_bindings = {
           fuzzy = false,
           alphabet = '', -- Disable numbering
           action = wezterm.action_callback(function(inner_window, inner_pane, id, _)
-            if not id then return end
+            if not id or id == 'header' then return end
 
             if id == 'copy' then
               inner_window:perform_action(wezterm.action.CopyTo('ClipboardAndPrimarySelection'), inner_pane)
