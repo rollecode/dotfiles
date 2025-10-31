@@ -1,3 +1,11 @@
+### 2.0.5: 2025-10-31
+
+* Add individual linter activation prompts in install.sh for phpcs, stylelint, flake8, luacheck, jsonlint, and eslint
+* Add linter feature flags to local.lua configuration file
+* Make nvim-lint conditionally enable linters based on flags in local.lua
+* Add comprehensive linter documentation to README with manual activation instructions and installation commands
+* Document project-specific linter detection for ESLint and phpcs
+
 ### 2.0.4: 2025-10-30
 
 * Add LSP (Language Server Protocol) as optional feature with explanation in install.sh
