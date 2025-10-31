@@ -165,10 +165,10 @@ config.keys = {
     mods = 'SHIFT',
     action = wezterm.action.PasteFrom 'Clipboard',
   },
-  -- Command palette
+  -- Command palette (use Alt+K to avoid conflicting with nano Ctrl+K)
   {
     key = 'k',
-    mods = 'CTRL',
+    mods = 'ALT',
     action = wezterm.action.ActivateCommandPalette,
   },
   -- Disable default Ctrl+Shift+O so nvim can use it for project switcher
@@ -179,10 +179,10 @@ config.keys = {
   },
   -- Split vertically (side by side) - removed Ctrl+D to keep default behavior
   -- Split horizontally (top and bottom) - removed Ctrl+Shift+D to keep default behavior
-  -- Close current pane
+  -- Close current pane (use Alt+W to avoid conflicting with nano Ctrl+W)
   {
     key = 'w',
-    mods = 'CTRL',
+    mods = 'ALT',
     action = wezterm.action.CloseCurrentPane { confirm = true },
   },
   -- Navigate between panes with Ctrl+Alt+Arrow

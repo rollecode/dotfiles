@@ -5,6 +5,10 @@
 * Make nvim-lint conditionally enable linters based on flags in local.lua
 * Add comprehensive linter documentation to README with manual activation instructions and installation commands
 * Document project-specific linter detection for ESLint and phpcs
+* Fix Ctrl+W and Ctrl+K not working in nano on SSH servers by changing WezTerm shortcuts to Alt+W and Alt+K
+* Fix Ctrl+P to search all files in project instead of only recent files
+* Replace heavy neo-tree with lightweight mini.files file explorer
+* Keep same file tree hotkeys (Ctrl+Shift+E for all platforms, Cmd+Shift+E on macOS)
 
 ### 2.0.4: 2025-10-30
 
