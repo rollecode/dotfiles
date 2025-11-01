@@ -476,6 +476,17 @@ setup_claude_code() {
         print_info "You'll need to create it and add the hooks configuration"
         print_info "See README.md section 'Configure Claude code hooks' for details"
     fi
+
+    # Install conversation-saver plugin if Claude Code is available
+    if command_exists claude; then
+        print_info "Installing claude-conversation-saver plugin for auto-saving conversations..."
+        claude /plugin marketplace add https://github.com/sirkitree/claude-conversation-saver 2>/dev/null || true
+        print_success "✓ Conversation-saver plugin installed (restart Claude Code to activate)"
+        print_info "Conversations will be saved to ~/.claude/conversation-logs/"
+    else
+        print_warning "Claude Code not found - skipping conversation-saver plugin installation"
+        print_info "You can install it later by running: claude /plugin marketplace add https://github.com/sirkitree/claude-conversation-saver"
+    fi
 }
 
 # Optional: install Syncthing

@@ -1,6 +1,7 @@
 ### 2.0.6: 2025-11-01
 
 * Add cross-platform desktop notifications to Code::Stats hook (Linux/macOS, safe for headless systems)
+* Add automatic claude-conversation-saver plugin installation in install.sh for auto-archiving all conversations to markdown
 
 ### 2.0.5: 2025-10-31
 
