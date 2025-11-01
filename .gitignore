@@ -4,6 +4,7 @@ nvim/lua/local.lua
 wezterm/local.lua
 claude-code/secrets.sh
 nvim/lazy-lock.json
+nvim/cd-project.nvim.json
 .stfolder
 .stversions
 .DS_Store
