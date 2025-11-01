@@ -2,6 +2,11 @@
 
 * Add cross-platform desktop notifications to Code::Stats hook (Linux/macOS, safe for headless systems)
 * Add automatic claude-conversation-saver plugin installation in install.sh for auto-archiving all conversations to markdown
+* Add Super+Shift+C keybind to center windows in Hyprland
+* Set Hyprland border_size to 1 with low opacity for subtle borders
+* Reduce extend_border_grab_area from 25 to 10 pixels
+* Enable no_hardware_cursors in Hyprland for proper cursor shape changes
+* Add mouse_move_enables_dpms and key_press_enables_dpms to Hyprland
 
 ### 2.0.5: 2025-10-31
 
