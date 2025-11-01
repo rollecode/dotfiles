@@ -1,3 +1,7 @@
+### 2.0.6: 2025-11-01
+
+* Add cross-platform desktop notifications to Code::Stats hook (Linux/macOS, safe for headless systems)
+
 ### 2.0.5: 2025-10-31
 
 * Add CodeCompanion AI chat plugin for asking Neovim questions with <Space>nv hotkey (uses OpenRouter auto-router)
