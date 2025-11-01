@@ -462,21 +462,21 @@ sudo pacman -S nginx
 ```bash
 sudo tee /etc/nginx/sites-available/syncthing > /dev/null << 'EOF'
 server {
-    listen 0.0.0.0:8385;
-    listen [::]:8385;
-    server_name your-domain.example.com;
+  listen 0.0.0.0:8385;
+  listen [::]:8385;
+  server_name your-domain.example.com;
 
-    location / {
-        proxy_pass http://127.0.0.1:8384/;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
+  location / {
+    proxy_pass http://127.0.0.1:8384/;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
-        # by default nginx times out connections in one minute
-        proxy_read_timeout 1d;
-    }
+    # by default nginx times out connections in one minute
+    proxy_read_timeout 1d;
+  }
 }
 EOF
 ```
