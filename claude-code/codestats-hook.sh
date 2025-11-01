@@ -157,11 +157,43 @@ RESET='\033[0m'
 # Log file location
 LOG_FILE="$HOME/.claude/codestats-hook.log"
 
+# Function to check if we have a desktop environment
+has_desktop() {
+    # Check for common desktop environment indicators
+    if [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+        return 0  # Has display
+    fi
+    return 1  # Headless
+}
+
+# Function to send desktop notification safely
+send_desktop_notification() {
+    local title="$1"
+    local message="$2"
+
+    # Only try to send notifications if we have a desktop
+    if ! has_desktop; then
+        return 0
+    fi
+
+    # Try different notification methods based on platform
+    if command -v notify-send >/dev/null 2>&1; then
+        # Linux with libnotify (most common)
+        notify-send -u low -a "Code::Stats" "$title" "$message" 2>/dev/null || true
+    elif command -v osascript >/dev/null 2>&1; then
+        # macOS
+        osascript -e "display notification \"$message\" with title \"$title\"" 2>/dev/null || true
+    fi
+}
+
 # Show notification based on response
 if [ "$HTTP_CODE" = "201" ]; then
     MESSAGE="+XP ${XP} (${LANGUAGE})"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - ${MESSAGE}" >> "$LOG_FILE"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Success: ${MESSAGE} (file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
+
+    # Send desktop notification (safe for headless systems)
+    send_desktop_notification "Code::Stats" "$MESSAGE"
 
     # Show XP notification via WezTerm overlay with ASCII box
     if command -v wezterm >/dev/null 2>&1 && [ -n "$WEZTERM_PANE" ]; then
