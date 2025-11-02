@@ -939,6 +939,7 @@ local plugins = {
     end,
     keys = {
       { "<leader>nv", "<cmd>Nv<cr>", mode = "n", desc = "Ask Neovim Question" },
+      { "?", "<cmd>Nv<cr>", mode = "n", desc = "Ask Neovim Question (Shift+?)" },
     },
   } or nil,
 
