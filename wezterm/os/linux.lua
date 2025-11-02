@@ -4,10 +4,7 @@ local M = {}
 
 function M.apply(config)
   -- Linux-specific settings
-
-  -- Workaround for Wayland/Hyprland clipboard issues
-  -- WezTerm's Wayland clipboard is broken, force X11 backend
-  config.enable_wayland = false
+  config.enable_wayland = true
 
   -- Font size adjustment for Linux
   config.font_size = 12
