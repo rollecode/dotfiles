@@ -4,7 +4,8 @@
 * Add top-right hot corner script for instant window grid overview
 * Improve window-overview.sh with minimum window size (400×300) to keep windows readable
 * Add max 5 columns limit to prevent tiny windows in grid layout
-* Add Vim AI helper with Shift+? hotkey for quick AI assistance
+* Add lightweight Vim AI helper with Ctrl+Shift+? (Cmd+Shift+? on Mac) for quick Neovim questions
+* Replace CodeCompanion with minimal custom floating window using OpenRouter API directly
 * Optimize window grid spacing and margins for better screen space usage
 * Add DMS overview patches for showing only workspaces with windows
 * Create patch-dms-overview script to reapply customizations after DMS updates
