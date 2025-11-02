@@ -9,6 +9,7 @@
 * Optimize window grid spacing and margins for better screen space usage
 * Add DMS overview patches for showing only workspaces with windows
 * Create patch-dms-overview script to reapply customizations after DMS updates
+* Re-enable wayland support
 
 ### 2.0.6: 2025-11-01
 
