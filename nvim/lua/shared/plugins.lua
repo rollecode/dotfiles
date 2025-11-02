@@ -847,76 +847,10 @@ local plugins = {
     end,
   } or nil,
 
-  -- CodeCompanion - AI assistant for Neovim help (optional)
-  is_enabled('enable_codecompanion') and {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
+  -- Simple Neovim AI helper - minimal floating window (no plugin needed)
+  {
+    "nvim-lua/plenary.nvim", -- For curl
     config = function()
-      local secrets = require('secrets')
-
-      require("codecompanion").setup({
-        strategies = {
-          chat = {
-            adapter = "openrouter",
-          },
-        },
-        adapters = {
-          http = {
-            openrouter = function()
-              return require("codecompanion.adapters").extend("openai", {
-                name = "openrouter",
-                url = "https://openrouter.ai/api/v1/chat/completions",
-                env = {
-                  api_key = secrets.openrouter_api_key,
-                },
-                headers = {
-                  ["HTTP-Referer"] = "https://github.com/rolle",
-                  ["X-Title"] = "Neovim Helper",
-                },
-                schema = {
-                  model = {
-                    default = "openrouter/auto", -- Auto-router picks fastest/cheapest
-                  },
-                },
-              })
-            end,
-          },
-        },
-        display = {
-          chat = {
-            window = {
-              layout = "float", -- Simple floating window
-              width = 0.6,
-              height = 0.6,
-            },
-          },
-        },
-      })
-
-      -- Custom command for Neovim-specific questions
-      vim.api.nvim_create_user_command("NeovimHelp", function(opts)
-        local question = opts.args
-
-        -- Create a chat with Neovim context pre-loaded
-        local chat = require("codecompanion").chat()
-        chat:submit({
-          {
-            role = "system",
-            content = "You are a Neovim expert assistant. The user is asking questions about Neovim commands, keybindings, and functionality. Always assume questions are about Neovim unless otherwise specified. Provide concise, actionable answers with exact commands and key combinations. Format commands in code blocks."
-          },
-          {
-            role = "user",
-            content = question
-          }
-        })
-      end, {
-        nargs = "+",
-        desc = "Ask Neovim question to AI",
-      })
-
       -- Simple Neovim helper - minimal floating window
       vim.api.nvim_create_user_command("Nv", function()
         vim.ui.input({ prompt = "Ask about Neovim: " }, function(question)
@@ -925,7 +859,7 @@ local plugins = {
           -- Create minimal floating window for answer
           local buf = vim.api.nvim_create_buf(false, true)
           local width = math.floor(vim.o.columns * 0.5)
-          local height = math.floor(vim.o.lines * 0.4)
+          local height = 15 -- Fixed compact height
           local win = vim.api.nvim_open_win(buf, true, {
             relative = 'editor',
             width = width,
@@ -934,7 +868,7 @@ local plugins = {
             row = math.floor((vim.o.lines - height) / 2),
             style = 'minimal',
             border = 'rounded',
-            title = ' Neovim Helper ',
+            title = ' Neovim helper ',
             title_pos = 'center',
           })
 
@@ -994,7 +928,7 @@ local plugins = {
       { "<leader>nv", "<cmd>Nv<cr>", mode = "n", desc = "Ask Neovim Question" },
       { "<C-?>", "<cmd>Nv<cr>", mode = "n", desc = "Ask Neovim Question (Ctrl+Shift+? / Cmd+Shift+?)" },
     },
-  } or nil,
+  },
 
   -- Comment.nvim - toggle comments
   {
