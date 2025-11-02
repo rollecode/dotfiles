@@ -1,3 +1,14 @@
+### 2.0.7: 2025-11-02
+
+* Add Mission Control-style window overview with hot corner and F3 keybind
+* Add top-right hot corner script for instant window grid overview
+* Improve window-overview.sh with minimum window size (400×300) to keep windows readable
+* Add max 5 columns limit to prevent tiny windows in grid layout
+* Add Vim AI helper with Shift+? hotkey for quick AI assistance
+* Optimize window grid spacing and margins for better screen space usage
+* Add DMS overview patches for showing only workspaces with windows
+* Create patch-dms-overview script to reapply customizations after DMS updates
+
 ### 2.0.6: 2025-11-01
 
 * Add cross-platform desktop notifications to Code::Stats hook (Linux/macOS, safe for headless systems)
