@@ -864,24 +864,26 @@ local plugins = {
           },
         },
         adapters = {
-          openrouter = function()
-            return require("codecompanion.adapters").extend("openai_compatible", {
-              name = "openrouter",
-              url = "https://openrouter.ai/api/v1/chat/completions",
-              env = {
-                api_key = secrets.openrouter_api_key,
-              },
-              headers = {
-                ["HTTP-Referer"] = "https://github.com/rolle",
-                ["X-Title"] = "Neovim Helper",
-              },
-              schema = {
-                model = {
-                  default = "openrouter/auto", -- Auto-router picks fastest/cheapest
+          http = {
+            openrouter = function()
+              return require("codecompanion.adapters").extend("openai", {
+                name = "openrouter",
+                url = "https://openrouter.ai/api/v1/chat/completions",
+                env = {
+                  api_key = secrets.openrouter_api_key,
                 },
-              },
-            })
-          end,
+                headers = {
+                  ["HTTP-Referer"] = "https://github.com/rolle",
+                  ["X-Title"] = "Neovim Helper",
+                },
+                schema = {
+                  model = {
+                    default = "openrouter/auto", -- Auto-router picks fastest/cheapest
+                  },
+                },
+              })
+            end,
+          },
         },
         display = {
           chat = {
@@ -915,26 +917,77 @@ local plugins = {
         desc = "Ask Neovim question to AI",
       })
 
-      -- Simpler interactive prompt version
+      -- Simple Neovim helper - minimal floating window
       vim.api.nvim_create_user_command("Nv", function()
-        -- Open input prompt
-        vim.ui.input({ prompt = "Ask about Neovim: " }, function(input)
-          if input and input ~= "" then
-            local chat = require("codecompanion").chat()
-            chat:submit({
-              {
-                role = "system",
-                content = "You are a Neovim expert assistant. The user is asking questions about Neovim commands, keybindings, and functionality. Always assume questions are about Neovim unless otherwise specified. Provide concise, actionable answers with exact commands and key combinations. Format commands in code blocks."
-              },
-              {
-                role = "user",
-                content = input
+        vim.ui.input({ prompt = "Ask about Neovim: " }, function(question)
+          if not question or question == "" then return end
+
+          -- Create minimal floating window for answer
+          local buf = vim.api.nvim_create_buf(false, true)
+          local width = math.floor(vim.o.columns * 0.5)
+          local height = math.floor(vim.o.lines * 0.4)
+          local win = vim.api.nvim_open_win(buf, true, {
+            relative = 'editor',
+            width = width,
+            height = height,
+            col = math.floor((vim.o.columns - width) / 2),
+            row = math.floor((vim.o.lines - height) / 2),
+            style = 'minimal',
+            border = 'rounded',
+            title = ' Neovim Helper ',
+            title_pos = 'center',
+          })
+
+          -- Set buffer options
+          vim.bo[buf].filetype = 'markdown'
+          vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+            'Q: ' .. question,
+            '',
+            'Waiting for answer...'
+          })
+
+          -- Close with q or Esc
+          vim.keymap.set('n', 'q', ':q<CR>', { buffer = buf, silent = true })
+          vim.keymap.set('n', '<Esc>', ':q<CR>', { buffer = buf, silent = true })
+
+          -- Call OpenRouter API
+          local secrets = require('secrets')
+          local curl = require('plenary.curl')
+
+          curl.post('https://openrouter.ai/api/v1/chat/completions', {
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ' .. secrets.openrouter_api_key,
+              ['HTTP-Referer'] = 'https://github.com/rolle',
+            },
+            body = vim.json.encode({
+              model = 'openrouter/auto',
+              messages = {
+                { role = 'system', content = 'You are a Neovim expert. Give concise answers with exact commands.' },
+                { role = 'user', content = question }
               }
-            })
-          end
+            }),
+            callback = vim.schedule_wrap(function(response)
+              if response.status ~= 200 then
+                vim.api.nvim_buf_set_lines(buf, 2, -1, false, { 'Error: ' .. response.status })
+                return
+              end
+
+              local data = vim.json.decode(response.body)
+              local answer = data.choices[1].message.content
+              local tokens = (data.usage.total_tokens or 0)
+
+              -- Format answer
+              local lines = { 'Q: ' .. question, '' }
+              vim.list_extend(lines, vim.split(answer, '\n'))
+              vim.list_extend(lines, { '', '─────────────', 'Tokens: ' .. tokens })
+
+              vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+            end)
+          })
         end)
       end, {
-        desc = "Quick Neovim question (interactive)",
+        desc = "Quick Neovim question",
       })
     end,
     keys = {
