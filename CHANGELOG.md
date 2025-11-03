@@ -1,3 +1,12 @@
+### 2.0.8: 2025-11-03
+
+* Make treesitter installation more bulletproof with proper directory setup and permissions
+* Add setup_nvim_directories() function to install.sh to create all required Neovim directories before plugin installation
+* Add enhanced error handling and permission validation for treesitter parser installation
+* Fix "tar: tree-sitter-lua-tmp: Cannot open: No such file or directory" errors on remote servers
+* Add directory writability checks with helpful warning messages
+* Pre-create ~/.local/share/nvim, ~/.local/share/nvim/lazy, ~/.cache/nvim, and ~/.cache/nvim/nvim-treesitter directories
+
 ### 2.0.7: 2025-11-02
 
 * Add Mission Control-style window overview with hot corner and F3 keybind

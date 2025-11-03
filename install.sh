@@ -433,6 +433,42 @@ setup_configs() {
             print_success "Hammerspoon config symlinked"
         fi
     fi
+
+    # Setup Neovim directories for plugins (fixes treesitter installation issues)
+    setup_nvim_directories
+}
+
+# Setup Neovim data and cache directories with proper permissions
+setup_nvim_directories() {
+    print_info "Setting up Neovim directories for plugin installation..."
+
+    # Create all required directories for Neovim data and cache
+    local nvim_dirs=(
+        "$HOME/.local/share/nvim"
+        "$HOME/.local/share/nvim/lazy"
+        "$HOME/.cache/nvim"
+        "$HOME/.cache/nvim/nvim-treesitter"
+    )
+
+    for dir in "${nvim_dirs[@]}"; do
+        if [ ! -d "$dir" ]; then
+            mkdir -p "$dir"
+            print_info "Created directory: $dir"
+        fi
+    done
+
+    # Ensure proper write permissions on all nvim directories
+    chmod -R u+w "$HOME/.local/share/nvim" 2>/dev/null || true
+    chmod -R u+w "$HOME/.cache/nvim" 2>/dev/null || true
+
+    # Check if we have write access
+    if [ ! -w "$HOME/.local/share/nvim" ] || [ ! -w "$HOME/.cache/nvim" ]; then
+        print_error "Warning: Cannot write to Neovim directories"
+        print_warning "This may cause plugin installation issues"
+        return 1
+    fi
+
+    print_success "Neovim directories prepared with correct permissions"
 }
 
 # Setup Claude Code integration
