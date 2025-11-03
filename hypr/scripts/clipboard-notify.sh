@@ -4,32 +4,46 @@
 # Exit on error
 set -e
 
-# Ensure wl-paste is available
-if ! command -v wl-paste &> /dev/null; then
-    echo "wl-paste not found, exiting"
+# Ensure cliphist is available
+if ! command -v cliphist &> /dev/null; then
+    echo "cliphist not found, exiting"
     exit 1
 fi
 
-# Loop with restart capability if wl-paste --watch crashes
-while true; do
-    wl-paste --watch bash -c '
-        # Check if clipboard contains an image
-        if wl-paste --list-types 2>/dev/null | grep -q "^image/"; then
-            notify-send "Copied to clipboard" "📷 Image copied" 2>/dev/null || true
+# Function to show notification - reads from cliphist to avoid wl-paste deadlock
+show_notification() {
+    # Get the most recent clipboard entry from cliphist (avoids wl-paste deadlock)
+    content=$(cliphist list | head -1 | cut -f2- 2>/dev/null || echo "")
+
+    if [ -n "$content" ]; then
+        # Check if it looks like an image (binary data)
+        if echo "$content" | file - | grep -qi "image\|binary"; then
+            notify-send "Copied to clipboard" "📷 Image copied" &
         else
-            # Only try to get text content if it'\''s not an image
-            content=$(wl-paste 2>/dev/null || echo "")
-            if [ -n "$content" ]; then
-                # Truncate to first 50 chars
-                preview="${content:0:50}"
-                if [ ${#content} -gt 50 ]; then
-                    preview="${preview}..."
-                fi
-                notify-send "Copied to clipboard" "$preview" 2>/dev/null || true
+            # Truncate to first 50 chars and sanitize
+            preview="${content:0:50}"
+            if [ ${#content} -gt 50 ]; then
+                preview="${preview}..."
             fi
+            # Use -- to prevent content from being interpreted as options
+            notify-send "Copied to clipboard" -- "$preview" &
         fi
-    ' || {
-        echo "wl-paste --watch crashed, restarting in 2 seconds..."
-        sleep 2
+    fi
+}
+
+# Export function so it's available to subshells
+export -f show_notification
+
+# Loop with restart capability if wl-paste --watch crashes or gets stuck
+while true; do
+    # Use wl-paste --watch to detect clipboard changes, but read from cliphist
+    timeout 1h wl-paste --watch bash -c 'show_notification' || {
+        exit_code=$?
+        if [ $exit_code -eq 124 ]; then
+            echo "wl-paste --watch timed out after 1 hour, restarting to prevent getting stuck..."
+        else
+            echo "wl-paste --watch crashed with exit code $exit_code, restarting in 2 seconds..."
+            sleep 2
+        fi
     }
 done
