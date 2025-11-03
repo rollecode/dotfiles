@@ -145,7 +145,7 @@ config.keys = {
   {
     key = 'C',
     mods = 'CTRL|SHIFT',
-    action = wezterm.action.CopyTo 'Clipboard',
+    action = wezterm.action.CopyTo 'ClipboardAndPrimarySelection',
   },
   -- Paste with Ctrl+Shift+V
   {
@@ -402,7 +402,6 @@ config.mouse_bindings = {
               inner_window:perform_action(wezterm.action.CopyTo('ClipboardAndPrimarySelection'), inner_pane)
               inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
             elseif id == 'copy_link' then
-              -- Copy the link without clearing selection
               inner_window:perform_action(wezterm.action.CopyTo('ClipboardAndPrimarySelection'), inner_pane)
               inner_window:perform_action(wezterm.action.ClearSelection, inner_pane)
             elseif id == 'paste' then
