@@ -745,25 +745,56 @@ local plugins = {
     lazy = false,      -- Cannot be lazy-loaded
     build = ":TSUpdate",
     config = function()
-      -- Ensure parser directory exists (fixes "No such file or directory" error)
-      local parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
-      vim.fn.mkdir(parser_dir, "p")
+      -- Ensure all required directories exist with proper permissions
+      local data_dir = vim.fn.stdpath("data")
+      local cache_dir = vim.fn.stdpath("cache")
 
-      require("nvim-treesitter.configs").setup({
-        -- Minimal recommended parsers
-        ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+      local required_dirs = {
+        data_dir .. "/lazy/nvim-treesitter",
+        data_dir .. "/lazy/nvim-treesitter/parser",
+        cache_dir .. "/nvim-treesitter",
+      }
 
-        -- Auto-install missing parsers when opening files
-        auto_install = true,
+      for _, dir in ipairs(required_dirs) do
+        vim.fn.mkdir(dir, "p")
+        -- Verify directory is writable
+        if vim.fn.isdirectory(dir) == 0 or vim.fn.filewritable(dir) ~= 2 then
+          vim.notify(
+            "Warning: Cannot create/write to directory: " .. dir .. "\n" ..
+            "Treesitter may fail to install parsers.\n" ..
+            "Check permissions with: ls -la " .. vim.fn.fnamemodify(dir, ":h"),
+            vim.log.levels.WARN,
+            { title = "Treesitter Setup" }
+          )
+        end
+      end
 
-        -- Deprecated fields (kept for compatibility)
-        sync_install = false,
-        ignore_install = {},
-        modules = {},
+      local ok, err = pcall(function()
+        require("nvim-treesitter.configs").setup({
+          -- Minimal recommended parsers
+          ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
 
-        -- Enable treesitter highlighting
-        highlight = { enable = true },
-      })
+          -- Auto-install missing parsers when opening files
+          auto_install = true,
+
+          -- Deprecated fields (kept for compatibility)
+          sync_install = false,
+          ignore_install = {},
+          modules = {},
+
+          -- Enable treesitter highlighting
+          highlight = { enable = true },
+        })
+      end)
+
+      if not ok then
+        vim.notify(
+          "Treesitter setup failed: " .. tostring(err) .. "\n" ..
+          "You may need to manually run :TSUpdate",
+          vim.log.levels.WARN,
+          { title = "Treesitter" }
+        )
+      end
     end,
   },
 
