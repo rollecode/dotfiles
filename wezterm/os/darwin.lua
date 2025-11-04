@@ -138,6 +138,15 @@ function M.apply(config)
       mods = 'CTRL|SHIFT',
     },
   })
+  -- Send Cmd+Shift+? through to nvim as Ctrl+? (Neovim AI helper)
+  table.insert(config.keys, {
+    key = '?',
+    mods = 'SUPER|SHIFT',
+    action = wezterm.action.SendKey {
+      key = '?',
+      mods = 'CTRL',
+    },
+  })
 
   -- Cmd+Shift+S: Prepare for screenshot (set opacity to 100% for 5 seconds)
   table.insert(config.keys, {
