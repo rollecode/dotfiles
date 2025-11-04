@@ -1,3 +1,8 @@
+### 2.0.9: 2025-11-04
+
+* Add Cmd+Shift+? keybind for Neovim AI helper on macOS (was only working on Linux)
+* Change default Ollama model from qwen2.5-coder:7b to codeqwen:code
+
 ### 2.0.8: 2025-11-03
 
 * Make treesitter installation more bulletproof with proper directory setup and permissions
