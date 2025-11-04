@@ -851,7 +851,7 @@ local plugins = {
           "Ollama is not running or not installed\n" ..
           "Install: https://ollama.ai\n" ..
           "Start: ollama serve\n" ..
-          "Pull model: ollama pull qwen2.5-coder:7b",
+          "Pull model: ollama pull codeqwen:code",
           vim.log.levels.WARN,
           { title = "Minuet AI" }
         )
@@ -866,7 +866,7 @@ local plugins = {
             api_key = 'TERM',
             name = 'Ollama',
             end_point = 'http://localhost:11434/v1/completions',
-            model = 'qwen2.5-coder:7b',
+            model = 'codeqwen:code',
             optional = {
               max_tokens = 128,
               top_p = 0.9,
