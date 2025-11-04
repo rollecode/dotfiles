@@ -341,33 +341,34 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 - [catppuccin](https://github.com/catppuccin/nvim) - Color scheme (Mocha variant)
 - [oklch-color-picker](https://github.com/eero-lehtinen/oklch-color-picker.nvim) - OKLCH color picker with graphical interface
 - [dashboard](https://github.com/nvimdev/dashboard-nvim) - Recent projects and files in start
-- [lualine](https://github.com/nvim-lualine/lualine.nvim) - Status bar
-- [persistence](https://github.com/folke/persistence.nvim) - Session management, automatically saves and restores nvim sessions
+- [lualine](https://github.com/nvim-lualine/lualine.nvim) - Status bar with Code::Stats integration
+- [barbar](https://github.com/romgrk/barbar.nvim) - Buffer tabline with icons and animations
+- [auto-session](https://github.com/rmagatti/auto-session) - Auto-save and auto-restore sessions per directory
+- [cd-project.nvim](https://github.com/LintaoAmons/cd-project.nvim) - VSCode-like project manager
 - [telescope](https://github.com/nvim-telescope/telescope.nvim) - Fuzzy finder
 - [telescope-frecency](https://github.com/nvim-telescope/telescope-frecency.nvim) - Frecency algorithm for telescope
-- [project.nvim](https://github.com/ahmedkhalf/project.nvim) - Project management
-- [gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim) - Gamify coding in nvim, achievements, streaks
+- [gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim) - Gamify coding with achievements and streaks
 - [gitsigns](https://github.com/lewis6991/gitsigns.nvim) - Git signs in gutter, inline blame, hunk actions
-- [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim) - File explorer
-- [flash](https://github.com/folke/flash.nvim) - Navigate your code with search labels
-- [which-key](https://github.com/folke/which-key.nvim) - Helps you remember your Neovim keymaps
-- [barbar](https://github.com/romgrk/barbar.nvim) - Buffer tabline with icons and animations
-- [presence](https://github.com/andweeb/presence.nvim) - Discord live presence
-- [nvim-notify](https://github.com/rcarriga/nvim-notify) - Notifications
-- [nvim-lint](https://github.com/mfussenegger/nvim-lint) - Lint code, see errors in the current file
-- [conform](https://github.com/stevearc/conform.nvim) - Auto format your code
-- [indentmini](https://github.com/nvimdev/indentmini.nvim) - Indent guides
-- [tiny-inline-diagnostic](https://github.com/rachartier/tiny-inline-diagnostic.nvim) - Like ErrorLens, UI for displaying the linter errors
-- [trouble](https://github.com/folke/trouble.nvim) - See errors across all files in the project
-- [dropbar](https://github.com/Bekaboo/dropbar.nvim) - VSCode-like breadcrumbs for nvim
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Better syntax highlighting and code understanding using Tree-sitter parsers
-- [blink.cmp](https://github.com/Saghen/blink.cmp) - Completion for definitions
+- [mini.files](https://github.com/echasnovski/mini.files) - Lightweight file explorer
+- [which-key](https://github.com/folke/which-key.nvim) - Shows keybindings in popup
+- [presence](https://github.com/andweeb/presence.nvim) - Discord Rich Presence
+- [nvim-notify](https://github.com/rcarriga/nvim-notify) - Notification manager
+- [nvim-lint](https://github.com/mfussenegger/nvim-lint) - Linting with contextual diagnostics
+- [conform](https://github.com/stevearc/conform.nvim) - Auto-formatting on save
+- [indentmini](https://github.com/nvimdev/indentmini.nvim) - Minimal indent guides
+- [tiny-inline-diagnostic](https://github.com/rachartier/tiny-inline-diagnostic.nvim) - Inline diagnostic messages
+- [trouble](https://github.com/folke/trouble.nvim) - Diagnostics panel
+- [dropbar](https://github.com/Bekaboo/dropbar.nvim) - Context-aware breadcrumbs
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Better syntax highlighting with Tree-sitter
+- [blink.cmp](https://github.com/Saghen/blink.cmp) - Completion plugin
 - [minuet-ai](https://github.com/milanglacier/minuet-ai.nvim) - AI code completion with Ollama
-- [hardtime](https://github.com/m4xshen/hardtime.nvim) - Break bad habits, master Vim motions
+- [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) - Lua utilities (includes custom Neovim AI helper)
+- [Comment.nvim](https://github.com/numToStr/Comment.nvim) - Toggle comments
+- [leap.nvim](https://github.com/ggandor/leap.nvim) - Jump to any location with search labels
+- [hardtime](https://github.com/m4xshen/hardtime.nvim) - Learn better Vim motions
 - [mason](https://github.com/williamboman/mason.nvim) - LSP server manager
 - [mason-lspconfig](https://github.com/williamboman/mason-lspconfig.nvim) - Bridge between mason and lspconfig
 - [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) - LSP configuration
-- [code-stats.nvim](https://github.com/Freed-Wu/code-stats.nvim) - Code::Stats integration for tracking coding activity
 
 ## Custom features
 
