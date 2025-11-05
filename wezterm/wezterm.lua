@@ -15,6 +15,10 @@ end
 
 -- ========== SHARED CONFIGURATION (ALL PLATFORMS) ==========
 
+-- GPU acceleration
+config.front_end = "WebGpu"
+config.webgpu_power_preference = "HighPerformance"
+
 -- Opacity/transparency configuration
 config.window_background_opacity = 0.68
 
@@ -95,7 +99,7 @@ config.colors = {
 -- Disable tab bar completely
 config.enable_tab_bar = false
 
--- Borderless window with integrated buttons
+-- Window decorations - works great on macOS, overridden for Linux
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 
 -- Pane border styling (subtle and transparent)

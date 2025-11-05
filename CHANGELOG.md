@@ -1,6 +1,8 @@
 ### 2.1.0: 2025-11-05
 
 * Revert Ollama model to qwen2.5-coder:7b (codeqwen:code doesn't support FIM API for completions)
+* Fix WezTerm window decoration glitches on Linux by making window_decorations OS-specific (INTEGRATED_BUTTONS on macOS, NONE on Linux)
+* Add GPU acceleration to WezTerm with WebGpu and HighPerformance power preference
 
 ### 2.0.9: 2025-11-04
 
