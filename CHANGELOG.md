@@ -1,7 +1,12 @@
+### 2.1.0: 2025-11-05
+
+* Revert Ollama model to qwen2.5-coder:7b (codeqwen:code doesn't support FIM API for completions)
+
 ### 2.0.9: 2025-11-04
 
-* Add Cmd+Shift+? keybind for Neovim AI helper on macOS (was only working on Linux)
-* Change default Ollama model from qwen2.5-coder:7b to codeqwen:code
+* Add Cmd+Shift+? keybind for Neovim AI helper on macOS via WezTerm translation
+* Fix Cmd+Shift+? not working - WezTerm now translates it to Ctrl+? for Neovim
+* Update plugin list in README to match actual installed plugins
 
 ### 2.0.8: 2025-11-03
 
