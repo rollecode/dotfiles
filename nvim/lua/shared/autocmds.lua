@@ -1,14 +1,17 @@
 -- Autocommands (shared across all platforms)
 
--- Custom highlight colors - override variable colors (orange -> cyan/blue)
+-- Custom highlight colors - override variable colors (orange -> bright purple)
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern = "*",
   callback = function()
-    -- Change variables from orange to cyan/blue tones
-    vim.api.nvim_set_hl(0, '@variable', { fg = '#7dcfff' }) -- cyan
+    -- Change variables from orange to bright purple/other colors
+    vim.api.nvim_set_hl(0, '@variable', { fg = '#c678dd' }) -- bright purple
     vim.api.nvim_set_hl(0, '@variable.builtin', { fg = '#bb9af7' }) -- purple
     vim.api.nvim_set_hl(0, '@variable.parameter', { fg = '#e0af68' }) -- yellow
     vim.api.nvim_set_hl(0, '@variable.member', { fg = '#73daca' }) -- teal
+    -- Bash/shell specific
+    vim.api.nvim_set_hl(0, '@variable.bash', { fg = '#c678dd' }) -- bright purple
+    vim.api.nvim_set_hl(0, '@constant.bash', { fg = '#c678dd' }) -- bright purple for CONSTANTS
   end,
 })
 
