@@ -2,6 +2,8 @@
 
 * Remove native Vim keybinding overrides (Ctrl+A, Ctrl+E, Ctrl+T, Ctrl+P) to preserve standard functionality
 * Fix leap.nvim keybind conflict by changing from 's' to '<leader>s' to avoid interfering with substitute command
+* Add Tokyo Night theme with Telescope theme picker (Space+s+t) for live preview
+* Disable Trouble diagnostics panel from auto-opening by default
 
 ### 2.1.0: 2025-11-05
 
