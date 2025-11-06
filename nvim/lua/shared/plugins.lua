@@ -729,7 +729,7 @@ local plugins = {
     end,
   },
 
-  -- Trouble - diagnostics panel (opens automatically)
+  -- Trouble - diagnostics panel
   {
     "folke/trouble.nvim",
     lazy = false, -- Load on startup so custom keymaps work
@@ -737,7 +737,7 @@ local plugins = {
       require("trouble").setup({
         modes = {
           diagnostics = {
-            auto_open = true,  -- Automatically open when there are diagnostics
+            auto_open = false, -- Don't automatically open
             auto_close = true, -- Close when there are no more diagnostics
           },
         },
