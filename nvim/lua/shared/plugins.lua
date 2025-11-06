@@ -71,6 +71,22 @@ local plugins = {
     },
   },
 
+  -- Tokyo Night colorscheme
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      style = "night", -- storm, moon, night, day
+      transparent = true,
+      terminal_colors = true,
+      styles = {
+        sidebars = "transparent",
+        floats = "transparent",
+      },
+    },
+  },
+
   -- OKLCH Color Picker (optional, requires GUI)
   is_enabled('enable_colorpicker') and {
     "eero-lehtinen/oklch-color-picker.nvim",

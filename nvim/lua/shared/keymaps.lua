@@ -133,6 +133,7 @@ vim.keymap.set('n', '<leader>sd', function() require('telescope.builtin').diagno
 vim.keymap.set('n', '<leader>sr', function() require('telescope.builtin').resume() end, { desc = '[S]earch [R]esume' })
 vim.keymap.set('n', '<leader>s.', function() require('telescope.builtin').oldfiles() end, { desc = '[S]earch Recent Files ("." for repeat)' })
 vim.keymap.set('n', '<leader><leader>', function() require('telescope.builtin').buffers() end, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>st', function() require('telescope.builtin').colorscheme({ enable_preview = true }) end, { desc = '[S]earch [T]hemes (live preview)' })
 
 -- LSP keybindings
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })

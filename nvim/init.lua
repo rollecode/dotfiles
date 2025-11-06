@@ -33,7 +33,7 @@ vim.g.blamer_relative_time = 1
 require("lazy").setup("shared.plugins")
 
 -- Set colorscheme
-vim.cmd.colorscheme "catppuccin-mocha"
+vim.cmd.colorscheme "tokyonight"
 
 -- Load shared configuration modules
 require('shared.options')
