@@ -28,24 +28,9 @@ vim.keymap.set('n', '<' .. mod .. '-S-a>', function()
   end
 end, { silent = true, desc = 'Toggle diagnostics panel' })
 
--- Select all keybindings
-if vim.fn.has('mac') == 1 then
-  -- macOS: Cmd+A for select all (WezTerm translates to Ctrl+Shift+A)
-  vim.keymap.set('n', '<C-S-a>', 'ggVG', { desc = 'Select all' })
-  vim.keymap.set('v', '<C-S-a>', '<Esc>ggVG', { desc = 'Select all' })
-  vim.keymap.set('i', '<C-S-a>', '<Esc>ggVG', { desc = 'Select all' })
-  -- macOS: Keep Ctrl+A for beginning of line
-  vim.keymap.set('i', '<C-a>', '<C-o>^', { desc = 'Go to beginning of line' })
-  vim.keymap.set('n', '<C-a>', '^', { desc = 'Go to beginning of line' })
-else
-  -- Linux/Windows: Ctrl+A for select all
-  vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select all' })
-  vim.keymap.set('v', '<C-a>', '<Esc>ggVG', { desc = 'Select all' })
-  vim.keymap.set('i', '<C-a>', '<Esc>ggVG', { desc = 'Select all' })
-end
--- Ctrl+E for end of line (all platforms)
-vim.keymap.set('i', '<C-e>', '<C-o>$', { desc = 'Go to end of line' })
-vim.keymap.set('n', '<C-e>', '$', { desc = 'Go to end of line' })
+-- Removed Ctrl+A and Ctrl+E overrides to preserve native Vim functionality
+-- Ctrl+A: increment number (native Vim)
+-- Ctrl+E: scroll down one line (native Vim)
 
 -- Tab/Shift+Tab for indenting
 vim.keymap.set('v', '<Tab>', '>gv', { desc = 'Indent and reselect' })
@@ -81,24 +66,8 @@ vim.keymap.set('n', '[e', function()
   vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
 end, { silent = true, desc = 'Previous error' })
 
--- VSCode-like keybindings for Telescope
-vim.keymap.set('n', '<C-p>', function()
-  local ok, builtin = pcall(require, 'telescope.builtin')
-  local ok2, themes = pcall(require, 'telescope.themes')
-  if ok and ok2 then
-    builtin.find_files(themes.get_dropdown({
-      previewer = false,
-      sorting_strategy = 'ascending',
-      layout_config = {
-        width = 0.8,
-        height = 0.6,
-        anchor = 'N',
-        anchor_padding = 0,
-        prompt_position = 'top',
-      },
-    }))
-  end
-end, { silent = true, desc = 'Find all files in project' })
+-- Removed Ctrl+P override to preserve native Vim completion navigation
+-- Use <leader>sf or Ctrl+Shift+P for file finding instead
 
 vim.keymap.set('n', '<C-S-p>', function()
   local ok, builtin = pcall(require, 'telescope.builtin')
@@ -125,8 +94,8 @@ vim.keymap.set('n', '<C-S-f>', function()
   end
 end, { silent = true, desc = 'Search text in all files (live grep)' })
 
+-- Removed Ctrl+T override to preserve native Vim tag stack navigation (jump back)
 -- Barbar buffer navigation
-vim.keymap.set('n', '<C-t>', '<Cmd>enew<CR>', { silent = true, desc = 'New tab' })
 vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', { silent = true, desc = 'Previous buffer' })
 vim.keymap.set('n', '<A-.>', '<Cmd>BufferNext<CR>', { silent = true, desc = 'Next buffer' })
 vim.keymap.set('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', { silent = true, desc = 'Move buffer left' })

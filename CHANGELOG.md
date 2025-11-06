@@ -1,3 +1,8 @@
+### 2.1.1: 2025-11-06
+
+* Remove native Vim keybinding overrides (Ctrl+A, Ctrl+E, Ctrl+T, Ctrl+P) to preserve standard functionality
+* Fix leap.nvim keybind conflict by changing from 's' to '<leader>s' to avoid interfering with substitute command
+
 ### 2.1.0: 2025-11-05
 
 * Revert Ollama model to qwen2.5-coder:7b (codeqwen:code doesn't support FIM API for completions)
