@@ -33,16 +33,16 @@ vim.g.blamer_relative_time = 1
 require("lazy").setup("shared.plugins")
 
 -- Set colorscheme
-vim.cmd.colorscheme "tokyonight"
+vim.cmd.colorscheme "catppuccin-mocha"
 
 -- Apply custom variable colors (override orange with cyan/blue/purple)
-vim.api.nvim_set_hl(0, '@variable', { fg = '#c678dd' }) -- bright purple
-vim.api.nvim_set_hl(0, '@variable.builtin', { fg = '#bb9af7' }) -- purple
+vim.api.nvim_set_hl(0, '@variable', { fg = '#c678dd' })           -- bright purple
+vim.api.nvim_set_hl(0, '@variable.builtin', { fg = '#bb9af7' })   -- purple
 vim.api.nvim_set_hl(0, '@variable.parameter', { fg = '#e0af68' }) -- yellow
-vim.api.nvim_set_hl(0, '@variable.member', { fg = '#73daca' }) -- teal
+vim.api.nvim_set_hl(0, '@variable.member', { fg = '#73daca' })    -- teal
 -- Bash/shell specific
-vim.api.nvim_set_hl(0, '@variable.bash', { fg = '#c678dd' }) -- bright purple
-vim.api.nvim_set_hl(0, '@constant.bash', { fg = '#c678dd' }) -- bright purple for CONSTANTS
+vim.api.nvim_set_hl(0, '@variable.bash', { fg = '#c678dd' })      -- bright purple
+vim.api.nvim_set_hl(0, '@constant.bash', { fg = '#c678dd' })      -- bright purple for CONSTANTS
 
 -- Load shared configuration modules
 require('shared.options')

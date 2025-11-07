@@ -823,8 +823,8 @@ local plugins = {
       local sources = { 'lsp', 'path', 'snippets', 'buffer' }
       local providers = {}
 
-      -- Add minuet source if Ollama is enabled
-      if is_enabled('enable_ollama') then
+      -- Add minuet source if AI completion is enabled
+      if is_enabled('enable_ai_completion') then
         table.insert(sources, 'minuet')
         providers.minuet = {
           name = 'minuet',
@@ -849,40 +849,23 @@ local plugins = {
     opts_extend = { "sources.default" }
   },
 
-  -- Minuet AI - AI completion with Ollama (optional, requires GPU)
-  is_enabled('enable_ollama') and {
+  -- Minuet AI - AI completion with OpenRouter
+  is_enabled('enable_ai_completion') and {
     'milanglacier/minuet-ai.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'rcarriga/nvim-notify' },
     config = function()
-      -- Check if ollama is running
-      local function check_ollama()
-        local handle = io.popen("curl -s http://localhost:11434/api/tags 2>&1")
-        local result = handle:read("*a")
-        handle:close()
-        return result:match("models")
-      end
-
-      if not check_ollama() then
-        vim.notify(
-          "Ollama is not running or not installed\n" ..
-          "Install: https://ollama.ai\n" ..
-          "Start: ollama serve\n" ..
-          "Pull model: ollama pull qwen2.5-coder:7b",
-          vim.log.levels.WARN,
-          { title = "Minuet AI" }
-        )
-      end
+      local secrets = require('secrets')
 
       require('minuet').setup({
         provider = 'openai_fim_compatible',
         n_completions = 1,
-        context_window = 8192, -- Good for RTX 3080 16GB
+        context_window = 8192,
         provider_options = {
           openai_fim_compatible = {
-            api_key = 'TERM',
-            name = 'Ollama',
-            end_point = 'http://localhost:11434/v1/completions',
-            model = 'qwen2.5-coder:7b',
+            api_key = function() return secrets.openrouter_api_key end,
+            name = 'OpenRouter',
+            end_point = 'https://openrouter.ai/api/v1/completions',
+            model = 'anthropic/claude-3.7-sonnet',
             optional = {
               max_tokens = 128,
               top_p = 0.9,
