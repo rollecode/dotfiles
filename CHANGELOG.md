@@ -1,3 +1,8 @@
+### 2.1.2: 2025-11-07
+
+* Change variable colors from orange to bright purple
+* Disable mini.files from auto-opening when opening directories
+
 ### 2.1.1: 2025-11-06
 
 * Remove native Vim keybinding overrides (Ctrl+A, Ctrl+E, Ctrl+T, Ctrl+P) to preserve standard functionality
