@@ -431,7 +431,7 @@ local plugins = {
           width_preview = 30,
         },
         options = {
-          use_as_default_explorer = true,
+          use_as_default_explorer = false, -- Don't auto-open when opening directories
         },
       })
     end,
