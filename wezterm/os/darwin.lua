@@ -6,11 +6,11 @@ function M.apply(config)
   local wezterm = require 'wezterm'
   -- macOS-specific settings
 
-  -- macOS background blur - disabled for 100% opacity
-  config.macos_window_background_blur = 0
+  -- macOS background blur
+  config.macos_window_background_blur = 60
 
-  -- Opacity - 100% opaque
-  config.window_background_opacity = 1.0
+  -- Opacity - 99%
+  config.window_background_opacity = 0.99
 
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
@@ -25,8 +25,8 @@ function M.apply(config)
 
   -- Window padding optimized for macOS
   config.window_padding = {
-    left = '3cell',
-    right = '3cell',
+    left = '3.5cell',
+    right = '3.5cell',
     top = '2.5cell',
     bottom = '1.5cell',
   }

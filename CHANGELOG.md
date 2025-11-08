@@ -1,6 +1,10 @@
 ### 2.1.3: 2025-11-08
 
 * Remove hardtime plugin completely
+* Replace Dracula with Catppuccin Mocha color scheme for WezTerm
+* Set macOS WezTerm to 99% opacity with blur
+* Restore green cursor color
+* Adjust macOS WezTerm padding (3.5cell left/right)
 
 ### 2.1.2: 2025-11-07
 
