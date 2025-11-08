@@ -67,9 +67,9 @@ config.cursor_blink_rate = 400
 config.colors = {
   foreground = '#cdd6f4', -- Text
   background = '#11111b', -- Mantle
-  cursor_bg = '#b4befe', -- Lavender
+  cursor_bg = '#50fa7b', -- Green (custom)
   cursor_fg = '#11111b', -- Mantle
-  cursor_border = '#b4befe', -- Lavender
+  cursor_border = '#50fa7b', -- Green (custom)
   selection_fg = '#cdd6f4', -- Text
   selection_bg = '#585b70', -- Surface2
 
