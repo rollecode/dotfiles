@@ -978,15 +978,6 @@ local plugins = {
     end,
   },
 
-  -- Hardtime - learn better Vim motions (optional)
-  is_enabled('enable_hardtime') and {
-    "m4xshen/hardtime.nvim",
-    lazy = false,
-    dependencies = { "MunifTanjim/nui.nvim" },
-    opts = {
-      disable_mouse = false, -- Allow mouse usage including scrolling
-    },
-  } or nil,
 
   -- Mason for managing LSP servers (optional - requires Node.js/npm)
   is_enabled('enable_lsp') and {

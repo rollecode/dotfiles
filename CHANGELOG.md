@@ -1,3 +1,7 @@
+### 2.1.3: 2025-11-08
+
+* Remove hardtime plugin completely
+
 ### 2.1.2: 2025-11-07
 
 * Change variable colors from orange to bright purple
