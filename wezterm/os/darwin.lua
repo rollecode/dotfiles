@@ -6,11 +6,11 @@ function M.apply(config)
   local wezterm = require 'wezterm'
   -- macOS-specific settings
 
-  -- macOS background blur
-  config.macos_window_background_blur = 60
+  -- macOS background blur - disabled for 100% opacity
+  config.macos_window_background_blur = 0
 
-  -- Opacity (less transparent than Linux)
-  config.window_background_opacity = 0.70
+  -- Opacity - 100% opaque
+  config.window_background_opacity = 1.0
 
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
@@ -146,22 +146,6 @@ function M.apply(config)
       key = '?',
       mods = 'CTRL',
     },
-  })
-
-  -- Cmd+Shift+S: Prepare for screenshot (set opacity to 100% for 5 seconds)
-  table.insert(config.keys, {
-    key = 's',
-    mods = 'SUPER|SHIFT',
-    action = wezterm.action_callback(function(window, _pane)
-      -- Set opacity to 100% for clean screenshot
-      window:set_config_overrides({ window_background_opacity = 1.0 })
-      window:toast_notification('WezTerm', 'Screenshot mode: 100% opacity for 5 seconds', nil, 2000)
-
-      -- Restore original opacity after 5 seconds
-      wezterm.time.call_after(5, function()
-        window:set_config_overrides({ window_background_opacity = 0.70 })
-      end)
-    end),
   })
 end
 

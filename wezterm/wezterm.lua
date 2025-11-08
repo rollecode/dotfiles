@@ -63,37 +63,37 @@ config.initial_rows = 28
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 400
 
--- Dracula color scheme
+-- Catppuccin Mocha color scheme
 config.colors = {
-  foreground = '#ffffff',
-  background = '#0c0e14',
-  cursor_bg = '#50fa7b',
-  cursor_fg = '#0c0e14',
-  cursor_border = '#50fa7b',
-  selection_fg = '#ffffff',
-  selection_bg = '#44475a',
+  foreground = '#cdd6f4', -- Text
+  background = '#11111b', -- Mantle
+  cursor_bg = '#f5e0dc', -- Rosewater
+  cursor_fg = '#11111b', -- Mantle
+  cursor_border = '#f5e0dc', -- Rosewater
+  selection_fg = '#cdd6f4', -- Text
+  selection_bg = '#585b70', -- Surface2
 
   ansi = {
-    '#000000', -- black
-    '#ff5555', -- red
-    '#50fa7b', -- green
-    '#f1fa8c', -- yellow
-    '#bd93f9', -- blue
-    '#ff79c6', -- magenta
-    '#8be9fd', -- cyan
-    '#cccccc', -- white
+    '#45475a', -- Surface1 (black)
+    '#f38ba8', -- Red
+    '#a6e3a1', -- Green
+    '#f9e2af', -- Yellow
+    '#89b4fa', -- Blue
+    '#f5c2e7', -- Pink
+    '#94e2d5', -- Teal
+    '#bac2de', -- Subtext1 (white)
   },
   brights = {
-    '#555555',                         -- bright black
-    '#ff5555',                         -- bright red
-    '#50fa7b',                         -- bright green
-    '#f1fa8c',                         -- bright yellow
-    '#bd93f9',                         -- bright blue
-    '#ff79c6',                         -- bright magenta
-    '#8be9fd',                         -- bright cyan
-    '#ffffff',                         -- bright white
+    '#585b70', -- Surface2 (bright black)
+    '#f38ba8', -- Red
+    '#a6e3a1', -- Green
+    '#f9e2af', -- Yellow
+    '#89b4fa', -- Blue
+    '#f5c2e7', -- Pink
+    '#94e2d5', -- Teal
+    '#a6adc8', -- Subtext0 (bright white/dim)
   },
-  split = 'rgba(255, 255, 255, 0.05)', -- Subtle split pane border
+  split = 'rgba(166, 173, 200, 0.1)', -- Subtext0 with low opacity
 }
 
 -- Disable tab bar completely
