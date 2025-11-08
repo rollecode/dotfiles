@@ -28,14 +28,14 @@ config.font = wezterm.font_with_fallback({
   { family = 'Monaspace Krypton NF',  weight = 400 }
 })
 
--- Bold font configuration (macOS defaults)
+-- Bold font configuration (macOS defaults) - using SemiBold (600)
 config.bold_brightens_ansi_colors = true
 config.font_rules = {
   {
     intensity = 'Bold',
     font = wezterm.font_with_fallback({
-      { family = 'Liga SFMono Nerd Font', weight = 620 },
-      { family = 'Monaspace Krypton NF',  weight = 620 }
+      { family = 'Liga SFMono Nerd Font', weight = 600 },
+      { family = 'Monaspace Krypton NF',  weight = 600 }
     })
   }
 }

@@ -12,6 +12,16 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     -- Bash/shell specific
     vim.api.nvim_set_hl(0, '@variable.bash', { fg = '#c678dd' }) -- bright purple
     vim.api.nvim_set_hl(0, '@constant.bash', { fg = '#c678dd' }) -- bright purple for CONSTANTS
+
+    -- Make breadcrumbs and bold text normal weight
+    -- Dropbar breadcrumbs
+    vim.api.nvim_set_hl(0, 'DropBarIconKindFile', { bold = false })
+    vim.api.nvim_set_hl(0, 'DropBarIconKindFolder', { bold = false })
+    vim.api.nvim_set_hl(0, 'DropBarIconKindMethod', { bold = false })
+    vim.api.nvim_set_hl(0, 'DropBarIconKindFunction', { bold = false })
+
+    -- General bold text (make it less bold by removing bold attribute)
+    vim.api.nvim_set_hl(0, 'Bold', { bold = false })
   end,
 })
 

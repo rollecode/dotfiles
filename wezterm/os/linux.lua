@@ -11,12 +11,11 @@ function M.apply(config)
 
   -- Font spacing for Linux
   config.line_height = 1.0
-  config.cell_width = 0.85
+  config.cell_width = 0.84
 
-  -- Disable window decorations on Linux (INTEGRATED_BUTTONS causes rendering glitches)
+  -- Disable window decorations on Linux
+  -- INTEGRATED_BUTTONS causes rendering glitches
   config.window_decorations = "NONE"
-
-  -- Add any other Linux-specific settings here
 end
 
 return M
