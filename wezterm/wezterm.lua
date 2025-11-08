@@ -20,15 +20,15 @@ config.front_end = "WebGpu"
 config.webgpu_power_preference = "HighPerformance"
 
 -- Opacity/transparency configuration
-config.window_background_opacity = 0.68
+config.window_background_opacity = 0.7
 
--- Font configuration - SF Mono for ligatures, Monaspace Krypton for non-ASCII
+-- Font configuration - Liga SFMono Nerd Font
 config.font = wezterm.font_with_fallback({
   { family = 'Liga SFMono Nerd Font', weight = 400 },
   { family = 'Monaspace Krypton NF',  weight = 400 }
 })
 
--- Bold font configuration
+-- Bold font configuration (macOS defaults)
 config.bold_brightens_ansi_colors = true
 config.font_rules = {
   {
@@ -40,7 +40,7 @@ config.font_rules = {
   }
 }
 
--- Font spacing
+-- Font spacing (macOS defaults)
 config.line_height = 1.0
 config.cell_width = 0.85
 
@@ -65,13 +65,13 @@ config.cursor_blink_rate = 400
 
 -- Catppuccin Mocha color scheme
 config.colors = {
-  foreground = '#cdd6f4', -- Text
-  background = '#11111b', -- Mantle
-  cursor_bg = '#50fa7b', -- Green (custom)
-  cursor_fg = '#11111b', -- Mantle
+  foreground = '#d9e0ee',    -- Text (slightly brighter than default #cdd6f4)
+  background = '#11111b',    -- Mantle
+  cursor_bg = '#50fa7b',     -- Green (custom)
+  cursor_fg = '#11111b',     -- Mantle
   cursor_border = '#50fa7b', -- Green (custom)
-  selection_fg = '#cdd6f4', -- Text
-  selection_bg = '#585b70', -- Surface2
+  selection_fg = '#cdd6f4',  -- Text
+  selection_bg = '#585b70',  -- Surface2
 
   ansi = {
     '#45475a', -- Surface1 (black)
@@ -84,14 +84,14 @@ config.colors = {
     '#bac2de', -- Subtext1 (white)
   },
   brights = {
-    '#585b70', -- Surface2 (bright black)
-    '#f38ba8', -- Red
-    '#a6e3a1', -- Green
-    '#cba6f7', -- Mauve (replaces yellow/orange)
-    '#89b4fa', -- Blue
-    '#f5c2e7', -- Pink
-    '#94e2d5', -- Teal
-    '#a6adc8', -- Subtext0 (bright white/dim)
+    '#585b70',                        -- Surface2 (bright black)
+    '#f38ba8',                        -- Red
+    '#a6e3a1',                        -- Green
+    '#cba6f7',                        -- Mauve (replaces yellow/orange)
+    '#89b4fa',                        -- Blue
+    '#f5c2e7',                        -- Pink
+    '#94e2d5',                        -- Teal
+    '#a6adc8',                        -- Subtext0 (bright white/dim)
   },
   split = 'rgba(166, 173, 200, 0.1)', -- Subtext0 with low opacity
 
@@ -346,22 +346,22 @@ config.mouse_bindings = {
 
         -- Match URLs with protocol
         is_url = trimmed:match("^https?://") or
-                 trimmed:match("^ftp://") or
-                 -- Match domains starting with www
-                 trimmed:match("^www%.%w+%.%w+") or
-                 -- Match domain.tld pattern (something.something)
-                 trimmed:match("^[%w%-]+%.[%w%.]+$") or
-                 -- Match common TLDs anywhere in string if it looks like a domain
-                 (trimmed:match("^[%w%-%.]+$") and (
-                   trimmed:match("%.com$") or
-                   trimmed:match("%.org$") or
-                   trimmed:match("%.net$") or
-                   trimmed:match("%.io$") or
-                   trimmed:match("%.dev$") or
-                   trimmed:match("%.ai$") or
-                   trimmed:match("%.co$") or
-                   trimmed:match("%.app$")
-                 ))
+            trimmed:match("^ftp://") or
+            -- Match domains starting with www
+            trimmed:match("^www%.%w+%.%w+") or
+            -- Match domain.tld pattern (something.something)
+            trimmed:match("^[%w%-]+%.[%w%.]+$") or
+            -- Match common TLDs anywhere in string if it looks like a domain
+            (trimmed:match("^[%w%-%.]+$") and (
+              trimmed:match("%.com$") or
+              trimmed:match("%.org$") or
+              trimmed:match("%.net$") or
+              trimmed:match("%.io$") or
+              trimmed:match("%.dev$") or
+              trimmed:match("%.ai$") or
+              trimmed:match("%.co$") or
+              trimmed:match("%.app$")
+            ))
       end
 
       local choices = {}

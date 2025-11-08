@@ -9,6 +9,10 @@ function M.apply(config)
   -- Font size adjustment for Linux
   config.font_size = 12
 
+  -- Font spacing for Linux
+  config.line_height = 1.0
+  config.cell_width = 0.85
+
   -- Disable window decorations on Linux (INTEGRATED_BUTTONS causes rendering glitches)
   config.window_decorations = "NONE"
 
