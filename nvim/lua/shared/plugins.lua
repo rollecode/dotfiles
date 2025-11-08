@@ -71,6 +71,21 @@ local plugins = {
     },
   },
 
+  -- GitHub Dark colorscheme
+  {
+    "projekt0n/github-nvim-theme",
+    priority = 1000,
+    lazy = false,
+    config = function()
+      require('github-theme').setup({
+        options = {
+          transparent = true,
+          terminal_colors = true,
+        }
+      })
+    end,
+  },
+
   -- Tokyo Night colorscheme
   {
     "folke/tokyonight.nvim",

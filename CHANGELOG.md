@@ -1,3 +1,13 @@
+### 2.1.4: 2025-11-08
+
+* Switch nvim colorscheme from Catppuccin Mocha to GitHub Dark
+* Add GitHub theme plugin for nvim
+* Make WezTerm font spacing OS-specific (cell_width 0.9 on Linux, 0.85 on macOS)
+* Adjust WezTerm foreground color brightness (#d9e0ee)
+* Set bold font weight to 600 (SemiBold) instead of 620
+* Set Linux font size to 10
+* Remove custom purple variable color overrides in nvim
+
 ### 2.1.3: 2025-11-08
 
 * Remove hardtime plugin completely
