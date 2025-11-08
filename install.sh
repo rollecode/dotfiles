@@ -576,13 +576,12 @@ create_local_config() {
     local enable_gamify=$5
     local enable_colorpicker=$6
     local enable_dashboard=$7
-    local enable_hardtime=$8
-    local enable_phpcs=$9
-    local enable_stylelint=${10}
-    local enable_flake8=${11}
-    local enable_luacheck=${12}
-    local enable_jsonlint=${13}
-    local enable_eslint=${14}
+    local enable_phpcs=$8
+    local enable_stylelint=$9
+    local enable_flake8=${10}
+    local enable_luacheck=${11}
+    local enable_jsonlint=${12}
+    local enable_eslint=${13}
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local local_config="$dotfiles_dir/nvim/lua/local.lua"
 
@@ -614,9 +613,6 @@ return {
     -- Gamification & Social
     enable_gamify = $([ "$enable_gamify" = "y" ] && echo "true" || echo "false"),
     enable_discord = $([ "$enable_discord" = "y" ] && echo "true" || echo "false"),
-
-    -- Workflow
-    enable_hardtime = $([ "$enable_hardtime" = "y" ] && echo "true" || echo "false"),
 
     -- Linters
     enable_phpcs = $([ "$enable_phpcs" = "y" ] && echo "true" || echo "false"),
@@ -766,12 +762,6 @@ main() {
     enable_discord=${enable_discord:-n}
 
     echo ""
-    print_info "Workflow:"
-    echo "Enable Hardtime (enforces good Vim habits)? (y/N)"
-    read -r enable_hardtime
-    enable_hardtime=${enable_hardtime:-n}
-
-    echo ""
     print_info "Linters (code quality checkers):"
     echo "Enable phpcs linter for PHP? (y/N)"
     read -r enable_phpcs
@@ -813,7 +803,7 @@ main() {
     fi
 
     # Create local.lua with feature flags
-    create_local_config "$enable_lsp" "$enable_ollama" "$enable_codecompanion" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_hardtime" "$enable_phpcs" "$enable_stylelint" "$enable_flake8" "$enable_luacheck" "$enable_jsonlint" "$enable_eslint"
+    create_local_config "$enable_lsp" "$enable_ollama" "$enable_codecompanion" "$enable_discord" "$enable_gamify" "$enable_colorpicker" "$enable_dashboard" "$enable_phpcs" "$enable_stylelint" "$enable_flake8" "$enable_luacheck" "$enable_jsonlint" "$enable_eslint"
 
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code
