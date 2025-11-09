@@ -1,3 +1,7 @@
+### 2.1.5: 2025-11-09
+
+* Fix double dollar sign in the prompt
+
 ### 2.1.4: 2025-11-08
 
 * Switch nvim colorscheme from Catppuccin Mocha to GitHub Dark
