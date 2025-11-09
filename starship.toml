@@ -15,6 +15,6 @@ format = "([$all_status$ahead_behind]($style)) "
 style = "red"
 
 [character]
-success_symbol = '[\$](#5cf870)'
-error_symbol = '[\$](red)'
+success_symbol = '[\$](bold #5cf870) '
+error_symbol = '[\$](bold red) '
 
