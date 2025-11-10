@@ -7,11 +7,11 @@ format = "[$path]($style) "
 style = "cyan"
 
 [git_branch]
-format = "[$symbol$branch]($style) "
+format = "[$symbol$branch]($style)"
 style = "purple"
 
 [git_status]
-format = "([$all_status$ahead_behind]($style)) "
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
 style = "red"
 stashed = ""
 
