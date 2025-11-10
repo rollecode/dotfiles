@@ -13,7 +13,7 @@ style = "purple"
 [git_status]
 format = "([$all_status$ahead_behind]($style)) "
 style = "red"
-stashed = "✦"
+stashed = ""
 
 [character]
 success_symbol = '[\$](bold #5cf870) '

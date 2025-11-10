@@ -1,6 +1,6 @@
 ### 2.1.6: 2025-11-10
 
-* Fix double dollar sign in the prompt by changing Starship git stash indicator from $ to ✦
+* Fix double dollar sign in the prompt by disabling Starship git stash indicator
 
 ### 2.1.5: 2025-11-09
 
