@@ -1,6 +1,10 @@
+### 2.1.6: 2025-11-10
+
+* Fix double dollar sign in the prompt by changing Starship git stash indicator from $ to ✦
+
 ### 2.1.5: 2025-11-09
 
-* Fix double dollar sign in the prompt
+* Comment out PS1 export in .bash_profile (conflicts with Starship)
 
 ### 2.1.4: 2025-11-08
 
