@@ -1,3 +1,9 @@
+### 2.1.7: 2025-11-15
+
+* Fix duplicate clipboard notifications by adding hash-based deduplication
+* Make clipboard notifications more reliable by handling errors gracefully
+* Add timeouts to prevent clipboard monitoring from hanging
+
 ### 2.1.6: 2025-11-10
 
 * Fix double dollar sign in the prompt by disabling Starship git stash indicator
