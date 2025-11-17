@@ -1,3 +1,8 @@
+### 2.1.8: 2025-11-17
+
+* Add hyprlock
+* NVIDIA settings
+
 ### 2.1.7: 2025-11-15
 
 * Fix duplicate clipboard notifications by adding hash-based deduplication
