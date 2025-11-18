@@ -1,3 +1,7 @@
+### 2.1.9: 2025-11-18
+
+* Wrap macOS IRC SSH connection in local screen session to persist when detaching
+
 ### 2.1.8: 2025-11-17
 
 * Add hyprlock
