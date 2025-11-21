@@ -1,3 +1,7 @@
+### 2.1.10: 2025-11-21
+
+* Improve WezTerm macOS visual style: 60% opacity with blur, 13pt font, 1.15 line height, 0.9 letter spacing
+
 ### 2.1.9: 2025-11-18
 
 * Wrap macOS IRC SSH connection in local screen session to persist when detaching
