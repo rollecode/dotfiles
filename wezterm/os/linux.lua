@@ -21,7 +21,7 @@ function M.apply(config)
 
   -- Terminal size
   config.initial_cols = 80
-  config.initial_rows = 28
+  config.initial_rows = 26
 
   -- Disable window decorations on Linux
   -- INTEGRATED_BUTTONS causes rendering glitches
