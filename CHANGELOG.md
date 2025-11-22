@@ -1,3 +1,7 @@
+### 2.1.11: 2025-11-22
+
+* Fix Hyprland config compatibility with stable version 0.52.1 (remove deprecated options: no_border_on_floating, allow_tearing, rounding_power)
+
 ### 2.1.10: 2025-11-21
 
 * Improve WezTerm macOS visual style: 60% opacity with blur, 13pt font, 1.15 line height, 0.9 letter spacing
