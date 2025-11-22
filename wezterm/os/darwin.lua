@@ -6,24 +6,17 @@ function M.apply(config)
   local wezterm = require 'wezterm'
   -- macOS-specific settings
 
-  -- macOS background blur
   config.macos_window_background_blur = 60
-
-  -- Opacity - 60% for nice blur effect
   config.window_background_opacity = 0.60
 
-  -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
     { family = 'Liga SFMono Nerd Font', weight = 500 },
     { family = 'Monaspace Krypton NF',  weight = 500 }
   })
   config.font_size = 13
-
-  -- Font spacing optimized for 13pt
   config.line_height = 1.15
   config.cell_width = 0.9
 
-  -- Window padding optimized for macOS
   config.window_padding = {
     left = '3.5cell',
     right = '3.5cell',
