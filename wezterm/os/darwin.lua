@@ -36,16 +36,6 @@ function M.apply(config)
   config.initial_rows = 28
 
   -- macOS-specific keybindings
-  table.insert(config.keys, {
-    key = 'v',
-    mods = 'SUPER',
-    action = wezterm.action.PasteFrom 'Clipboard',
-  })
-  table.insert(config.keys, {
-    key = 'c',
-    mods = 'SUPER',
-    action = wezterm.action.CopyTo 'Clipboard',
-  })
   -- Send Cmd+A through to nvim as a key sequence it can recognize
   table.insert(config.keys, {
     key = 'a',
