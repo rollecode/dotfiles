@@ -1,3 +1,7 @@
+### 2.1.12: 2025-11-26
+
+* Remove custom paste keybindings on macOS to fix bracketed paste escape sequence leakage
+
 ### 2.1.11: 2025-11-22
 
 * Fix Hyprland config compatibility with stable version 0.52.1 (remove deprecated options: no_border_on_floating, allow_tearing, rounding_power)
