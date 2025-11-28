@@ -9,7 +9,7 @@ function M.apply(config)
   -- macOS background blur
   config.macos_window_background_blur = 60
 
-  -- Opacity - 99%
+  -- Opacity
   config.window_background_opacity = 0.60
 
   -- Font configuration for macOS (heavier weight)
