@@ -1,3 +1,9 @@
+### 2.1.13: 2025-11-28
+
+* Disable Hyprland window shadows
+* Let WezTerm handle its own opacity instead of Hyprland override
+* Disable hyprbars for AyuGram Desktop
+
 ### 2.1.12: 2025-11-26
 
 * Remove custom paste keybindings on macOS to fix bracketed paste escape sequence leakage

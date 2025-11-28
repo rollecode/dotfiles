@@ -5,8 +5,7 @@ local M = {}
 function M.apply(config)
   -- Linux-specific settings
   config.enable_wayland = true
-
-  config.window_background_opacity = 0.60
+  config.window_background_opacity = 0.30
 
   config.font_size = 12
   config.line_height = 1.15
