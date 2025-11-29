@@ -1,10 +1,9 @@
--- Windows-specific WezTerm configuration
-
 local wezterm = require 'wezterm'
 local M = {}
 
 function M.apply(config)
   -- Windows-specific settings
+  config.window_background_opacity = 0.50
 
   -- Font size adjustment for Windows
   config.font_size = 11
