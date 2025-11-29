@@ -1,3 +1,7 @@
+### 2.1.14: 2025-11-29
+
+* Only assign apps to workspaces at startup, not on every launch
+
 ### 2.1.13: 2025-11-28
 
 * Disable Hyprland window shadows
