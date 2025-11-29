@@ -1,6 +1,7 @@
 ### 2.1.14: 2025-11-29
 
 * Only assign apps to workspaces at startup, not on every launch
+* Make AyuGram's window decoration more minimal
 
 ### 2.1.13: 2025-11-28
 
