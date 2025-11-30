@@ -1,3 +1,9 @@
+### 2.1.15: 2025-11-30
+
+* Super+scroll for volume, Super+Shift+scroll for workspaces
+* Remove steam from startup, all apps launch on workspace 1
+* Fix scroll bind delay with scroll_event_delay = 0
+
 ### 2.1.14: 2025-11-29
 
 * Only assign apps to workspaces at startup, not on every launch
