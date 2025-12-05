@@ -1,3 +1,7 @@
+### 2.1.16: 2025-12-05
+
+* Add .inputrc with readline config for macOS: disable bracketed paste, Option+Arrow word movement
+
 ### 2.1.15: 2025-11-30
 
 * Super+scroll for volume, Super+Shift+scroll for workspaces

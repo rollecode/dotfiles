@@ -1,0 +1,11 @@
+# Disable bracketed paste
+set enable-bracketed-paste off
+
+# Option+Left/Right word movement (macOS)
+"\e[1;3D": backward-word
+"\e[1;3C": forward-word
+"\e[1;9D": backward-word
+"\e[1;9C": forward-word
+
+# Option+Backspace delete word
+"\e[3;3~": kill-word
