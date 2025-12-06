@@ -1,6 +1,7 @@
 ### 2.1.17: 2025-12-06
 
 * Remove markdown from conform.nvim formatters
+* Disable waybar
 
 ### 2.1.16: 2025-12-05
 
