@@ -683,7 +683,6 @@ local plugins = {
           typescript = { "prettier" },
           json = { "prettier" },
           html = { "prettier" },
-          markdown = { "prettier" },
           lua = { "stylua" },
           python = { "black" },
         },

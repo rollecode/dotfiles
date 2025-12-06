@@ -1,3 +1,7 @@
+### 2.1.17: 2025-12-06
+
+* Remove markdown from conform.nvim formatters
+
 ### 2.1.16: 2025-12-05
 
 * Add .inputrc with readline config for macOS: disable bracketed paste, Option+Arrow word movement
