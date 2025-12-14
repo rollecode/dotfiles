@@ -1,3 +1,11 @@
+### 2.2.0: 2025-12-14
+
+* Fix hyprlock black background after monitor power cycle (NVIDIA workaround)
+* Add monitor-watcher.sh to detect monitor reconnect and restart hyprlock
+* Add hyprlock-wrapper.sh for DMS restart after unlock
+* Add hypridle with unlock_cmd support
+* Add allow_session_lock_restore to Hyprland misc config
+
 ### 2.1.17: 2025-12-06
 
 * Remove markdown from conform.nvim formatters
