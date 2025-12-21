@@ -11,7 +11,7 @@ while pidof hyprlock >/dev/null; do
     if [[ "$LAST_COUNT" == "0" && "$CURRENT_COUNT" != "0" ]]; then
         sleep 0.3
         pkill -9 -x hyprlock  # -x for exact match only
-        sleep 0.2
+        sleep 1  # Wait for desktop to render before taking screenshot
         hyprlock &
     fi
 
