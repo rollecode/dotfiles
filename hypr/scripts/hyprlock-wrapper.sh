@@ -2,23 +2,9 @@
 
 # Start monitor watcher in background
 ~/.config/hypr/scripts/monitor-watcher.sh &
-WATCHER_PID=$!
 
-# Start hyprlock
-hyprlock "$@" &
-sleep 1
+# Run hyprlock (blocking)
+hyprlock "$@"
 
-# Wait until no hyprlock is running (real unlock, not just restart)
-while true; do
-    sleep 1
-    if ! pidof hyprlock >/dev/null; then
-        sleep 0.5
-        if ! pidof hyprlock >/dev/null; then
-            break
-        fi
-    fi
-done
-
-# Cleanup and restart DMS
-kill $WATCHER_PID 2>/dev/null
+# After unlock, restart DMS
 dms restart

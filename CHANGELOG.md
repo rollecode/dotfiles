@@ -1,3 +1,9 @@
+### 2.2.1: 2025-12-22
+
+* Add wallpaper-sync.sh to auto-sync hyprpaper wallpaper to hyprlock
+* Remove deprecated hyprlock options (grace, fail_transition)
+* Disable IRC autostart, add thelounge-app
+
 ### 2.2.0: 2025-12-14
 
 * Fix hyprlock black background after monitor power cycle (NVIDIA workaround)
