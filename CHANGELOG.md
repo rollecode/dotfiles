@@ -1,3 +1,10 @@
+### 2.2.2: 2025-12-29
+
+* Add Fish shell configuration with Oh My Posh support
+* Add Oh My Posh catppuccin_macchiato theme
+* Update starship config: add git branch icon, path truncation with ../ symbol
+* Symlink starship.toml to ~/.config/
+
 ### 2.2.1: 2025-12-22
 
 * Add wallpaper-sync.sh to auto-sync hyprpaper wallpaper to hyprlock
