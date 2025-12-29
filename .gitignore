@@ -1,5 +1,6 @@
 nvim/lua/secrets.lua
 wezterm/secrets.lua
+fish/secrets.fish
 nvim/lua/local.lua
 wezterm/local.lua
 claude-code/secrets.sh
