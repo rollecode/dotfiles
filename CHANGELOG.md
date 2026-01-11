@@ -1,3 +1,14 @@
+### 2.2.4: 2026-01-11
+
+* Update Hyprland config for 0.53 windowrule syntax
+* Fix float rule: use new `windowrule = match:class .*, float on` syntax
+* Fix hyprbars plugin rules: use block syntax without `plugin:` prefix per [hyprland-plugins#586](https://github.com/hyprwm/hyprland-plugins/issues/586)
+* Convert windowrulev2 to new windowrule format where applicable
+
+### 2.2.3: 2026-01-11
+
+* Fix deprecated windowrule syntax for Hyprland (suppressevent, nofocus)
+
 ### 2.2.2: 2025-12-29
 
 * Add Fish shell configuration with Oh My Posh support
