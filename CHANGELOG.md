@@ -1,3 +1,7 @@
+### 2.2.5: 2026-01-17
+
+* Remove clipboard management (cliphist, wl-clip-persist, clipboard-notify) - DMS 1.2 has native clipboard
+
 ### 2.2.4: 2026-01-11
 
 * Update Hyprland config for 0.53 windowrule syntax
