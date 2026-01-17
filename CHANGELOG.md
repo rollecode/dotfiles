@@ -1,6 +1,7 @@
 ### 2.2.5: 2026-01-17
 
 * Remove clipboard management (cliphist, wl-clip-persist, clipboard-notify) - DMS 1.2 has native clipboard
+* Remove Sunsama, Signal, AyuGram, The Lounge from autostart; Discord starts minimized to tray
 
 ### 2.2.4: 2026-01-11
 
