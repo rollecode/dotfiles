@@ -1,3 +1,8 @@
+### 2.2.6: 2026-01-18
+
+* Keep DMS restart after unlock (bugs not fixed in recent updates)
+* Add custom title bar color for The Lounge IRC app
+
 ### 2.2.5: 2026-01-17
 
 * Remove clipboard management (cliphist, wl-clip-persist, clipboard-notify) - DMS 1.2 has native clipboard
