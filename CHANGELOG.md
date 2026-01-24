@@ -1,3 +1,16 @@
+### 2.3.0: 2026-01-24
+
+* Add hy3 plugin for i3-like manual tiling with smart autotile
+* Configure autotile with 800px width and 500px height thresholds to prevent tiny windows
+* Add transparent blurred tab styling matching hyprbars theme
+* Add hy3 keybindings: Super+H/J/G for horizontal/vertical/tab groups
+* Add Super+U to untab, Super+O to toggle layout orientation
+* Add Super+E to expand window, Super+A/Z for parent/child focus
+* Update arrow key bindings to use hy3:movefocus and hy3:movewindow
+* Move workspace switching to Super+Alt+arrows
+* Move file manager to Super+Shift+E
+* Document all Hyprland keybindings in README
+
 ### 2.2.6: 2026-01-18
 
 * Keep DMS restart after unlock (bugs not fixed in recent updates)

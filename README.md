@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.2.6-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.3.0-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -377,6 +377,63 @@ Create the file if it doesn't exist, then restart PowerShell or run `. $PROFILE`
 - Gamify streak tracking
 - OS-specific configurations
 - Contextual linter notifications (only for files you're editing)
+
+## Hyprland
+
+Linux desktop uses [Hyprland](https://hypr.land/) with the [hy3](https://github.com/outfoxxed/hy3) plugin for i3-like manual tiling with smart autotile.
+
+### Tiling layout
+
+Windows float by default. Use `Super+V` to tile a window. The hy3 autotile feature prevents windows from becoming too narrow or short by automatically reorganizing the layout.
+
+### Hyprland keybindings
+
+#### Window management
+
+| Keybind | Action |
+|---------|--------|
+| Super + V | Toggle floating/tiled |
+| Super + C | Close window |
+| Super + Shift + C | Center window |
+| Super + T | Pin floating window |
+
+#### hy3 tiling controls
+
+| Keybind | Action |
+|---------|--------|
+| Super + arrows | Move focus between windows |
+| Super + Shift + arrows | Move window in layout |
+| Super + H | Group windows horizontally |
+| Super + J | Group windows vertically |
+| Super + G | Group windows as tabs |
+| Super + U | Untab (convert tabs to splits) |
+| Super + O | Toggle horizontal/vertical layout |
+| Super + E | Expand window into parent container |
+| Super + A | Focus parent container |
+| Super + Z | Focus child container |
+| Super + Shift + L | Lock group (prevent layout changes) |
+
+#### Workspaces
+
+| Keybind | Action |
+|---------|--------|
+| Super + 1-9 | Switch to workspace |
+| Super + Shift + 1-9 | Move window to workspace |
+| Super + Alt + left/right | Previous/next workspace |
+| Super + Ctrl + left/right | Move window to prev/next workspace |
+
+#### Other
+
+| Keybind | Action |
+|---------|--------|
+| Super + Q | Open terminal (WezTerm) |
+| Super + K | App launcher (DMS spotlight) |
+| Super + L | Lock screen |
+| Super + Shift + E | File manager |
+| Super + Tab | Window switcher |
+| Print | Screenshot area |
+| Shift + Print | Screenshot active window |
+| Ctrl + Print | Screenshot full screen |
 
 ## Keybindings
 
