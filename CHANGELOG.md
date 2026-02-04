@@ -1,3 +1,13 @@
+### 2.3.1: 2026-02-04
+
+* Disable hy3 plugin due to version mismatch with Hyprland 0.53.3
+* Switch from hy3 to dwindle layout temporarily
+* Update windowrule syntax for Hyprland 0.53 breaking changes
+* Convert all windowrulev2 to windowrule format
+* Comment out hy3 keybindings, add dwindle equivalents for window moving
+* Remove invalid windowrule properties (nofocus, noborder, noshadow, etc.)
+* Comment out hyprbars plugin windowrules (syntax incompatible)
+
 ### 2.3.0: 2026-01-24
 
 * Add hy3 plugin for i3-like manual tiling with smart autotile
