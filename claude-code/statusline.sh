@@ -54,7 +54,7 @@ fi
 LINE="${CYAN}${MODEL}${RESET}"
 
 # Tokens
-LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${MAUVE}${IN_FMT} in${RESET} ${DIM}\xC2\xB7${RESET} ${MAUVE}${OUT_FMT} out${RESET}"
+LINE="${LINE} ${DIM}\xC2\xB7 ${IN_FMT} in \xC2\xB7 ${OUT_FMT} out${RESET}"
 
 # Lines changed
 if [ "$LINES_ADD" -gt 0 ] || [ "$LINES_REM" -gt 0 ]; then
