@@ -11,7 +11,7 @@ while pidof hyprlock >/dev/null; do
     if [[ "$LAST_COUNT" == "0" && "$CURRENT_COUNT" != "0" ]]; then
         sleep 0.5
         pkill -9 -x hyprlock
-        ~/.config/hypr/scripts/hyprlock-wrapper.sh &
+        SKIP_SAVE=1 ~/.config/hypr/scripts/hyprlock-wrapper.sh &
         exit 0
     fi
 

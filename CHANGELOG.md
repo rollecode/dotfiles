@@ -1,3 +1,9 @@
+### 2.3.2: 2026-02-07
+
+* Fix windows going off-screen after monitor power cycle and hyprlock unlock
+* Save window positions before lock, restore with monitor bounds clamping after unlock
+* Fix monitor-watcher overwriting saved positions on hyprlock restart
+
 ### 2.3.1: 2026-02-04
 
 * Disable hy3 plugin due to version mismatch with Hyprland 0.53.3
