@@ -6,10 +6,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/codestats-hook.sh"
+            "command": "~/.claude/hooks/codestats-hook.sh",
+            "async": true
           }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
   }
 }

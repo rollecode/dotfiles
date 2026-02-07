@@ -149,42 +149,7 @@ RESPONSE=$(curl -X POST "$CODESTATS_API_URL" \
 # Extract HTTP status code (last line)
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
-# Catppuccin Mocha Yellow: #f9e2af (RGB 249, 226, 175)
-YELLOW='\033[38;2;249;226;175m'
-RED='\033[38;2;243;139;168m'
-RESET='\033[0m'
-
-# Log file location
 LOG_FILE="$HOME/.claude/codestats-hook.log"
-
-# Function to check if we have a desktop environment
-has_desktop() {
-    # Check for common desktop environment indicators
-    if [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
-        return 0  # Has display
-    fi
-    return 1  # Headless
-}
-
-# Function to send desktop notification safely
-send_desktop_notification() {
-    local title="$1"
-    local message="$2"
-
-    # Only try to send notifications if we have a desktop
-    if ! has_desktop; then
-        return 0
-    fi
-
-    # Try different notification methods based on platform
-    if command -v notify-send >/dev/null 2>&1; then
-        # Linux with libnotify (most common)
-        notify-send -u low -a "Code::Stats" "$title" "$message" 2>/dev/null || true
-    elif command -v osascript >/dev/null 2>&1; then
-        # macOS
-        osascript -e "display notification \"$message\" with title \"$title\"" 2>/dev/null || true
-    fi
-}
 
 # Show notification based on response
 if [ "$HTTP_CODE" = "201" ]; then
@@ -192,52 +157,13 @@ if [ "$HTTP_CODE" = "201" ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - ${MESSAGE}" >> "$LOG_FILE"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Success: ${MESSAGE} (file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
 
-    # Send desktop notification (safe for headless systems)
-    send_desktop_notification "Code::Stats" "$MESSAGE"
+    # Write last gain for status line display
+    echo "$XP" > /tmp/codestats-last-xp
 
-    # Show XP notification via WezTerm overlay with ASCII box
-    if command -v wezterm >/dev/null 2>&1 && [ -n "$WEZTERM_PANE" ]; then
-        # Create a temporary script to display the message in a box
-        TEMP_SCRIPT="/tmp/codestats-notify-$$.sh"
-        cat > "$TEMP_SCRIPT" << 'SCRIPT_END'
-#!/bin/bash
-MESSAGE="$1"
-YELLOW='\033[38;2;249;226;175m'
-RESET='\033[0m'
-
-# Calculate box width
-MSG_LEN=${#MESSAGE}
-BOX_WIDTH=$((MSG_LEN + 4))
-
-# Create top border
-TOP_BORDER="┌"
-for ((i=0; i<MSG_LEN+2; i++)); do TOP_BORDER="${TOP_BORDER}─"; done
-TOP_BORDER="${TOP_BORDER}┐"
-
-# Create bottom border
-BOTTOM_BORDER="└"
-for ((i=0; i<MSG_LEN+2; i++)); do BOTTOM_BORDER="${BOTTOM_BORDER}─"; done
-BOTTOM_BORDER="${BOTTOM_BORDER}┘"
-
-clear
-echo ""
-echo -e "${YELLOW}${TOP_BORDER}${RESET}"
-echo -e "${YELLOW}│ ${MESSAGE} │${RESET}"
-echo -e "${YELLOW}${BOTTOM_BORDER}${RESET}"
-echo ""
-sleep 1.5
-SCRIPT_END
-        chmod +x "$TEMP_SCRIPT"
-
-        # Spawn overlay and clean up
-        wezterm cli spawn --cwd "$PWD" -- bash -c "$TEMP_SCRIPT '$MESSAGE'; rm -f '$TEMP_SCRIPT'" &
-    fi
+    # Output as systemMessage for non-blocking inline display in Claude Code
+    echo "{\"systemMessage\": \"${MESSAGE}\"}"
     exit 0
 else
-    MESSAGE="code::stats error (HTTP ${HTTP_CODE})"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - ${MESSAGE}" >> "$LOG_FILE"
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: HTTP ${HTTP_CODE} (file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
-
-    # Silent error - just log it
     exit 0
 fi

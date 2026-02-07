@@ -1,3 +1,9 @@
+### 2.3.3: 2026-02-07
+
+* Restore hy3 layout, keybindings, and tab styling config
+* Change Super+G to hy3:makegroup tab toggle for proper tab toggling
+* Make Code::Stats XP hook async and non-blocking (systemMessage instead of notify-send/WezTerm overlay)
+
 ### 2.3.2: 2026-02-07
 
 * Fix windows going off-screen after monitor power cycle and hyprlock unlock
