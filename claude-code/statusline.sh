@@ -6,25 +6,21 @@ input=$(cat)
 
 # Extract session data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
-IN_TOKENS=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
-OUT_TOKENS=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
+DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
 
-# Format token counts: round to nearest k/M, no decimals
-fmt_tokens() {
-    local n=$1
-    if [ "$n" -ge 1000000 ]; then
-        printf '%dM' $(( (n + 500000) / 1000000 ))
-    elif [ "$n" -ge 1000 ]; then
-        printf '%dk' $(( (n + 500) / 1000 ))
-    else
-        printf '%d' "$n"
-    fi
-}
-
-IN_FMT=$(fmt_tokens "$IN_TOKENS")
-OUT_FMT=$(fmt_tokens "$OUT_TOKENS")
+# Format duration from ms to human readable
+DURATION_S=$(( DURATION_MS / 1000 ))
+DURATION_M=$(( DURATION_S / 60 ))
+DURATION_H=$(( DURATION_M / 60 ))
+if [ "$DURATION_H" -gt 0 ]; then
+    DURATION_FMT="${DURATION_H}h $((DURATION_M % 60))m"
+elif [ "$DURATION_M" -gt 0 ]; then
+    DURATION_FMT="${DURATION_M}m"
+else
+    DURATION_FMT="${DURATION_S}s"
+fi
 
 # Colors (Catppuccin Mocha palette)
 CYAN='\033[38;2;137;180;250m'
@@ -53,8 +49,8 @@ fi
 # Build output line
 LINE="${CYAN}${MODEL}${RESET}"
 
-# Tokens
-LINE="${LINE} ${DIM}\xC2\xB7 ${IN_FMT} in \xC2\xB7 ${OUT_FMT} out${RESET}"
+# Duration
+LINE="${LINE} ${DIM}\xC2\xB7 ${DURATION_FMT}${RESET}"
 
 # Lines changed
 if [ "$LINES_ADD" -gt 0 ] || [ "$LINES_REM" -gt 0 ]; then
@@ -67,7 +63,7 @@ LAST_XP=""
 
 if [ "$SESSION_XP" -gt 0 ]; then
     XP_PART="${YELLOW}XP: ${SESSION_XP}${RESET}"
-    [ -n "$LAST_XP" ] && [ "$LAST_XP" -gt 0 ] 2>/dev/null && XP_PART="${XP_PART} ${GREEN}+${LAST_XP}${RESET}"
+    [ -n "$LAST_XP" ] && [ "$LAST_XP" -gt 0 ] 2>/dev/null && XP_PART="${XP_PART} ${YELLOW}+${LAST_XP}${RESET}"
     [ -n "$LAST_LANG" ] && XP_PART="${XP_PART} ${DIM}(${LAST_LANG})${RESET}"
     LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${XP_PART}"
 fi
