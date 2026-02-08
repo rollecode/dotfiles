@@ -1,3 +1,9 @@
+### 2.3.4: 2026-02-08
+
+* Add Claude Code status line with session duration, lines changed, and Code::Stats XP display
+* Fix macOS compatibility in status line (replace grep -oP with portable sed)
+* Update README with status line setup docs and symlink instructions
+
 ### 2.3.3: 2026-02-07
 
 * Restore hy3 layout, keybindings, and tab styling config

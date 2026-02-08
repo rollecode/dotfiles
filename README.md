@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.3.3-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.3.4-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -84,13 +84,19 @@ Linter and formatter notifications appear automatically when you open files - nv
 
 ## Claude code integration
 
-Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you'll earn XP and see a yellow ASCII box notification in WezTerm (1 XP per line written by Claude).
+Track your AI-assisted coding activity with Code::Stats automatically! Every time Claude Code writes or edits a file, you earn XP (1 XP per line). A custom status line shows model, session duration, lines changed, and XP at the bottom of the Claude Code terminal.
 
-The install script sets up the hook symlink automatically. You just need to configure `~/.claude/settings.json`:
+The install script sets up symlinks automatically. For manual setup:
+
+```bash
+mkdir -p ~/.claude/hooks
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+ln -sf ~/Projects/dotfiles/claude-code/statusline.sh ~/.claude/statusline.sh
+```
 
 ### Configure Claude code hooks
 
-Add the following to your `~/.claude/settings.json` (if you already have settings, just add the `hooks` section):
+Add the following to your `~/.claude/settings.json` (this file cannot be symlinked as it varies per machine):
 
 ```json
 {
@@ -101,11 +107,16 @@ Add the following to your `~/.claude/settings.json` (if you already have setting
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/codestats-hook.sh"
+            "command": "~/.claude/hooks/codestats-hook.sh",
+            "async": true
           }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
   }
 }
 ```
@@ -114,11 +125,11 @@ Add the following to your `~/.claude/settings.json` (if you already have setting
 
 The hook automatically:
 - Detects file type from extension (JavaScript, Python, Markdown, Bash, etc.)
-- Calculates XP based on characters written (1 XP = 1 character)
-- Sends the XP to Code::Stats API after each file edit/write
-- Supports all file types that Claude Code can edit
+- Calculates XP based on lines written (1 XP per line)
+- Sends the XP to Code::Stats API asynchronously (non-blocking)
+- Displays running XP total in the status line
 
-Now your AI-assisted coding will contribute to your Code::Stats profile!
+The status line shows: `Opus 4.6 · 45m · +156 -23 · XP: 4312 +5 (Shell)`
 
 ### Auto-save conversations
 
@@ -195,11 +206,12 @@ echo '#!/bin/bash
 export CODESTATS_API_KEY="YOUR_API_KEY_HERE"' > ~/Projects/dotfiles/claude-code/secrets.sh
 chmod +x ~/Projects/dotfiles/claude-code/secrets.sh
 
-# Symlink the hook
+# Symlink the hook and status line
 mkdir -p ~/.claude/hooks
 ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+ln -sf ~/Projects/dotfiles/claude-code/statusline.sh ~/.claude/statusline.sh
 
-# Add hooks to ~/.claude/settings.json on the server (see above)
+# Add hooks and statusLine to ~/.claude/settings.json (see above)
 ```
 
 ## Linters

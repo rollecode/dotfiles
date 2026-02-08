@@ -39,9 +39,9 @@ LAST_LANG=""
 
 if [ -f "$XP_LOG" ]; then
     while IFS= read -r line; do
-        xp_val=$(echo "$line" | grep -oP '\+XP \K[0-9]+')
+        xp_val=$(echo "$line" | sed -n 's/.*+XP \([0-9]*\).*/\1/p')
         [ -n "$xp_val" ] && SESSION_XP=$((SESSION_XP + xp_val))
-        lang=$(echo "$line" | grep -oP '\(\K[^)]+')
+        lang=$(echo "$line" | sed -n 's/.*(\([^)]*\)).*/\1/p')
         [ -n "$lang" ] && LAST_LANG="$lang"
     done < <(grep "^${TODAY}" "$XP_LOG")
 fi
