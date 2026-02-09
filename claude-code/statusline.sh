@@ -10,6 +10,11 @@ DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
 
+# Ensure numeric values have defaults
+LINES_ADD=${LINES_ADD:-0}
+LINES_REM=${LINES_REM:-0}
+DURATION_MS=${DURATION_MS:-0}
+
 # Format duration from ms to human readable
 DURATION_S=$(( DURATION_MS / 1000 ))
 DURATION_M=$(( DURATION_S / 60 ))
