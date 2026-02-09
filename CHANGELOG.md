@@ -1,3 +1,9 @@
+### 2.3.5: 2026-02-09
+
+* Fix status line script permissions (add execute bit)
+* Fix integer expression errors in status line when variables are empty
+* Add default values for LINES_ADD, LINES_REM, and DURATION_MS
+
 ### 2.3.4: 2026-02-08
 
 * Add Claude Code status line with session duration, lines changed, and Code::Stats XP display
