@@ -1,3 +1,8 @@
+### 2.3.6: 2026-02-10
+
+* Remove unbounded codestats-hook.log and debug log that caused CPU spikes
+* Replace log-parsing statusline loop with lightweight daily counter file (/tmp/codestats-xp-today)
+
 ### 2.3.5: 2026-02-09
 
 * Fix status line script permissions (add execute bit)

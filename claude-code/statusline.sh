@@ -36,19 +36,18 @@ MAUVE='\033[38;2;203;166;247m'
 DIM='\033[2m'
 RESET='\033[0m'
 
-# Read Code::Stats XP for today
-XP_LOG="$HOME/.claude/codestats-hook.log"
+# Read Code::Stats XP for today from counter file
+XP_FILE="/tmp/codestats-xp-today"
 TODAY=$(date '+%Y-%m-%d')
 SESSION_XP=0
 LAST_LANG=""
 
-if [ -f "$XP_LOG" ]; then
-    while IFS= read -r line; do
-        xp_val=$(echo "$line" | sed -n 's/.*+XP \([0-9]*\).*/\1/p')
-        [ -n "$xp_val" ] && SESSION_XP=$((SESSION_XP + xp_val))
-        lang=$(echo "$line" | sed -n 's/.*(\([^)]*\)).*/\1/p')
-        [ -n "$lang" ] && LAST_LANG="$lang"
-    done < <(grep "^${TODAY}" "$XP_LOG")
+if [ -f "$XP_FILE" ]; then
+    STORED_DATE=$(sed -n '1p' "$XP_FILE")
+    if [ "$STORED_DATE" = "$TODAY" ]; then
+        SESSION_XP=$(sed -n '2p' "$XP_FILE")
+        LAST_LANG=$(sed -n '3p' "$XP_FILE")
+    fi
 fi
 
 # Build output line

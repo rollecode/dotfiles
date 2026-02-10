@@ -29,7 +29,6 @@ if [ -z "$CODESTATS_API_KEY" ] || [ "$CODESTATS_API_KEY" == "YOUR_API_KEY_HERE" 
 fi
 
 CODESTATS_API_URL="https://codestats.net/api/my/pulses"
-DEBUG_LOG_FILE="$HOME/.claude/codestats-hook-debug.log"
 
 # Read the hook input from stdin
 INPUT=$(cat)
@@ -40,7 +39,6 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 # Skip if no file path (some tools don't modify files)
 if [ -z "$FILE_PATH" ] || [ "$FILE_PATH" == "null" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Skipped: No file path (tool: $TOOL_NAME)" >> "$DEBUG_LOG_FILE"
     exit 0
 fi
 
@@ -59,15 +57,12 @@ case "$TOOL_NAME" in
         CONTENT=$(echo "$INPUT" | jq -r '.tool_input.new_source // empty')
         ;;
     *)
-        # Unknown tool, skip
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - Skipped: Unknown tool ($TOOL_NAME)" >> "$DEBUG_LOG_FILE"
         exit 0
         ;;
 esac
 
 # Skip if no content
 if [ -z "$CONTENT" ] || [ "$CONTENT" == "null" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Skipped: No content (tool: $TOOL_NAME, file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
     exit 0
 fi
 
@@ -80,7 +75,6 @@ fi
 
 # Skip if no XP to award
 if [ "$XP" -eq 0 ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Skipped: Zero XP (tool: $TOOL_NAME, file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
     exit 0
 fi
 
@@ -149,13 +143,23 @@ RESPONSE=$(curl -X POST "$CODESTATS_API_URL" \
 # Extract HTTP status code (last line)
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
-LOG_FILE="$HOME/.claude/codestats-hook.log"
-
 # Show notification based on response
 if [ "$HTTP_CODE" = "201" ]; then
     MESSAGE="+XP ${XP} (${LANGUAGE})"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - ${MESSAGE}" >> "$LOG_FILE"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Success: ${MESSAGE} (file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
+
+    # Update daily XP counter for statusline (resets each day)
+    TODAY=$(date '+%Y-%m-%d')
+    XP_FILE="/tmp/codestats-xp-today"
+    STORED_DATE=""
+    STORED_XP=0
+    if [ -f "$XP_FILE" ]; then
+        STORED_DATE=$(head -1 "$XP_FILE")
+        STORED_XP=$(tail -1 "$XP_FILE")
+    fi
+    if [ "$STORED_DATE" != "$TODAY" ]; then
+        STORED_XP=0
+    fi
+    printf '%s\n%d\n%s\n' "$TODAY" "$((STORED_XP + XP))" "$LANGUAGE" > "$XP_FILE"
 
     # Write last gain for status line display
     echo "$XP" > /tmp/codestats-last-xp
@@ -164,6 +168,5 @@ if [ "$HTTP_CODE" = "201" ]; then
     echo "{\"systemMessage\": \"${MESSAGE}\"}"
     exit 0
 else
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: HTTP ${HTTP_CODE} (file: $FILE_PATH)" >> "$DEBUG_LOG_FILE"
     exit 0
 fi
