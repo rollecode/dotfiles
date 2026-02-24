@@ -1,3 +1,8 @@
+### 2.3.7: 2026-02-24
+
+* Switch Neovim AI helper to OpenAI direct API with gpt-4.1-nano for instant responses
+* Add OpenAI API key to secrets configuration
+
 ### 2.3.6: 2026-02-10
 
 * Remove unbounded codestats-hook.log and debug log that caused CPU spikes

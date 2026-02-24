@@ -932,16 +932,17 @@ local plugins = {
           local secrets = require('secrets')
           local curl = require('plenary.curl')
 
-          curl.post('https://openrouter.ai/api/v1/chat/completions', {
+          curl.post('https://api.openai.com/v1/chat/completions', {
             headers = {
               ['Content-Type'] = 'application/json',
-              ['Authorization'] = 'Bearer ' .. secrets.openrouter_api_key,
-              ['HTTP-Referer'] = 'https://github.com/rolle',
+              ['Authorization'] = 'Bearer ' .. secrets.openai_api_key,
             },
             body = vim.json.encode({
-              model = 'openrouter/auto',
+              model = 'gpt-4.1-nano',
+              max_tokens = 300,
+              temperature = 0,
               messages = {
-                { role = 'system', content = 'You are a Neovim expert. Give concise answers with exact commands.' },
+                { role = 'system', content = 'You are a Neovim expert. Give concise answers with exact commands. Be brief.' },
                 { role = 'user', content = question }
               }
             }),
