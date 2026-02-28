@@ -1,3 +1,7 @@
+### 2.3.8: 2026-02-28
+
+* Remove DMS restart after hyprlock unlock
+
 ### 2.3.7: 2026-02-24
 
 * Switch Neovim AI helper to OpenAI direct API with gpt-4.1-nano for instant responses
