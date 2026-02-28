@@ -58,5 +58,5 @@ if [[ -f /tmp/hypr-window-positions.json ]]; then
     done
 fi
 
-# After unlock, restart DMS
-dms restart
+# After unlock, restart DMS (disabled for testing - check if bug persists without this)
+# dms restart
