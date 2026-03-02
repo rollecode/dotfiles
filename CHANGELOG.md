@@ -1,3 +1,7 @@
+### 2.3.9: 2026-03-02
+
+* Disable WezTerm background transparency on macOS
+
 ### 2.3.8: 2026-02-28
 
 * Remove DMS restart after hyprlock unlock

@@ -10,7 +10,7 @@ function M.apply(config)
   config.macos_window_background_blur = 60
 
   -- Opacity
-  config.window_background_opacity = 0.60
+  config.window_background_opacity = 1.0
 
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
