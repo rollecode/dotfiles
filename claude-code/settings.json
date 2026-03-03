@@ -10,6 +10,15 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "sunsama_complete_task|mcp__sunsama__sunsama_complete_task|mcp__linear__save_issue|mcp__plugin_linear_linear__save_issue",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/append-changelog.sh"
+          }
+        ]
       }
     ]
   },

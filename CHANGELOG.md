@@ -1,3 +1,8 @@
+### 2.4.1: 2026-03-03
+
+* Add `append-changelog.sh` hook for auto-logging completed tasks to Obsidian Life changelog
+* Add PostToolUse hook for Sunsama and Linear task completions
+
 ### 2.4.0: 2026-03-03
 
 * Add context window usage percentage to status line
