@@ -9,6 +9,7 @@ MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
 DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
+CTX_PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | awk '{printf "%.0f", $1}')
 
 # Ensure numeric values have defaults
 LINES_ADD=${LINES_ADD:-0}
@@ -53,8 +54,8 @@ fi
 # Build output line
 LINE="${CYAN}${MODEL}${RESET}"
 
-# Duration
-LINE="${LINE} ${DIM}\xC2\xB7 ${DURATION_FMT}${RESET}"
+# Duration and context %
+LINE="${LINE} ${DIM}\xC2\xB7${RESET} \033[38;2;187;194;206m${DURATION_FMT}${RESET} ${DIM}\xC2\xB7${RESET} \033[38;2;171;179;241m${CTX_PCT}%${RESET}"
 
 # Lines changed
 if [ "$LINES_ADD" -gt 0 ] || [ "$LINES_REM" -gt 0 ]; then
