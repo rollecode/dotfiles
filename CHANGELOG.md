@@ -2,6 +2,7 @@
 
 * Add `append-changelog.sh` hook for auto-logging completed tasks to Obsidian Life changelog
 * Add PostToolUse hook for Sunsama and Linear task completions
+* Add `plan-today`, `plan-week` and `done` command prompts for Claude Code
 
 ### 2.4.0: 2026-03-03
 
