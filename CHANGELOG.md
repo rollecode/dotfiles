@@ -1,3 +1,8 @@
+### 2.4.0: 2026-03-03
+
+* Add context window usage percentage to status line
+* Add custom colors for duration and context percentage in status line
+
 ### 2.3.9: 2026-03-02
 
 * Disable WezTerm background transparency on macOS
