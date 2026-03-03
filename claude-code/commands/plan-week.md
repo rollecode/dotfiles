@@ -27,36 +27,38 @@ Consider:
 
 Step 3 - Output a weekly overview:
 
-Format your output exactly like this:
+Use Finnish date format (d.M.yyyy) for all dates. Format your output exactly like this:
 
 ---
 
-WEEKLY PLAN - Week of [Monday date]
+# Weekly plan — week of [Monday d.M.yyyy]
 
-This week's priorities
+## This week's priorities
 - Top 3-5 things that must get done this week
 
-Slack highlights
+## Slack highlights
 - Important messages or requests from Juha or other leads this week
 
-Day by day breakdown
+## Day by day breakdown
 
-Monday [date]
+### Monday d.M.yyyy
 - Key tasks and meetings
 
-Tuesday [date]
+### Tuesday d.M.yyyy
 - Key tasks and meetings
 
 (continue for each weekday)
 
-Stale tasks (open 2+ weeks)
+## Stale tasks (open 2+ weeks)
 - List with age. Still relevant? Blocked? Should be closed?
 
-At risk
+## At risk
 - Tasks that might slip if not actively managed
 - Overdue items carried from previous weeks
 
 ---
+
+If any MCP server fails or returns an error, silently skip that section. Do not include "check manually" messages or error notes in the plan output — just omit the section entirely.
 
 Be concise. Use actual task titles from source systems. Include Linear issue IDs.
 

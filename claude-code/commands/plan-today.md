@@ -29,36 +29,38 @@ Consider these factors in order:
 
 Step 3 - Output a clear daily plan:
 
-Format your output exactly like this:
+Use Finnish date format (d.M.yyyy) for all dates. Format your output exactly like this:
 
 ---
 
-DAILY PLAN - [today's date, weekday name] (planned at HH:MM, X hours remaining)
+# Daily plan — [weekday name] d.M.yyyy (planned at HH:MM, X hours remaining)
 
-Overdue / urgent
+## Overdue / urgent
 - List anything overdue or with hard deadlines today
 
-Slack highlights
+## Slack highlights
 - Important messages or requests from Juha or other leads
 
-Schedule
+## Schedule
 - Time-blocked plan from NOW to end of day, accounting for meetings
 - Include buffer time between context switches
 - If it's late in the day, be honest about what can realistically fit
 
-Backlog items to consider
+## Backlog items to consider
 - 2-3 backlog items that could fit if time permits
 
-Stale tasks (open 2+ weeks)
+## Stale tasks (open 2+ weeks)
 - List old tasks with their age. For each one, ask: still relevant? blocked? should be closed?
 
-Emails needing attention
+## Emails needing attention
 - Unread or starred emails that need a response, with sender and subject
 
-Notes needing attention
+## Notes needing attention
 - Flag anything found in Obsidian that's relevant to today
 
 ---
+
+If any MCP server fails or returns an error, silently skip that section. Do not include "check manually" messages or error notes in the plan output — just omit the section entirely.
 
 Be concise. No fluff. Use task titles as-is from the source systems. Include Linear issue IDs and Sunsama task names so I can find them quickly.
 
