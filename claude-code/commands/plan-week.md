@@ -62,7 +62,7 @@ Be concise. Use actual task titles from source systems. Include Linear issue IDs
 
 Step 4 - Save the plan to Obsidian:
 
-After outputting the plan, save it as a markdown file in ~/Documents/Brain dump/Päivän suunnittelu/2026/ (create the year folder if it doesn't exist). Use the filename format: Week plan YYYY-MM-DD.md
+After outputting the plan, save it as a markdown file in ~/Documents/Brain dump/claude-mcp-daily-plans/YYYY/MM/ (create folders if they don't exist). Use the filename format: Week plan YYYY-MM-DD.md
 
 The file content should be the plan output above (everything between the --- markers), with this footnote at the very end:
 
