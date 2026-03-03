@@ -60,7 +60,7 @@ Use Finnish date format (d.M.yyyy) for all dates. Format your output exactly lik
 
 If any MCP server fails or returns an error, silently skip that section. Do not include "check manually" messages or error notes in the plan output — just omit the section entirely.
 
-Be concise. Use actual task titles from source systems. Include Linear issue IDs.
+Be concise. Use actual task titles from source systems. For every task, include its source in parentheses, e.g. (Sunsama), (Linear), (Backlog). Include Linear issue IDs and link them as [DEV-123](https://linear.app/dude/issue/DEV-123).
 
 Step 4 - Save the plan to Obsidian:
 
