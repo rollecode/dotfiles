@@ -68,7 +68,9 @@ Format your output exactly like this:
 
 Only include sections that have content. If a section would be empty or an MCP server fails, omit it entirely. Do not include "check manually" messages or error notes. Do not add extra sections beyond the template above.
 
-Be concise. No fluff. Use task titles as-is from the source systems. For every task, include its source in parentheses, e.g. (Sunsama), (Linear), (Backlog). When referencing Linear issues, ALWAYS include the task name alongside the ID: [Task name DEV-123](https://linear.app/dude/issue/DEV-123). Never reference an issue by ID alone.
+Be concise. No fluff. Use task titles as-is from the source systems. For every task, include its source in parentheses, e.g. (Sunsama), (Linear), (Backlog).
+
+CRITICAL: Every single Linear issue ID that appears ANYWHERE in the plan MUST be a markdown link with the task name. Format: [Task name DEV-123](https://linear.app/dude/issue/DEV-123). This applies to ALL mentions - in schedule, overdue, stale, backlog, everywhere. Never write a bare ID like "DEV-123" without linking it.
 
 Step 4 - Save the plan to Obsidian:
 
