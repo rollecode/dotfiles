@@ -9,7 +9,7 @@ Follow these steps carefully:
 Step 1 - Gather all my tasks:
 - Use the Sunsama MCP to get tasks for each day this week (Monday through Friday)
 - Use the Sunsama MCP to get my full backlog
-- Use the Linear MCP to list issues in active states (in progress, todo, triage) - not just assigned to me, check the full team's board. Prioritize issues that are stale (created long ago), have due dates, or are marked high/urgent priority.
+- Use the Linear MCP to list issues in active states (in progress, todo, triage) - not just assigned to me, check the FULL team board across ALL categories. Make sure to search broadly - include issues from all labels/projects including sysop, marketing, tech stack, client projects, etc. Do multiple queries if needed to cover everything.
 - Use the Google Calendar MCP to get this week's events/meetings
 - Use the Gmail MCP to check for emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages from CTO Juha and key channels for anything flagged as important (READ ONLY - never send messages)
@@ -22,7 +22,14 @@ IGNORE and exclude these completely:
 - Tasks that are just URLs with no context
 - Vague tasks with no actionable content
 
-Only include WORK tasks: coding, design, client work, meetings, Linear issues, work communication, etc.
+Only include WORK tasks. Categorize tasks into these work categories:
+- Meetings - calendar events, calls
+- Project management - planning, reviews, Linear triage
+- Sysop - server maintenance, monitoring, infrastructure, security
+- Marketing - dude.fi website, social media, content
+- Blogging - blog posts, case studies, tech writing
+- Tech stack - air-light theme, starter themes, internal tools, open source repos
+- Client work - project-specific development and design tasks
 
 Analyze by:
 1. Which days are meeting-heavy vs have deep focus time available
@@ -35,12 +42,10 @@ Analyze by:
 
 Step 3 - Output a weekly overview:
 
-Use Finnish date format (d.M.yyyy) for all dates. Never use emdashes. Use regular dashes (-) everywhere. Write the plan in English. Use markdown checkbox lists for all tasks:
+Use Finnish date format (d.M.yyyy) for all dates. Never use emdashes. Use regular dashes (-) everywhere. Write the plan in English. Always leave one empty line after every heading. Use markdown checkbox lists for all tasks:
 - `- [ ]` for pending tasks
 - `- [>]` for tasks already in progress
 - `- [x]` for completed tasks
-
-When referencing Linear issues, ALWAYS include the task name alongside the ID: [Task name DEV-123](https://linear.app/dude/issue/DEV-123).
 
 Format your output exactly like this:
 
@@ -49,38 +54,51 @@ Format your output exactly like this:
 # Weekly plan - week of [Monday d.M.yyyy]
 
 ## This week's priorities
+
 - [ ] Top 3-5 things that must get done this week
 
 ## Day by day breakdown
 
 ### Monday d.M.yyyy
+
 - [ ] Key tasks and meetings
 
 ### Tuesday d.M.yyyy
+
 - [ ] Key tasks and meetings
 
 (continue for each weekday)
 
 ## Stale tasks (open 2+ weeks)
+
 - [ ] List with age. Still relevant? Blocked? Should be closed?
 
 ## At risk
+
 - [ ] Tasks that might slip if not actively managed
 - [ ] Overdue items carried from previous weeks
 
+## Analysis
+
+Write a brief analysis paragraph here covering:
+- Which days have the most focus time vs meeting-heavy days
+- What the top priorities for the week are and why
+- Any observations about task load, stale items, or risks
+- Recommendations for the week
+
 ---
 
-Only include sections that have content. If a section would be empty or an MCP server fails, omit it entirely. Do not include "check manually" messages or error notes. Do not add extra sections beyond the template above.
+Only include sections that have content. If a section would be empty or an MCP server fails, omit it entirely. Do not include "check manually" messages or error notes. Do not add extra sections beyond the template above. The Analysis section should ALWAYS be included.
 
 Be concise. Use actual task titles from source systems. For every task, include its source in parentheses, e.g. (Sunsama), (Linear), (Backlog).
 
-CRITICAL: Every single Linear issue ID that appears ANYWHERE in the plan MUST be a markdown link with the task name. Format: [Task name DEV-123](https://linear.app/dude/issue/DEV-123). This applies to ALL mentions - in priorities, day breakdown, stale, at risk, everywhere. Never write a bare ID like "DEV-123" without linking it.
+CRITICAL: Every single Linear issue ID that appears ANYWHERE in the plan MUST be a markdown link with the task name. Format: [Task name DEV-123](https://linear.app/dude/issue/DEV-123). This applies to ALL mentions - in priorities, day breakdown, stale, at risk, analysis, everywhere. Never write a bare ID like "DEV-123" without linking it.
 
 Step 4 - Save the plan to Obsidian:
 
-After outputting the plan, save it as a markdown file in ~/Documents/Brain dump/claude-mcp-daily-plans/YYYY/MM/ (create folders if they don't exist). Use the filename format: Week plan d.M.yyyy.md (e.g. Week plan 4.3.2026.md).
+After outputting the plan, save EVERYTHING between the --- markers as a markdown file in ~/Documents/Brain dump/claude-mcp-daily-plans/YYYY/MM/ (create folders if they don't exist). Use the filename format: Week plan d.M.yyyy.md (e.g. Week plan 4.3.2026.md).
 
-The file content should be the plan output above (everything between the --- markers), with this footnote at the very end:
+The saved file must contain the COMPLETE plan including the Analysis section. Do not leave anything out that was shown to the user. Add this footnote at the very end:
 
 ---
 *Plan generated by Claude Code on macOS*
