@@ -6,6 +6,9 @@ Additional instructions from user (if any): $ARGUMENTS
 
 Follow these steps carefully:
 
+Step 0 - Pre-flight check:
+Before doing anything else, make a quick test call to each MCP server (e.g. sunsama_get_user, list-calendars, a simple Gmail search, slack_list_channels, a simple Obsidian search, list_issues). If ANY server fails or is not connected, STOP immediately. Do not generate a partial plan. Instead, list which servers failed and how to fix them, then ask the user to resolve the issues before retrying.
+
 Step 1 - Gather all my tasks:
 - Use the Sunsama MCP to get tasks for each day this week (Monday through Friday)
 - Use the Sunsama MCP to get my full backlog
