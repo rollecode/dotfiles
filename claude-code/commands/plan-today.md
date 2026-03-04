@@ -11,6 +11,7 @@ Step 1 - Gather all my tasks:
 - Use the Sunsama MCP to get my backlog (sunsama_get_backlog)
 - Use the Linear MCP to list issues in active states (in progress, todo, triage) - not just assigned to me, check the FULL team board across ALL categories. Make sure to search broadly - include issues from all labels/projects including sysop, marketing, tech stack, client projects, etc. Do multiple queries if needed to cover everything.
 - Use the Google Calendar MCP to get today's events/meetings
+- Use the Google Calendar MCP to also get the REST OF THIS WEEK's events/meetings (tomorrow through Friday) - you need this to assess workload and whether to recommend stretching today
 - Use the Gmail MCP to check for unread or starred emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages in key channels and DMs, especially from CTO Juha - anything he flags as important or urgent should be prioritized (READ ONLY - never send messages)
 - Use the Obsidian MCP to search for any notes with today's date or recent planning notes
@@ -42,12 +43,22 @@ Prioritize by:
 8. Dependencies (if task X blocks others, do it first)
 9. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
 
+Important scheduling rules:
+- Timely (time tracking/timesheets) should ALWAYS be scheduled as the LAST work task of the day, right before end of workday. It takes about 15 minutes.
+- The user is an entrepreneur. The default workday ends at 18:00, but it CAN be stretched if needed. To decide whether to recommend stretching, look at the rest of the week's calendar and task load. If tomorrow and upcoming days are heavy, recommend finishing on time. If there's slack later in the week or today has critical deadlines that won't fit, recommend stretching with a specific end time.
+- The user does a daily 2-5km run Mon-Fri after work. Keep this in mind when recommending end-of-day timing - if recommending a stretch, factor in that the run still needs to happen after work.
+
 Step 3 - Output a clear daily plan:
 
 Use Finnish date format (d.M.yyyy) for all dates. Never use emdashes. Use regular dashes (-) everywhere. Write the plan in English. Always leave one empty line after every heading. Use markdown checkbox lists for all tasks:
 - `- [ ]` for pending tasks
 - `- [>]` for tasks already in progress
 - `- [x]` for completed tasks
+
+The Schedule section must be a proper timeblocked schedule with specific times for each task, e.g.:
+- [ ] 09:00-09:30 - Stand-up meeting (Calendar)
+- [ ] 09:30-11:00 - Task name (Linear)
+- [ ] 17:45-18:00 - Timely timesheets (Daily)
 
 Format your output exactly like this:
 
@@ -61,8 +72,8 @@ Format your output exactly like this:
 
 ## Schedule
 
-- [ ] Time-blocked plan from NOW to end of day, accounting for meetings
-- [ ] Include buffer time between context switches
+- [ ] HH:MM-HH:MM - Timeblocked tasks from NOW to end of day
+- [ ] Always end with Timely timesheets as the last task
 
 ## Backlog items to consider
 
@@ -82,6 +93,7 @@ Write a brief analysis paragraph here covering:
 - How much focus time is realistically available today (accounting for meetings)
 - What the top priority should be and why
 - Any observations about task load, stale items, or risks
+- Whether to finish at 18:00 or stretch today, based on the rest of the week's load. If stretching, suggest a specific end time and note the after-work run.
 - Recommendations for the day
 
 ---
