@@ -1,3 +1,10 @@
+### 2.4.2: 2026-03-04
+
+* Improve planner prompts: timeblocked schedule, work categories, analysis section, week lookahead
+* Add CTO role context and full team Linear board search
+* Filter personal tasks, use checkbox lists, Finnish date format
+* Silently skip failed MCP sections
+
 ### 2.4.1: 2026-03-03
 
 * Add `append-changelog.sh` hook for auto-logging completed tasks to Obsidian Life changelog
