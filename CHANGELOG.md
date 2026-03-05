@@ -1,3 +1,8 @@
+### 2.4.3: 2026-03-05
+
+* Fix Discord zombie processes on boot by removing redundant background fork from exec-once
+* Add auto-update wrapper script for Discord to prevent stuck splash screen on version mismatch
+
 ### 2.4.2: 2026-03-04
 
 * Improve planner prompts: timeblocked schedule, work categories, analysis section, week lookahead
