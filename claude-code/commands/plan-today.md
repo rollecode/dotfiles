@@ -39,12 +39,13 @@ Prioritize by:
 1. Remaining time today (from current time to end of workday) - be realistic, don't overschedule
 2. Hard deadlines and due dates (anything due today or overdue is top priority)
 3. Calendar commitments (meetings are immovable, plan around them)
-4. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
-5. Linear issue priority levels (urgent > high > medium > low)
-6. Task age - how long a task has been open. Old tasks (2+ weeks) should be flagged. Ask whether they're still relevant or should be closed/archived.
-7. Sunsama time estimates (fit tasks into available focus blocks)
-8. Dependencies (if task X blocks others, do it first)
-9. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
+4. Billable client work ALWAYS takes priority over internal tasks. Internal work (DEV- issues, "Tekninen tiimi" tasks, new tech experiments, tooling upgrades) should be scheduled only after client work is covered - unless the internal task is critical, blocking the team, or directly related to a client project.
+5. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
+6. Linear issue priority levels (urgent > high > medium > low)
+7. Task age - how long a task has been open. Old tasks (2+ weeks) should be flagged. Ask whether they're still relevant or should be closed/archived.
+8. Sunsama time estimates (fit tasks into available focus blocks)
+9. Dependencies (if task X blocks others, do it first)
+10. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
 
 Important scheduling rules:
 - Timely (time tracking/timesheets) should ALWAYS be scheduled as the LAST work task of the day, right before end of workday. It takes about 15 minutes.

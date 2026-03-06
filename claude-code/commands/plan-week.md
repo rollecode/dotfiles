@@ -37,10 +37,11 @@ Only include WORK tasks. Categorize tasks into these work categories:
 Analyze by:
 1. Which days are meeting-heavy vs have deep focus time available
 2. Hard deadlines and due dates across the week
-3. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
-4. Linear sprint/cycle commitments
-5. Task dependencies and logical ordering
-6. Task age - flag anything open 2+ weeks. Old tasks may be stale, blocked, or no longer relevant.
+3. Billable client work ALWAYS takes priority over internal tasks. Internal work (DEV- issues, "Tekninen tiimi" tasks, new tech experiments, tooling upgrades) should be scheduled only after client work is covered - unless the internal task is critical, blocking the team, or directly related to a client project.
+4. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
+5. Linear sprint/cycle commitments
+6. Task dependencies and logical ordering
+7. Task age - flag anything open 2+ weeks. Old tasks may be stale, blocked, or no longer relevant.
 7. Realistic daily capacity (don't overload any single day)
 
 Step 3 - Output a weekly overview:
