@@ -1,3 +1,8 @@
+### 2.4.4: 2026-03-07
+
+* Disable hy3 plugin, switch to dwindle layout (hy3 incompatible with hyprland 0.54.x)
+* Load plugins via hyprpm instead of manual hyprctl plugin load
+
 ### 2.4.3: 2026-03-05
 
 * Fix Discord zombie processes on boot by removing redundant background fork from exec-once
