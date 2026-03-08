@@ -1,3 +1,8 @@
+### 2.4.5: 2026-03-08
+
+* Disable F3 window expose and hot corner (no working solution available)
+* Remove `window-overview.sh` script
+
 ### 2.4.4: 2026-03-07
 
 * Disable hy3 plugin, switch to dwindle layout (hy3 incompatible with hyprland 0.54.x)

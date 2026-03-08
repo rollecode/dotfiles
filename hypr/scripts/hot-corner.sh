@@ -23,7 +23,7 @@ while true; do
         # Check if cursor is in top-right corner
         if [ "$cursor_x" -ge $((screen_width - THRESHOLD)) ] && [ "$cursor_y" -le $THRESHOLD ]; then
             if [ "$TRIGGERED" = false ]; then
-                ~/.config/hypr/scripts/window-overview.sh >/dev/null 2>&1
+                hyprswitch gui --mod-key alt_l --key F3 --close default --filter-current-workspace --ignore-workspaces >/dev/null 2>&1
                 TRIGGERED=true
             fi
         else
