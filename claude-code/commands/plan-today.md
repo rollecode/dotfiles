@@ -17,6 +17,7 @@ Step 1 - Gather all my tasks:
 - Use the Google Calendar MCP to also get the REST OF THIS WEEK's events/meetings (tomorrow through Friday) - you need this to assess workload and whether to recommend stretching today
 - Use the Gmail MCP to check for unread or starred emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages in key channels and DMs, look for anything important or urgent across all channels and DMs (READ ONLY - never send messages)
+- Use the Help Scout MCP to check for recent active/pending conversations assigned to me (Rolle, roni@dude.fi), plus all active, pending, and recently closed (within 7 days) conversations. Luka and Maria handle most customer service, but some tickets need CTO/entrepreneur attention - pricing questions, technical escalations, strategic decisions, etc.
 - Use the Obsidian MCP to search for any notes with today's date or recent planning notes
 
 Step 2 - Filter and analyze:
@@ -34,6 +35,7 @@ Only include WORK tasks. Categorize tasks into these work categories:
 - Blogging - blog posts, case studies, tech writing
 - Tech stack - air-light theme, starter themes, internal tools, open source repos
 - Client work - project-specific development and design tasks
+- Support - Help Scout tickets assigned to me that need response or follow-up
 
 Prioritize by:
 1. Remaining time today (from current time to end of workday) - be realistic, don't overschedule
@@ -48,6 +50,8 @@ Prioritize by:
 10. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
 
 Important scheduling rules:
+- When scheduling Timely at end of day, remember to include time spent on Help Scout support tickets in the time entries.
+- William can help with sysop tasks - consider delegating sysop work to him when appropriate.
 - Timely (time tracking/timesheets) should ALWAYS be scheduled as the LAST work task of the day, right before end of workday. It takes about 15 minutes.
 - The user is an entrepreneur. The default workday ends at 18:00, but it CAN be stretched if needed. To decide whether to recommend stretching, look at the rest of the week's calendar and task load. If tomorrow and upcoming days are heavy, recommend finishing on time. If there's slack later in the week or today has critical deadlines that won't fit, recommend stretching with a specific end time.
 - The user does a daily 2-5km run Mon-Fri after work. Keep this in mind when recommending end-of-day timing - if recommending a stretch, factor in that the run still needs to happen after work.
@@ -90,6 +94,10 @@ Format your output exactly like this:
 ## Emails needing attention
 
 - [ ] Unread or starred emails that need a response, with sender and subject
+
+## Support tickets needing attention
+
+- [ ] Help Scout tickets that need CTO/entrepreneur input (pricing, technical escalations, strategic decisions)
 
 ## Analysis
 

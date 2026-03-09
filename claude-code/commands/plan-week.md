@@ -16,6 +16,7 @@ Step 1 - Gather all my tasks:
 - Use the Google Calendar MCP to get this week's events/meetings
 - Use the Gmail MCP to check for emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages from all channels and DMs for anything important or urgent (READ ONLY - never send messages)
+- Use the Help Scout MCP to check for all active, pending, and recently closed (within 7 days) conversations. Luka and Maria handle most customer service, but some tickets need CTO/entrepreneur attention - pricing questions, technical escalations, strategic decisions, etc.
 - Use the Obsidian MCP to search for weekly goals or planning notes
 
 Step 2 - Filter and analyze:
@@ -33,6 +34,7 @@ Only include WORK tasks. Categorize tasks into these work categories:
 - Blogging - blog posts, case studies, tech writing
 - Tech stack - air-light theme, starter themes, internal tools, open source repos
 - Client work - project-specific development and design tasks
+- Support - Help Scout tickets that need CTO/entrepreneur input
 
 Analyze by:
 1. Which days are meeting-heavy vs have deep focus time available
@@ -43,6 +45,8 @@ Analyze by:
 6. Task dependencies and logical ordering
 7. Task age - flag anything open 2+ weeks. Old tasks may be stale, blocked, or no longer relevant.
 7. Realistic daily capacity (don't overload any single day)
+8. William can help with sysop tasks - consider delegating sysop work to him when appropriate
+9. Remember to account for Help Scout support ticket work when planning Timely time entries
 
 Step 3 - Output a weekly overview:
 
@@ -76,6 +80,10 @@ Format your output exactly like this:
 ## Stale tasks (open 2+ weeks)
 
 - [ ] List with age. Still relevant? Blocked? Should be closed?
+
+## Support tickets needing attention
+
+- [ ] Help Scout tickets that need CTO/entrepreneur input (pricing, technical escalations, strategic decisions)
 
 ## At risk
 
