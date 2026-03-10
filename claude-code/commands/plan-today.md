@@ -18,7 +18,7 @@ Step 1 - Gather all my tasks:
 - Use the Gmail MCP to check for unread or starred emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages in key channels and DMs, look for anything important or urgent across all channels and DMs (READ ONLY - never send messages)
 - Use the Help Scout MCP to check for recent active/pending conversations assigned to me (Rolle, roni@dude.fi), plus all active, pending, and recently closed (within 7 days) conversations. Luka and Maria handle most customer service, but some tickets need CTO/entrepreneur attention - pricing questions, technical escalations, strategic decisions, etc.
-- Use the Obsidian MCP to search for any notes with today's date or recent planning notes
+- Use the Obsidian MCP to search for recently created and edited notes from this week (Monday to today). Look for meeting notes, transcriptions, memos, client notes, or anything that might contain action items, promises to customers, or tasks that haven't been captured in Sunsama/Linear yet. Flag anything important that doesn't have a corresponding task.
 
 Step 2 - Filter and analyze:
 
