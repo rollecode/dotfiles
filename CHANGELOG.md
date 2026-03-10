@@ -1,3 +1,13 @@
+### 2.4.6: 2026-03-10
+
+* Add `/finish-day` command for end-of-day Timely + changelog wrap-up
+* Add revenue-first prioritization tiers to planner commands
+* Add workaholic protection with strict overtime rules
+* Add Help Scout support to planner commands
+* Add GitHub MCP server for commits and releases
+* Emphasize Obsidian note scanning for uncaptured action items
+* Emphasize Sunsama backlog check in planners
+
 ### 2.4.5: 2026-03-08
 
 * Disable F3 window expose and hot corner (no working solution available)

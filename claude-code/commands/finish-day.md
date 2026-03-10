@@ -35,7 +35,7 @@ Group the day's work into logical time entries. Rules:
 - Round to nearest 15 minutes (0.25h increments)
 - Map to the correct Timely project. Match client work to client projects, internal work to internal projects. If unsure, list the available projects and ask.
 - Add relevant labels/tags to each entry
-- Write clear, concise notes describing what was done. Include Linear issue IDs (e.g. DEV-123) and Help Scout ticket numbers where applicable.
+- Write clear, concise notes describing what was done. Include Linear issue IDs (e.g. DEV-123) and Help Scout ticket numbers where applicable. Do NOT add meta-notes like "Filled via Claude" or "Automated entry".
 - The total should realistically reflect a workday (typically 7-8 hours). Don't inflate or deflate.
 - Subtract lunch break (usually ~30min-1h, not logged)
 - Do NOT log personal tasks, breaks, or non-work activities
@@ -82,3 +82,7 @@ Important:
 - If the day seems heavy (over 9 hours), flag it - the user might be overworking
 - Do not duplicate entries that are already in the changelog
 - Keep changelog entries concise and action-oriented, matching the existing style
+- Changelog entries must use present tense ("Fix login bug", not "Fixed login bug")
+- Reference Linear/GitHub task IDs in CAPS: ", Closes DEV-123" for completed tasks or ", Ref: DEV-123" for work done but not closed
+- Help Scout tickets: "Reply to Help Scout ticket #12345 - Subject"
+- Do NOT add meta-entries about the process itself (e.g. "Fill Timely timesheets", "Run finish-day command", "Update changelog"). Only log actual work accomplished.
