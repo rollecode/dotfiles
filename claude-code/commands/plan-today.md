@@ -11,7 +11,7 @@ Before doing anything else, make a quick test call to each MCP server (e.g. suns
 
 Step 1 - Gather all my tasks:
 - Use the Sunsama MCP to get today's tasks (sunsama_get_tasks with today's date)
-- Use the Sunsama MCP to get my backlog (sunsama_get_backlog)
+- Use the Sunsama MCP to get my backlog (sunsama_get_backlog) - IMPORTANT: Always check the backlog carefully. It often contains important tasks that haven't been scheduled yet. Flag any high-priority or revenue-generating backlog items in the plan.
 - Use the Linear MCP to list issues in active states (in progress, todo, triage) - not just assigned to me, check the FULL team board across ALL categories. Make sure to search broadly - include issues from all labels/projects including sysop, marketing, tech stack, client projects, etc. Do multiple queries if needed to cover everything.
 - Use the Google Calendar MCP to get today's events/meetings
 - Use the Google Calendar MCP to also get the REST OF THIS WEEK's events/meetings (tomorrow through Friday) - you need this to assess workload and whether to recommend stretching today
