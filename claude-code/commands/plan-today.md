@@ -37,17 +37,24 @@ Only include WORK tasks. Categorize tasks into these work categories:
 - Client work - project-specific development and design tasks
 - Support - Help Scout tickets assigned to me that need response or follow-up
 
-Prioritize by:
+Use this revenue-first prioritization framework. Every task falls into one of three tiers:
+
+Tier 1 - Makes money now: Billable client work, client-facing bug fixes, invoiceable deliverables, client meetings, Help Scout tickets from paying clients. These ALWAYS come first.
+Tier 2 - Makes money later: Sales meetings, proposals, marketing (dude.fi, blog, social), new client onboarding, strategic partnerships, infrastructure that unblocks client work. Schedule after Tier 1.
+Tier 3 - Everything else: Internal tooling (DEV- issues, "Tekninen tiimi"), tech stack experiments, open source, internal process improvements, non-urgent sysop. Only if Tier 1 and 2 are covered.
+
+Within each tier, further prioritize by:
 1. Remaining time today (from current time to end of workday) - be realistic, don't overschedule
 2. Hard deadlines and due dates (anything due today or overdue is top priority)
 3. Calendar commitments (meetings are immovable, plan around them)
-4. Billable client work ALWAYS takes priority over internal tasks. Internal work (DEV- issues, "Tekninen tiimi" tasks, new tech experiments, tooling upgrades) should be scheduled only after client work is covered - unless the internal task is critical, blocking the team, or directly related to a client project.
-5. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
-6. Linear issue priority levels (urgent > high > medium > low)
+4. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
+5. Linear issue priority levels (urgent > high > medium > low)
+6. Dependencies (if task X blocks others, do it first)
 7. Task age - how long a task has been open. Old tasks (2+ weeks) should be flagged. Ask whether they're still relevant or should be closed/archived.
 8. Sunsama time estimates (fit tasks into available focus blocks)
-9. Dependencies (if task X blocks others, do it first)
-10. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
+9. Energy management (suggest deep work for morning focus blocks, lighter tasks for afternoons)
+
+Exception: If a Tier 3 task is critical, blocking the team, or a security issue, it can be promoted.
 
 Important scheduling rules:
 - When scheduling Timely at end of day, remember to include time spent on Help Scout support tickets in the time entries.

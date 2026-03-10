@@ -36,17 +36,24 @@ Only include WORK tasks. Categorize tasks into these work categories:
 - Client work - project-specific development and design tasks
 - Support - Help Scout tickets that need CTO/entrepreneur input
 
-Analyze by:
+Use this revenue-first prioritization framework. Every task falls into one of three tiers:
+
+Tier 1 - Makes money now: Billable client work, client-facing bug fixes, invoiceable deliverables, client meetings, Help Scout tickets from paying clients. These ALWAYS come first.
+Tier 2 - Makes money later: Sales meetings, proposals, marketing (dude.fi, blog, social), new client onboarding, strategic partnerships, infrastructure that unblocks client work. Schedule after Tier 1.
+Tier 3 - Everything else: Internal tooling (DEV- issues, "Tekninen tiimi"), tech stack experiments, open source, internal process improvements, non-urgent sysop. Only if Tier 1 and 2 are covered.
+
+Within each tier, analyze by:
 1. Which days are meeting-heavy vs have deep focus time available
 2. Hard deadlines and due dates across the week
-3. Billable client work ALWAYS takes priority over internal tasks. Internal work (DEV- issues, "Tekninen tiimi" tasks, new tech experiments, tooling upgrades) should be scheduled only after client work is covered - unless the internal task is critical, blocking the team, or directly related to a client project.
-4. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
-5. Linear sprint/cycle commitments
-6. Task dependencies and logical ordering
-7. Task age - flag anything open 2+ weeks. Old tasks may be stale, blocked, or no longer relevant.
+3. Slack context (any important or urgent messages from anyone - CEO Juha, team members, clients)
+4. Linear sprint/cycle commitments
+5. Task dependencies and logical ordering
+6. Task age - flag anything open 2+ weeks. Old tasks may be stale, blocked, or no longer relevant.
 7. Realistic daily capacity (don't overload any single day)
 8. William can help with sysop tasks - consider delegating sysop work to him when appropriate
 9. Remember to account for Help Scout support ticket work when planning Timely time entries
+
+Exception: If a Tier 3 task is critical, blocking the team, or a security issue, it can be promoted.
 
 Step 3 - Output a weekly overview:
 
