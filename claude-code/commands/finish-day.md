@@ -85,4 +85,5 @@ Important:
 - Changelog entries must use present tense ("Fix login bug", not "Fixed login bug")
 - Reference Linear/GitHub task IDs in CAPS: ", Closes DEV-123" for completed tasks or ", Ref: DEV-123" for work done but not closed
 - Help Scout tickets: "Reply to Help Scout ticket #12345 - Subject"
+- Do NOT add source labels in brackets like (Calendar), (Sunsama), (Linear) etc. to changelog entries. Those are for the daily plan, not the changelog.
 - Do NOT add meta-entries about the process itself (e.g. "Fill Timely timesheets", "Run finish-day command", "Update changelog"). Only log actual work accomplished.
