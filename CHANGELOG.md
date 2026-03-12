@@ -1,3 +1,11 @@
+### 2.4.7: 2026-03-12
+
+* Add global `CLAUDE.md` with MCP-first tool preferences
+* Update task completion to sync both changelog and daily plan
+* Enforce English and present tense in changelog entries
+* Remove source labels from changelog entries in `/finish-day`
+* Switch Slack MCP from bot token to user token for all-channel access
+
 ### 2.4.6: 2026-03-10
 
 * Add `/finish-day` command for end-of-day Timely + changelog wrap-up
