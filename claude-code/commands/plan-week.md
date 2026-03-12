@@ -13,6 +13,7 @@ Step 1 - Gather all my tasks:
 - Use the Sunsama MCP to get tasks for each day this week (Monday through Friday)
 - Use the Sunsama MCP to get my full backlog - IMPORTANT: Always check the backlog carefully. It often contains important tasks that haven't been scheduled yet. Flag any high-priority or revenue-generating backlog items in the plan.
 - Use the Linear MCP to list issues in active states (in progress, todo, triage) - not just assigned to me, check the FULL team board across ALL categories. Make sure to search broadly - include issues from all labels/projects including sysop, marketing, tech stack, client projects, etc. Do multiple queries if needed to cover everything.
+- Use the Linear MCP to check my inbox/notifications for unread items, comments that need my response, mentions, or issues that need my reaction or action. Flag anything requiring attention.
 - Use the Google Calendar MCP to get this week's events/meetings
 - Use the Gmail MCP to check for emails that need response (READ ONLY - never send, draft, or modify emails)
 - Use the Slack MCP to check recent messages from all channels and DMs for anything important or urgent (READ ONLY - never send messages)
