@@ -11,6 +11,13 @@
 - Use present tense in commits
 - Use sentence case for headings
 
+## Task completion tracking
+
+- When the user says something is done, finished, or indicates a task is completed (e.g. "done with X", "finished the meeting", "closed that ticket"), update BOTH:
+  1. Today's CHANGELOG.md entry (~/Documents/Brain dump/CHANGELOG.md) - append a `* ` bullet in English, present tense
+  2. Today's daily plan if it exists (~/Documents/Brain dump/claude-mcp-daily-plans/) - change the matching task checkbox from `- [ ]` or `- [>]` to `- [x]`
+- This applies whether the user uses `/done` or just mentions completion in conversation
+
 ## Communication
 
 - Write in English by default
