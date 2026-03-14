@@ -58,5 +58,5 @@ if [[ -f /tmp/hypr-window-positions.json ]]; then
     done
 fi
 
-# After unlock, restart DMS (disabled for testing - check if bug persists without this)
-# dms restart
+# After unlock, restart DMS to restore HUD (volume control, etc.)
+dms restart
