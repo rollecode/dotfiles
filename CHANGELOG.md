@@ -2,6 +2,7 @@
 
 * Re-enable DMS restart after hyprlock unlock to restore volume HUD
 * Add free time planner command (`/plan-freetime`) for personal task planning
+* Fix black border on area screenshots by disabling slurp layer animation
 
 ### 2.4.7: 2026-03-12
 
