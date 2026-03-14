@@ -1,3 +1,7 @@
+### 2.4.8: 2026-03-14
+
+* Re-enable DMS restart after hyprlock unlock to restore volume HUD
+
 ### 2.4.7: 2026-03-12
 
 * Add global `CLAUDE.md` with MCP-first tool preferences
