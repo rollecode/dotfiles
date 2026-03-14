@@ -1,6 +1,7 @@
 ### 2.4.8: 2026-03-14
 
 * Re-enable DMS restart after hyprlock unlock to restore volume HUD
+* Add free time planner command (`/plan-freetime`) for personal task planning
 
 ### 2.4.7: 2026-03-12
 
