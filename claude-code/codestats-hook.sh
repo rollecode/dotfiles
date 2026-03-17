@@ -81,17 +81,22 @@ fi
 # Determine language from file extension
 get_language() {
     local filepath="$1"
-    local ext="${filepath##*.}"
     local filename=$(basename "$filepath")
+    local ext="${filename##*.}"
 
     # Special cases for filenames without extensions or special files
     if [ "$filename" = "$ext" ]; then
         case "$filename" in
-            Dockerfile*) echo "Dockerfile"; return ;;
+            Dockerfile*) echo "Docker"; return ;;
             Makefile*) echo "Makefile"; return ;;
-            .bashrc|.bash_profile|.bash_aliases) echo "Bash"; return ;;
+            LICENSE*) echo "Plain text"; return ;;
+            .bashrc|.bash_profile|.bash_aliases|.inputrc) echo "Bash"; return ;;
             .zshrc|.zprofile) echo "Zsh"; return ;;
             .vimrc) echo "Vim script"; return ;;
+            .gitignore|.gitattributes) echo "Git config"; return ;;
+            .prettierignore|.eslintignore|.stylelintignore|.phpcsignore|.distignore) echo "Plain text"; return ;;
+            .prettierrc|.eslintrc|.stylelintrc|.babelrc|.parcelrc|.sassrc|.luacheckrc|.screenrc|.nvmrc) echo "JSON"; return ;;
+            .editorconfig|.env*) echo "Plain text"; return ;;
             *) echo "Plain text"; return ;;
         esac
     fi
@@ -102,11 +107,33 @@ get_language() {
         ts|tsx) echo "TypeScript" ;;
         py) echo "Python" ;;
         rb) echo "Ruby" ;;
-        sh) echo "Shell" ;;
+        sh|bash) echo "Shell" ;;
         md|markdown) echo "Markdown" ;;
-        yml) echo "YAML" ;;
-        # For everything else, just capitalize the extension
-        *) echo "$ext" | tr '[:lower:]' '[:upper:]' ;;
+        yml|yaml) echo "YAML" ;;
+        json|jsonc) echo "JSON" ;;
+        lua) echo "Lua" ;;
+        php) echo "PHP" ;;
+        html|htm) echo "HTML" ;;
+        css) echo "CSS" ;;
+        scss|sass) echo "SCSS" ;;
+        xml) echo "XML" ;;
+        sql) echo "SQL" ;;
+        rs) echo "Rust" ;;
+        go) echo "Go" ;;
+        java) echo "Java" ;;
+        c|h) echo "C" ;;
+        cpp|cc|cxx|hpp) echo "C++" ;;
+        swift) echo "Swift" ;;
+        toml) echo "TOML" ;;
+        ini|cfg|conf) echo "Configuration" ;;
+        csv) echo "CSV" ;;
+        txt|text|log) echo "Plain text" ;;
+        vim) echo "Vim script" ;;
+        fish) echo "Shell" ;;
+        plist|entitlements) echo "XML" ;;
+        desktop) echo "Configuration" ;;
+        timer|watch|service) echo "Systemd" ;;
+        *) echo "Plain text" ;;
     esac
 }
 
@@ -153,8 +180,8 @@ if [ "$HTTP_CODE" = "201" ]; then
     STORED_DATE=""
     STORED_XP=0
     if [ -f "$XP_FILE" ]; then
-        STORED_DATE=$(head -1 "$XP_FILE")
-        STORED_XP=$(tail -1 "$XP_FILE")
+        STORED_DATE=$(sed -n '1p' "$XP_FILE")
+        STORED_XP=$(sed -n '2p' "$XP_FILE")
     fi
     if [ "$STORED_DATE" != "$TODAY" ]; then
         STORED_XP=0
