@@ -1,3 +1,9 @@
+### 2.4.9: 2026-03-17
+
+* Fix Code::Stats language detection leaking file paths as language names
+* Fix XP counter reading wrong line from daily counter file
+* Add comprehensive file extension to language mapping
+
 ### 2.4.8: 2026-03-14
 
 * Re-enable DMS restart after hyprlock unlock to restore volume HUD
