@@ -24,3 +24,5 @@
 - Finnish date format (d.M.yyyy)
 - Never use emdashes, use regular dashes
 - No fluff, be concise
+- Always run `date +%H:%M` to check the actual time before mentioning it. Never guess or approximate times.
+- Always mention task name, not just ID (e.g. "DEV-232 Lisaosien paivittaja scriptin kautta", not just "DEV-232")
