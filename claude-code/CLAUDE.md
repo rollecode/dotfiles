@@ -26,4 +26,5 @@
 - No fluff, be concise
 - Always run `date +%H:%M` to check the actual time before mentioning it. Never guess or approximate times.
 - Always mention task name, not just ID (e.g. "DEV-232 Lisäosien päivittäjä scriptin kautta", not just "DEV-232")
+- Always use proper ääkköset (ä, ö, å) in Finnish words. Never write "paivittaja" when it should be "päivittäjä".
 - NEVER blindly suggest tasks. Before suggesting what to work on, ALWAYS check the current status first: git log, Linear status, Sunsama completion state. Tasks mentioned earlier in the conversation may already be done. Verify before recommending.

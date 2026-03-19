@@ -1,3 +1,14 @@
+### 2.5.0: 2026-03-19
+
+* Add ääkköset rule and task status verification to global `CLAUDE.md`
+* Add `/finish-day` command for end-of-day Timely + changelog wrap-up
+* Add task completion tracking to sync changelog and daily plan
+* Add GitHub MCP server for commits and releases
+* Switch Slack MCP from bot token to user token for all-channel access
+* Add revenue-first prioritization tiers to planner commands
+* Add Help Scout, Linear inbox, and Obsidian note scanning to planners
+* Enforce English, present tense, and no source labels in changelog entries
+
 ### 2.4.9: 2026-03-17
 
 * Fix Code::Stats language detection leaking file paths as language names
