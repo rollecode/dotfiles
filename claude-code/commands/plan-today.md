@@ -24,6 +24,7 @@ Step 1 - Gather all my tasks:
 - Use the Slack MCP to check recent messages in key channels and DMs, look for anything important or urgent across all channels and DMs (READ ONLY - never send messages)
 - Use the Help Scout MCP to check for recent active/pending conversations assigned to me (Rolle, roni@dude.fi), plus all active, pending, and recently closed (within 7 days) conversations. Luka and Maria handle most customer service, but some tickets need CTO/entrepreneur attention - pricing questions, technical escalations, strategic decisions, etc.
 - Use the Obsidian MCP to search for recently created and edited notes from this week (Monday to today). Look for meeting notes, transcriptions, memos, client notes, or anything that might contain action items, promises to customers, or tasks that haven't been captured in Sunsama/Linear yet. Flag anything important that doesn't have a corresponding task.
+- Check yesterday's daily plan and this week's weekly plan if they exist (in ~/Documents/Brain dump/claude-mcp-daily-plans/). Look for tasks marked `- [ ]` or `- [>]` that were NOT completed. These carry-over items should be prioritized in today's plan - they were already deemed important enough to schedule.
 
 Step 2 - Filter and analyze:
 
