@@ -1,3 +1,10 @@
+### 2.5.1: 2026-03-24
+
+* Enforce exhaustive fetching of all Linear issues and Sunsama backlog with pagination
+* Reference previous day/week plans for carry-over tasks
+* Exclude planning meta-entries from changelog
+* Switch Gmail MCP to actively maintained ArtyMcLabin fork (pure stdio, no port)
+
 ### 2.5.0: 2026-03-19
 
 * Add ääkköset rule and task status verification to global `CLAUDE.md`
