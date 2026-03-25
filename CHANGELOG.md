@@ -1,3 +1,7 @@
+### 2.5.2: 2026-03-25
+
+* Move planner commands and CLAUDE.md to separate `claude-day-planner` repo
+
 ### 2.5.1: 2026-03-24
 
 * Enforce exhaustive fetching of all Linear issues and Sunsama backlog with pagination
