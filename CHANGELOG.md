@@ -1,3 +1,7 @@
+### 2.5.3: 2026-04-03
+
+* Remove non-existent `dms/outputs.conf` source reference from Hyprland config
+
 ### 2.5.2: 2026-03-25
 
 * Move planner commands and CLAUDE.md to separate `claude-day-planner` repo
