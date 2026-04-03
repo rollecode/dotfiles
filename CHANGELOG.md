@@ -1,3 +1,7 @@
+### 2.5.5: 2026-04-03
+
+* Add safeguard to prevent file paths leaking as language names to Code::Stats
+
 ### 2.5.4: 2026-04-03
 
 * Use `dms-minimize` for hyprbar minimize button instead of `toggle-minimize.sh`
