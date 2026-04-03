@@ -1,6 +1,7 @@
 ### 2.5.5: 2026-04-03
 
 * Add safeguard to prevent file paths leaking as language names to Code::Stats
+* Set WezTerm opacity to 0.65 on macOS for `qllervo` user
 
 ### 2.5.4: 2026-04-03
 

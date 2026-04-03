@@ -9,8 +9,13 @@ function M.apply(config)
   -- macOS background blur
   config.macos_window_background_blur = 60
 
-  -- Opacity
-  config.window_background_opacity = 1.0
+  -- Opacity (translucent for qllervo, opaque for others)
+  local username = os.getenv("USER") or ""
+  if username:lower() == "qllervo" then
+    config.window_background_opacity = 0.65
+  else
+    config.window_background_opacity = 1.0
+  end
 
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
