@@ -69,6 +69,7 @@ LAST_XP=""
 if [ "$SESSION_XP" -gt 0 ]; then
     XP_PART="${YELLOW}XP: ${SESSION_XP}${RESET}"
     [ -n "$LAST_XP" ] && [ "$LAST_XP" -gt 0 ] 2>/dev/null && XP_PART="${XP_PART} ${YELLOW}+${LAST_XP}${RESET}"
+    [[ "$LAST_LANG" == */* ]] && LAST_LANG=""
     [ -n "$LAST_LANG" ] && XP_PART="${XP_PART} ${DIM}(${LAST_LANG})${RESET}"
     LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${XP_PART}"
 fi

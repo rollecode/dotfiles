@@ -139,6 +139,12 @@ get_language() {
 
 LANGUAGE=$(get_language "$FILE_PATH")
 
+# Safeguard: never send a path as a language name
+if [[ "$LANGUAGE" == */* ]] || [[ ${#LANGUAGE} -gt 30 ]]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') BLOCKED path-as-lang: FILE_PATH=$FILE_PATH LANGUAGE=$LANGUAGE" >> /tmp/codestats-debug.log
+    LANGUAGE="Plain text"
+fi
+
 # Create timestamp in RFC 3339 format with local timezone
 TIMESTAMP=$(date "+%Y-%m-%dT%H:%M:%S%z" | sed 's/\([0-9][0-9]\)$/:\1/')
 
