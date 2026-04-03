@@ -1,3 +1,10 @@
+### 2.5.4: 2026-04-03
+
+* Use `dms-minimize` for hyprbar minimize button instead of `toggle-minimize.sh`
+* Enable `icon_on_hover` for hyprbar buttons with close and minimize icons
+* Increase hyprbar button size from 12 to 14
+* Remove workspace 99 minimize keybind
+
 ### 2.5.3: 2026-04-03
 
 * Remove non-existent `dms/outputs.conf` source reference from Hyprland config
