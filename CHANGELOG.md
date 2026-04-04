@@ -1,3 +1,8 @@
+### 2.5.6: 2026-04-04
+
+* Add `hyprpm-ensure.sh` script to auto-rebuild plugins on Hyprland startup
+* Replace manual `hyprpm reload` with update + reload for post-update compatibility
+
 ### 2.5.5: 2026-04-03
 
 * Add safeguard to prevent file paths leaking as language names to Code::Stats
