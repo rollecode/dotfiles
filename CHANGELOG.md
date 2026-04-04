@@ -2,6 +2,7 @@
 
 * Add `hyprpm-ensure.sh` script to auto-rebuild plugins on Hyprland startup
 * Replace manual `hyprpm reload` with update + reload for post-update compatibility
+* Invoke hyprpm-ensure via `bash` to avoid dotfiles sync stripping execute permissions
 
 ### 2.5.5: 2026-04-03
 
