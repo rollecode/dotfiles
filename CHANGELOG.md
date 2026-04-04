@@ -1,3 +1,8 @@
+### 2.5.7: 2026-04-05
+
+* Speed up Hyprland animations for snappier feel
+* Set hyprbars `bar_part_of_window` to true
+
 ### 2.5.6: 2026-04-04
 
 * Add `hyprpm-ensure.sh` script to auto-rebuild plugins on Hyprland startup
