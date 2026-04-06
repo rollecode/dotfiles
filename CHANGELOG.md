@@ -4,6 +4,7 @@
 * Add `suppress_event maximize` windowrule for all windows
 * Add Super+M keybind for minimize
 * Switch default terminal to foot
+* Update foot config: green blinking cursor, disable bell, hide mouse when typing
 
 ### 2.5.7: 2026-04-05
 
