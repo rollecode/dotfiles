@@ -1,3 +1,10 @@
+### 2.5.8: 2026-04-06
+
+* Add `focus_on_activate` windowrule to prevent minimized windows from stealing focus
+* Add `suppress_event maximize` windowrule for all windows
+* Add Super+M keybind for minimize
+* Switch default terminal to foot
+
 ### 2.5.7: 2026-04-05
 
 * Speed up Hyprland animations for snappier feel
