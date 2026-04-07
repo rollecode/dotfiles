@@ -1,10 +1,14 @@
+### 2.5.9: 2026-04-07
+
+* Update foot config: green blinking cursor, disable bell, hide mouse when typing
+* Add OSC 7 note for preserving CWD on spawn-terminal
+
 ### 2.5.8: 2026-04-06
 
 * Add `focus_on_activate` windowrule to prevent minimized windows from stealing focus
 * Add `suppress_event maximize` windowrule for all windows
 * Add Super+M keybind for minimize
 * Switch default terminal to foot
-* Update foot config: green blinking cursor, disable bell, hide mouse when typing
 
 ### 2.5.7: 2026-04-05
 
