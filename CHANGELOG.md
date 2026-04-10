@@ -1,3 +1,7 @@
+### 2.5.10: 2026-04-10
+
+* Use Catppuccin Mocha Peach for orange/yellow ANSI color instead of Mauve
+
 ### 2.5.9: 2026-04-07
 
 * Update foot config: green blinking cursor, disable bell, hide mouse when typing
