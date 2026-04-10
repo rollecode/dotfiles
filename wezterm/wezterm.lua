@@ -77,7 +77,7 @@ config.colors = {
     '#45475a', -- Surface1 (black)
     '#f38ba8', -- Red
     '#a6e3a1', -- Green
-    '#cba6f7', -- Mauve (replaces yellow/orange)
+    '#fab387', -- Peach (orange/yellow)
     '#89b4fa', -- Blue
     '#f5c2e7', -- Pink
     '#94e2d5', -- Teal
@@ -87,7 +87,7 @@ config.colors = {
     '#585b70',                        -- Surface2 (bright black)
     '#f38ba8',                        -- Red
     '#a6e3a1',                        -- Green
-    '#cba6f7',                        -- Mauve (replaces yellow/orange)
+    '#fab387',                        -- Peach (bright orange/yellow)
     '#89b4fa',                        -- Blue
     '#f5c2e7',                        -- Pink
     '#94e2d5',                        -- Teal
@@ -95,10 +95,10 @@ config.colors = {
   },
   split = 'rgba(166, 173, 200, 0.1)', -- Subtext0 with low opacity
 
-  -- Override specific 256-color palette entries (IRC orange -> Mauve)
+  -- Override specific 256-color palette entries
   indexed = {
-    [208] = '#cba6f7', -- Replace orange #ff8700 with Mauve
-    [214] = '#cba6f7', -- Replace another orange variant
+    [208] = '#fab387', -- Orange -> Peach
+    [214] = '#fab387', -- Orange variant -> Peach
   },
 }
 
