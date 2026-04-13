@@ -481,12 +481,19 @@ setup_claude_code() {
     # Create hooks directory
     mkdir -p "$claude_hooks_dir"
 
-    # Setup hook symlink
+    # Setup hook symlinks
     if [ -L "$claude_hooks_dir/codestats-hook.sh" ]; then
         print_success "✓ Found existing Claude Code hook symlink - preserving"
     else
         ln -sf "$dotfiles_dir/claude-code/codestats-hook.sh" "$claude_hooks_dir/codestats-hook.sh"
         print_success "Claude Code hook symlinked"
+    fi
+
+    if [ -L "$claude_hooks_dir/update-cross-channel-context.sh" ]; then
+        print_success "✓ Found existing cross-channel context hook symlink - preserving"
+    else
+        ln -sf "$dotfiles_dir/claude-code/update-cross-channel-context.sh" "$claude_hooks_dir/update-cross-channel-context.sh"
+        print_success "Cross-channel context hook symlinked"
     fi
 
     # Setup secrets
