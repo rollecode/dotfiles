@@ -20,6 +20,16 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/update-cross-channel-context.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

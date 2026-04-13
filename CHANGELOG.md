@@ -1,3 +1,9 @@
+### 2.5.11: 2026-04-13
+
+* Add `claude-code/update-cross-channel-context.sh` hook that patches Son of Anton handoff file on every Claude Code Stop event
+* Register Stop hook in `claude-code/settings.json` reference config
+* Symlink the new hook in `install.sh` so fresh installs pick it up automatically
+
 ### 2.5.10: 2026-04-10
 
 * Use Catppuccin Mocha Peach for orange/yellow ANSI color instead of Mauve
