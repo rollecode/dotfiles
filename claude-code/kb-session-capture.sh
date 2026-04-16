@@ -4,8 +4,8 @@
 
 set -euo pipefail
 
-KB_RAW="/Users/rolle/Documents/Knowledge base/sources/claude-sessions"
-LOG="/Users/rolle/.claude/kb-session-capture.log"
+KB_RAW="$HOME/Documents/Knowledge base/sources/claude-sessions"
+LOG="$HOME/.claude/kb-session-capture.log"
 
 mkdir -p "$KB_RAW"
 
