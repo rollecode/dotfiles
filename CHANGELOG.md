@@ -1,3 +1,8 @@
+### 2.5.13: 2026-05-03
+
+* Autostart `wl-paste --watch cliphist store` for text and images so clipboard history persists after source apps close
+* Add Brave Origin Nightly windowrule with the same float and size as Brave
+
 ### 2.5.12: 2026-05-03
 
 * Add Brave windowrule to always float at 1710x1200 centered
