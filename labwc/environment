@@ -1,0 +1,17 @@
+# labwc environment file - mirrors Hyprland env entries
+
+# Cursor theme
+XCURSOR_THEME=elementary
+XCURSOR_SIZE=24
+HYPRCURSOR_THEME=elementary
+HYPRCURSOR_SIZE=24
+
+# Qt theming
+QT_QPA_PLATFORMTHEME=gtk3
+
+# NVIDIA Wayland
+LIBVA_DRIVER_NAME=nvidia
+XDG_SESSION_TYPE=wayland
+GBM_BACKEND=nvidia-drm
+__GLX_VENDOR_LIBRARY_NAME=nvidia
+NVD_BACKEND=direct

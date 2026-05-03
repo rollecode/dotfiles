@@ -1,3 +1,8 @@
+### 2.6.0: 2026-05-03
+
+* Add labwc compositor configs (`rc.xml`, `autostart`, `environment`, `menu.xml`) as a parallel session alongside Hyprland with ported keybinds, window rules, autostart, and built-in floating titlebars
+* Symlink `~/.config/labwc` to `labwc/` in the dotfiles repo
+
 ### 2.5.13: 2026-05-03
 
 * Autostart `wl-paste --watch cliphist store` for text and images so clipboard history persists after source apps close
