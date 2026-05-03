@@ -1,3 +1,7 @@
+### 2.5.12: 2026-05-03
+
+* Add Brave windowrule to always float at 1710x1200 centered
+
 ### 2.5.11: 2026-04-13
 
 * Add `claude-code/update-cross-channel-context.sh` hook that patches Son of Anton handoff file on every Claude Code Stop event
