@@ -1,3 +1,8 @@
+### 2.6.1: 2026-05-03
+
+* Remove labwc compositor configs - labwc cannot match Hyprland's blur, animations, or DMS dock minimize integration
+* Remove hyprbars minimize button - clicking it triggers a click-leak bug that makes the next click in the unminimized window act as a drag; use Super+M instead
+
 ### 2.6.0: 2026-05-03
 
 * Add labwc compositor configs (`rc.xml`, `autostart`, `environment`, `menu.xml`) as a parallel session alongside Hyprland with ported keybinds, window rules, autostart, and built-in floating titlebars
