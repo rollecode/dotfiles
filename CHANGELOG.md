@@ -1,3 +1,9 @@
+### 2.6.2: 2026-05-03
+
+* Add `browser-flags/` directory with `chromium-flags.conf`, `brave-flags.conf`, `brave-origin-nightly-flags.conf`
+* Disable hardware video decoding in Brave Origin Nightly to prevent NVIDIA GPU hangs on autoplay videos
+* Add `setup_browser_flags` function to `install.sh` that symlinks browser flag configs to `~/.config`
+
 ### 2.6.1: 2026-05-03
 
 * Remove labwc compositor configs - labwc cannot match Hyprland's blur, animations, or DMS dock minimize integration
