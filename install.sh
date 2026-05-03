@@ -436,6 +436,40 @@ setup_configs() {
 
     # Setup Neovim directories for plugins (fixes treesitter installation issues)
     setup_nvim_directories
+
+    # Setup browser flag configs (Linux only)
+    if [ "$OS" = "linux" ]; then
+        setup_browser_flags
+    fi
+}
+
+# Setup browser flag configs (Chromium-based browsers on Linux)
+setup_browser_flags() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+    local flags_src="$dotfiles_dir/browser-flags"
+
+    if [ ! -d "$flags_src" ]; then
+        return 0
+    fi
+
+    print_info "Setting up browser flag configs..."
+
+    for flag_file in "$flags_src"/*.conf; do
+        [ -f "$flag_file" ] || continue
+        local name=$(basename "$flag_file")
+        local target="$HOME/.config/$name"
+
+        if [ -L "$target" ]; then
+            print_success "✓ Found existing $name symlink - preserving"
+        elif [ -f "$target" ]; then
+            mv "$target" "${target}.backup.$(date +%s)"
+            ln -sf "$flag_file" "$target"
+            print_success "$name symlinked (old config backed up)"
+        else
+            ln -sf "$flag_file" "$target"
+            print_success "$name symlinked"
+        fi
+    done
 }
 
 # Setup Neovim data and cache directories with proper permissions
