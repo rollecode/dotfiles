@@ -1,3 +1,9 @@
+### 2.6.3: 2026-05-08
+
+* Slim hyprbars: smaller bar height, smaller text, zero button padding
+* Make close button background transparent with white X on hover
+* Bump close icon size for better hover target
+
 ### 2.6.2: 2026-05-03
 
 * Add `browser-flags/` directory with `chromium-flags.conf`, `brave-flags.conf`, `brave-origin-nightly-flags.conf`
