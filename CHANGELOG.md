@@ -1,3 +1,7 @@
+### 2.6.4: 2026-05-09
+
+* Restore hyprbars `bar_height` to 28
+
 ### 2.6.3: 2026-05-08
 
 * Slim hyprbars: smaller bar height, smaller text, zero button padding
