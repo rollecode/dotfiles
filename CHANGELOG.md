@@ -1,3 +1,10 @@
+### 2.7.0: 2026-05-09
+
+* Add Wayfire compositor config at `wayfire/wayfire.ini` with DMS autostart, scale exposé on `Super+A`, hot corners, floating window rules, and Hyprland-style keybinds
+* Add `setup_wayfire` function to `install.sh` that symlinks `wayfire/wayfire.ini` to `~/.config/wayfire.ini`
+* Leave mouse acceleration unset so libinput uses the per-device default, matching Hyprland's empty `accel_profile` behaviour
+* Disable `Super+M` minimize binding because Wayfire has no taskbar to restore from
+
 ### 2.6.4: 2026-05-09
 
 * Restore hyprbars `bar_height` to 28

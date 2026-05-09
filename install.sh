@@ -440,6 +440,31 @@ setup_configs() {
     # Setup browser flag configs (Linux only)
     if [ "$OS" = "linux" ]; then
         setup_browser_flags
+        setup_wayfire
+    fi
+}
+
+# Setup Wayfire compositor config (Linux only)
+setup_wayfire() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+    local src="$dotfiles_dir/wayfire/wayfire.ini"
+    local target="$HOME/.config/wayfire.ini"
+
+    if [ ! -f "$src" ]; then
+        return 0
+    fi
+
+    print_info "Setting up Wayfire config..."
+
+    if [ -L "$target" ]; then
+        print_success "✓ Found existing wayfire.ini symlink - preserving"
+    elif [ -f "$target" ]; then
+        mv "$target" "${target}.backup.$(date +%s)"
+        ln -sf "$src" "$target"
+        print_success "wayfire.ini symlinked (old config backed up)"
+    else
+        ln -sf "$src" "$target"
+        print_success "wayfire.ini symlinked"
     fi
 }
 
