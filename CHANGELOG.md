@@ -1,3 +1,9 @@
+### 2.7.2: 2026-05-10
+
+* Bump hyprswitch `--size-factor` from 5 to 8 for larger Alt+Tab thumbnails
+* Remove `max-width` cap on hyprswitch monitor containers so they grow with size factor
+* Raise hyprswitch monitor `min-width` from 400px to 600px
+
 ### 2.7.1: 2026-05-10
 
 * Disable Super key press that opened app selector
