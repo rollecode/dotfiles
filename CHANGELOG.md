@@ -3,6 +3,9 @@
 * Bump hyprswitch `--size-factor` from 5 to 8 for larger Alt+Tab thumbnails
 * Remove `max-width` cap on hyprswitch monitor containers so they grow with size factor
 * Raise hyprswitch monitor `min-width` from 400px to 600px
+* Include `special:minimized` workspace in hyprswitch switcher and restore minimized windows automatically when selected via `hyprswitch-dispatch-with-restore.sh` wrapper
+* Add `immediate on` windowrule for `bg3.*`, `ts4_x64.exe`, and `battle.net.*` to enable screen tearing during gameplay for low input lag
+* Drop invalid `noanim`, `noborder`, `bordersize`, and `idleinhibit` windowrule fields that no longer exist in Hyprland 0.54 and were spamming on-screen config errors
 
 ### 2.7.1: 2026-05-10
 
