@@ -8,10 +8,9 @@ window {
     min-width: 400px;
 }
 
-/* Force monitor containers to be compact */
+/* Let monitor containers grow with --size-factor */
 .monitor {
-    min-width: 400px;
-    max-width: 800px;
+    min-width: 600px;
 }
 
 /* Monitor containers */
