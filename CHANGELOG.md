@@ -1,3 +1,8 @@
+### 2.7.1: 2026-05-10
+
+* Disable Super key press that opened app selector
+* Comment out `hyprmissionctrl` keybinds (plugin crashes Hyprland)
+
 ### 2.7.0: 2026-05-09
 
 * Add Wayfire compositor config at `wayfire/wayfire.ini` with DMS autostart, scale exposé on `Super+A`, hot corners, floating window rules, and Hyprland-style keybinds
