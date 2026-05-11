@@ -1,3 +1,8 @@
+### 2.7.3: 2026-05-12
+
+* Switch hymission plugin source from `gfhdhytghd/hymission` to fork `rollecode/hymission` so locally-developed PRs (toggle default, raise-on-select, damage-tracking-override, hover-dwell, hyprbars suppression, reserved-area awareness, close button) stay live until merged upstream
+* Drop the manual `plugin = ...libhymission.so` directive from `hypr/hyprland.conf`; hyprpm now manages the build and reload, so plugin survives Hyprland updates without manual rebuilds
+
 ### 2.7.2: 2026-05-10
 
 * Bump hyprswitch `--size-factor` from 5 to 8 for larger Alt+Tab thumbnails
