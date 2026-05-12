@@ -1,3 +1,8 @@
+### 2.7.8: 2026-05-12
+
+* Drop the `hyprctl dispatch exec` wrapper from the hyprbars minimize button so the bar plugin runs `~/.local/bin/hypr-minimize.sh` directly (one fewer subprocess hop)
+* Add `hypr/scripts/hyprbars-patch-deploy.sh` to deploy the locally-built patched hyprbars `.so` and reload it live via `hyprpm disable`/`enable`, so the upstream `m_bCancelledDown` leak fix can be re-applied after `hyprpm update` clobbers it; full diagnosis and patch in `rollecode/dms-minimize#upstream-hyprbars-m_bcancelleddown-leak-patch-below`
+
 ### 2.7.7: 2026-05-12
 
 * `dms-hide-on-fullscreen.sh` now also tracks the active window class/title so the DMS bar and dock hide when BG3, Sims 4 (TS4_x64.exe), Overwatch, Battle.net or any Steam app is focused, even when the game runs windowed (Hyprland's fullscreen event alone misses windowed-fullscreen games)
