@@ -1,3 +1,7 @@
+### 2.7.5: 2026-05-12
+
+* Switch hyprbars minimize glyph back to `nf-md-window_minimize` after trying several plain-minus alternatives that the bar font cannot render cleanly
+
 ### 2.7.4: 2026-05-12
 
 * Restore hyprbars minimize button with macOS-style red and yellow dots (close `#ED5256`, minimize `#E8AF0F`) using dark red and dark amber for the hover icons
