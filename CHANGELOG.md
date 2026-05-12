@@ -1,3 +1,9 @@
+### 2.7.6: 2026-05-12
+
+* Route Alt+Tab through hymission mission control; keep Super+Tab on hyprswitch GUI
+* Render brave-origin-nightly hyprbars titlebar as solid black
+* Autostart `dms-hide-on-fullscreen.sh` so the DMS bar/dock auto-hide when any window is fullscreen
+
 ### 2.7.5: 2026-05-12
 
 * Switch hyprbars minimize glyph back to `nf-md-window_minimize` after trying several plain-minus alternatives that the bar font cannot render cleanly
