@@ -1,3 +1,8 @@
+### 2.7.7: 2026-05-12
+
+* `dms-hide-on-fullscreen.sh` now also tracks the active window class/title so the DMS bar and dock hide when BG3, Sims 4 (TS4_x64.exe), Overwatch, Battle.net or any Steam app is focused, even when the game runs windowed (Hyprland's fullscreen event alone misses windowed-fullscreen games)
+* Use correct DMS IPC calls: `bar hide index 0` / `bar reveal index 0` and `dock hide` / `dock reveal`; previous `manualHide` call was a no-op against this Quickshell build
+
 ### 2.7.6: 2026-05-12
 
 * Route Alt+Tab through hymission mission control; keep Super+Tab on hyprswitch GUI
