@@ -1,3 +1,9 @@
+### 2.7.4: 2026-05-12
+
+* Restore hyprbars minimize button with macOS-style red and yellow dots (close `#ED5256`, minimize `#E8AF0F`) using dark red and dark amber for the hover icons
+* Resize hyprbars buttons to 12px and bump `bar_padding` to 8 with `bar_button_padding` 8 for macOS-style spacing
+* Switch minimize glyph to a centered minus
+
 ### 2.7.3: 2026-05-12
 
 * Switch hymission plugin source from `gfhdhytghd/hymission` to fork `rollecode/hymission` so locally-developed PRs (toggle default, raise-on-select, damage-tracking-override, hover-dwell, hyprbars suppression, reserved-area awareness, close button) stay live until merged upstream
