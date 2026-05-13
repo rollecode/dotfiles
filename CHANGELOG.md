@@ -1,3 +1,9 @@
+### 2.7.9: 2026-05-13
+
+* Drop `hyprpm update` from `hyprpm-ensure.sh`
+* Startup no longer rebuilds plugins from upstream and clobbers local patches
+* Run `hyprpm update` manually when you want upstream changes, then re-apply patches via the deploy scripts
+
 ### 2.7.8: 2026-05-12
 
 * Drop the `hyprctl dispatch exec` wrapper from the hyprbars minimize button so the bar plugin runs `~/.local/bin/hypr-minimize.sh` directly (one fewer subprocess hop)
