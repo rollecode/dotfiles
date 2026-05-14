@@ -1,3 +1,7 @@
+### 2.7.10: 2026-05-14
+
+* Swap Alt+Tab and Super+Tab: Alt+Tab now runs hyprswitch (lightweight, no GL framebuffer allocation, safe during VRAM-saturated game sessions); Super+Tab opens hymission. Super+A and its variants still trigger hymission as before.
+
 ### 2.7.8: 2026-05-14
 
 * Simplify `dms-hide-on-fullscreen.sh`: track only Hyprland's fullscreen event, drop the per-game class regex. Auto-handles any game that goes fullscreen (OW, RDR2, Sims 4, any future title) without a maintenance list. Windowed games (BG3) keep the bar visible.
