@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
-# Hide DMS bar + dock when a game window is focused, restore otherwise.
-#
-# Listens to Hyprland's event socket for both:
-#   - fullscreen toggle (fullscreen>>1/0)  — covers OW etc. that go true fullscreen
-#   - active-window change (activewindow>>CLASS,TITLE)  — covers BG3, Sims 4
-#                                                          which user runs windowed
-#
-# Triggers `dms ipc bar hide|reveal index 0` and `dms ipc dock hide|reveal`
-# only when state changes, to avoid spamming IPC.
-#
-# Game window classes/titles matched below. Add more as needed.
+# Hide DMS bar + dock whenever the focused window is fullscreen.
+# Restore otherwise. Tracks ONLY Hyprland's fullscreen state - no per-app
+# config or game-class list to maintain. Covers OW, RDR2, Sims 4 (any game
+# in fullscreen) automatically; leaves the bar visible for windowed games
+# (BG3 windowed) and the normal desktop.
 #
 # Run as exec-once from hyprland.conf:
 #   exec-once = ~/.config/hypr/scripts/dms-hide-on-fullscreen.sh &
@@ -25,21 +19,10 @@ done
 
 [ -S "$SOCKET" ] || { echo "dms-hide-on-fullscreen: socket not found" >&2; exit 1; }
 
-# Regex matching game window CLASS,TITLE strings from activewindow events.
-# Anchored at start of line; titles can include commas so match before the comma.
-GAME_RE='^(bg3|bg3_dx11|ts4_x64\.exe|Overwatch|battle\.net|steam_app_).*'
-
-current="visible"
-fullscreen=0
-focused_is_game=0
+current="unknown"
 
 apply() {
-    local want
-    if [ "$fullscreen" = "1" ] || [ "$focused_is_game" = "1" ]; then
-        want="hidden"
-    else
-        want="visible"
-    fi
+    local want="$1"
     [ "$current" = "$want" ] && return
     if [ "$want" = "hidden" ]; then
         dms ipc bar  hide   index 0 >/dev/null 2>&1 || true
@@ -51,19 +34,20 @@ apply() {
     current="$want"
 }
 
+# Always start visible. If a fullscreen game is already focused, the next
+# 'fullscreen>>1' event (or activewindow query below) will hide it again
+# within a poll cycle. Never leaves the bar stuck hidden after a crash.
+apply visible
+
+# Re-sync with current Hyprland state in case we restarted while a game
+# was already fullscreen.
+if hyprctl activewindow -j 2>/dev/null | grep -q '"fullscreen":[[:space:]]*[12]'; then
+    apply hidden
+fi
+
 socat -u "UNIX-CONNECT:$SOCKET" - | while IFS= read -r line; do
     case "$line" in
-        fullscreen\>\>1) fullscreen=1; apply ;;
-        fullscreen\>\>0) fullscreen=0; apply ;;
-        activewindow\>\>*)
-            # activewindow>>CLASS,TITLE
-            payload="${line#activewindow>>}"
-            if [[ "$payload" =~ $GAME_RE ]]; then
-                focused_is_game=1
-            else
-                focused_is_game=0
-            fi
-            apply
-            ;;
+        fullscreen\>\>1) apply hidden ;;
+        fullscreen\>\>0) apply visible ;;
     esac
 done
