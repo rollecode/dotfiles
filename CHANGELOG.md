@@ -7,6 +7,10 @@
 * Simplify `dms-hide-on-fullscreen.sh`: track only Hyprland's fullscreen event, drop the per-game class regex. Auto-handles any game that goes fullscreen (OW, RDR2, Sims 4, any future title) without a maintenance list. Windowed games (BG3) keep the bar visible.
 * Always start with bar revealed, then re-sync once from `hyprctl activewindow`. Fixes stuck-hidden state after a Hyprland/DMS crash cascade.
 
+### 2.8.1: 2026-05-14
+
+* Disable hymission keybindings and config block while the `port/hyprland-0.55` build is verified in nested Hyprland; live-deploying the partial port crashed the compositor
+
 ### 2.8.0: 2026-05-14
 
 * Drop `dwindle:pseudotile` config option (removed in Hyprland 0.55; pseudotile now always available via dispatcher)
