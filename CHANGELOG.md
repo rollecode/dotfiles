@@ -1,3 +1,8 @@
+### 2.7.8: 2026-05-14
+
+* Simplify `dms-hide-on-fullscreen.sh`: track only Hyprland's fullscreen event, drop the per-game class regex. Auto-handles any game that goes fullscreen (OW, RDR2, Sims 4, any future title) without a maintenance list. Windowed games (BG3) keep the bar visible.
+* Always start with bar revealed, then re-sync once from `hyprctl activewindow`. Fixes stuck-hidden state after a Hyprland/DMS crash cascade.
+
 ### 2.7.9: 2026-05-13
 
 * Drop `hyprpm update` from `hyprpm-ensure.sh`
