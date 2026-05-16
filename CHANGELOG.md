@@ -1,3 +1,11 @@
+### 2.9.0: 2026-05-16
+
+* Switch hymission to upstream's official `v0.3.3-0.55.0` (proper Hyprland 0.55 port) instead of the local partial port that kept crashing the compositor
+* Re-apply fork patches on top: `toggle_switch_mode` off, `outer_padding_top` 32, hover-retarget dwell 150ms, hyprbars titlebar suppression during overview
+* Add `hymission-rebuild.sh`: rebuilds the patched `rolle/0.55-fixes` branch from source and stages it in the hyprpm cache, never hot-swapping a running session
+* Rewrite `hyprbars-patch-deploy.sh` to rebuild hyprbars from source with the `m_bCancelledDown` patch instead of copying an ABI-pinned prebuilt `.so`
+* `hyprpm-ensure.sh` now detects Hyprland version changes and, only then, runs `hyprpm update` followed by the two re-patch scripts so patched plugins survive Hyprland upgrades automatically; unchanged-version boots stay a fast `hyprpm reload`
+
 ### 2.7.10: 2026-05-14
 
 * Swap Alt+Tab and Super+Tab: Alt+Tab now runs hyprswitch (lightweight, no GL framebuffer allocation, safe during VRAM-saturated game sessions); Super+Tab opens hymission. Super+A and its variants still trigger hymission as before.
