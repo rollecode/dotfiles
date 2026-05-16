@@ -1,57 +1,63 @@
 #!/usr/bin/env bash
-# Deploy the locally-built patched hyprbars.so to hyprpm's plugin cache and
-# reload it live (without restarting Hyprland).
+# Rebuild hyprbars from upstream source with our m_bCancelledDown leak fix
+# applied, and install the result into hyprpm's plugin cache.
 #
-# The patch fixes an upstream m_bCancelledDown state leak in hyprbars that
-# causes the next click after a bar-button-minimize+unminimize cycle to be
-# treated as a drag. See
-#   https://github.com/rollecode/dms-minimize#upstream-hyprbars-m_bcancelleddown-leak-patch-below
-# for the full diagnosis. Re-apply after every `hyprpm update` (it rebuilds
-# hyprbars from upstream and clobbers the patched .so).
+# The fix: upstream hyprbars leaks m_bCancelledDown after a bar-button
+# minimize+unminimize cycle, so the next click is treated as a drag. Full
+# diagnosis + patch:
+#   ~/Projects/hyprbars-patch/click-leak-fix.patch
 #
-# Inputs:
-#   $HYPRBARS_PATCHED_SO  optional, defaults to ~/Projects/hyprbars-patch/hyprbars.so
+# Why rebuild instead of copying a prebuilt .so: a prebuilt .so is tied to
+# one Hyprland ABI. When Hyprland upgrades, a stale prebuilt won't load.
+# Rebuilding from source against the CURRENT hyprpm headers keeps the patch
+# working across Hyprland upgrades. hyprpm-ensure.sh calls this on a detected
+# Hyprland version change, right after `hyprpm update`.
 #
-# Exit codes:
-#   0  patched and reloaded
-#   1  precondition failed (file missing, no hyprctl, etc.)
-#   2  hyprpm action failed
+# This only writes the plugin cache; it does NOT hot-swap into a running
+# compositor. The new .so loads on the next clean Hyprland start.
+#
+# Exit codes: 0 ok / 1 precondition failed / 2 build failed.
 
 set -euo pipefail
 
-PATCHED="${HYPRBARS_PATCHED_SO:-$HOME/Projects/hyprbars-patch/hyprbars.so}"
-LIVE="/var/cache/hyprpm/$USER/hyprland-plugins/hyprbars.so"
-BACKUP="$LIVE.pre-fix-backup"
+PATCH="${HYPRBARS_PATCH:-$HOME/Projects/hyprbars-patch/click-leak-fix.patch}"
+CACHE="/var/cache/hyprpm/$USER/hyprland-plugins/hyprbars.so"
+WORK="$(mktemp -d /tmp/hyprbars-rebuild.XXXXXX)"
+# Pin to the hyprbars commit hyprpm last built so source matches the ABI of
+# the headers hyprpm fetched. Overridable if a newer pin is needed.
+PIN="${HYPRBARS_PIN:-}"
 
 log() { printf '[hyprbars-patch-deploy] %s\n' "$*"; }
-die() { log "$*" >&2; exit "${2:-1}"; }
+die() { log "$*" >&2; rm -rf "$WORK"; exit "${2:-1}"; }
+trap 'rm -rf "$WORK"' EXIT
 
-[ -r "$PATCHED" ] || die "Patched .so not found at $PATCHED (set HYPRBARS_PATCHED_SO to override)"
-[ -r "$LIVE" ]    || die "Live hyprbars.so not found at $LIVE - is hyprbars installed via hyprpm?"
-command -v hyprctl >/dev/null || die "hyprctl not on PATH"
-command -v hyprpm  >/dev/null || die "hyprpm not on PATH"
+[ -r "$PATCH" ] || die "patch not found at $PATCH"
+[ -d "$(dirname "$CACHE")" ] || die "hyprbars not installed via hyprpm ($CACHE dir missing)"
+command -v git >/dev/null || die "git not on PATH"
+command -v make >/dev/null || die "make not on PATH"
 
-if cmp -s "$PATCHED" "$LIVE"; then
-    log "Live plugin is already byte-identical to the patched version. Nothing to do."
-    exit 0
+log "clone hyprwm/hyprland-plugins"
+git clone --depth=20 https://github.com/hyprwm/hyprland-plugins.git "$WORK/hp" >/dev/null 2>&1 \
+    || die "clone failed" 1
+cd "$WORK/hp"
+[ -n "$PIN" ] && { log "checkout pin $PIN"; git checkout "$PIN" >/dev/null 2>&1 || die "pin checkout failed" 1; }
+
+log "apply m_bCancelledDown patch"
+if ! git apply --check "$PATCH" 2>/dev/null; then
+    die "patch does not apply cleanly to current upstream - needs manual rebase" 2
 fi
+git apply "$PATCH"
 
-if [ ! -e "$BACKUP" ]; then
-    log "Creating backup at $BACKUP"
-    sudo cp "$LIVE" "$BACKUP"
+log "build hyprbars"
+cd hyprbars
+if ! make 2>&1 | tail -1; then
+    die "build failed - NOT touching the cache" 2
 fi
+[ -f hyprbars.so ] || die "build produced no hyprbars.so" 2
 
-log "Disabling hyprbars (unloads it from the running Hyprland)"
-hyprpm disable hyprbars >/dev/null || die "hyprpm disable failed" 2
+log "install into hyprpm cache (sudo)"
+sudo cp hyprbars.so "$CACHE"
+# Keep a preserved copy for reference / emergency.
+cp hyprbars.so "$HOME/Projects/hyprbars-patch/hyprbars.so" 2>/dev/null || true
 
-log "Installing patched .so into $LIVE"
-sudo cp "$PATCHED" "$LIVE"
-
-log "Re-enabling hyprbars (loads patched plugin into the running Hyprland)"
-hyprpm enable hyprbars >/dev/null || die "hyprpm enable failed - rollback with: sudo cp $BACKUP $LIVE && hyprpm enable hyprbars" 2
-
-if hyprctl version >/dev/null 2>&1; then
-    log "Hyprland is alive. Done."
-else
-    die "Hyprland is not responding - check journal and consider rollback" 2
-fi
+log "done. Patched hyprbars staged - loads on the NEXT clean Hyprland start."
