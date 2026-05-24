@@ -1,3 +1,8 @@
+### 2.9.1: 2026-05-16
+
+* Add flock single-instance guard to `dms-hide-on-fullscreen.sh` so duplicate copies can't fight over bar/dock visibility and leave DMS stuck on top of fullscreen games
+* Re-assert hidden state on active-window changes while a window is fullscreen, so DMS popping its own bar/dock up (notifications, spotlight, workspace switches) no longer lingers over the game
+
 ### 2.9.0: 2026-05-16
 
 * Switch hymission to upstream's official `v0.3.3-0.55.0` (proper Hyprland 0.55 port) instead of the local partial port that kept crashing the compositor
