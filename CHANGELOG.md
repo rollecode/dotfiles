@@ -1,3 +1,8 @@
+### 2.9.2: 2026-05-31
+
+* Add `cleanup-headless.sh` to remove orphan `HEADLESS-*` outputs left by crashed Moonlight/Sunshine sessions, runs once on Hyprland startup
+* Add `monitor-event-listener.sh` that watches Hyprland IPC and restarts `hyprswitch` on monitor topology changes, so Alt+Tab UI doesn't render on a stale/removed output
+
 ### 2.9.1: 2026-05-16
 
 * Add flock single-instance guard to `dms-hide-on-fullscreen.sh` so duplicate copies can't fight over bar/dock visibility and leave DMS stuck on top of fullscreen games
