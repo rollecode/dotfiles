@@ -114,7 +114,12 @@ local plugins = {
         desc = "Color pick under cursor",
       },
     },
-    opts = {},
+    opts = {
+      highlight = {
+        -- Sidestep nvim 0.12 vim.lsp.document_color.enable signature mismatch
+        disable_builtin_lsp_colors = false,
+      },
+    },
   } or nil,
 
   -- Lualine (status bar)
@@ -684,7 +689,7 @@ local plugins = {
           json = { "prettier" },
           html = { "prettier" },
           lua = { "stylua" },
-          python = { "black" },
+          python = { "ruff_format" },
         },
         formatters = {
           stylelint = {
