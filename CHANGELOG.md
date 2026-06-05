@@ -4,6 +4,10 @@
 * Switch Python formatter from `black` to `ruff_format` in `conform.nvim`
 * Document `ruff` and `python-flake8` as Python tooling dependencies
 
+### 2.9.3: 2026-06-06
+
+* Remove hyprswitch IPC socket before relaunching in `cleanup-headless.sh` and `monitor-event-listener.sh`, otherwise the new instance saw the orphaned socket and refused to start with "Daemon already running", leaving Alt+Tab broken
+
 ### 2.9.2: 2026-05-31
 
 * Add `cleanup-headless.sh` to remove orphan `HEADLESS-*` outputs left by crashed Moonlight/Sunshine sessions, runs once on Hyprland startup
