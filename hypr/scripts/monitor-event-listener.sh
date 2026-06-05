@@ -32,6 +32,9 @@ restart_hyprswitch() {
 
     pkill -x hyprswitch 2>/dev/null
     sleep 0.3
+    # pkill doesn't clean up hyprswitch's IPC socket; the next instance will
+    # see it and refuse to start with "Daemon already running".
+    rm -f "${XDG_RUNTIME_DIR}/hyprswitch.sock"
     nohup hyprswitch init --show-title --size-factor 8 \
         --custom-css "$HOME/.config/hypr/hyprswitch/style.css" \
         >/tmp/hyprswitch.log 2>&1 &
