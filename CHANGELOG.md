@@ -1,3 +1,9 @@
+### 2.9.4: 2026-06-07
+
+* Add `wl-clip-persist.service` systemd user unit so Wayland clipboard contents survive after the source app exits, auto-restarts on crash via `Restart=always`, compositor-agnostic
+* Move `wl-clip-persist` out of Hyprland `exec-once` since systemd now manages it
+* Add `setup_systemd_user_services` to `install.sh` so new machines symlink and enable units from `systemd/user/`
+
 ### 2.9.3: 2026-06-01
 
 * Fix `oklch-color-picker.nvim` LspAttach error on Neovim 0.12 by nesting `disable_builtin_lsp_colors = false` under `highlight` opts
