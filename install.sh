@@ -441,7 +441,46 @@ setup_configs() {
     if [ "$OS" = "linux" ]; then
         setup_browser_flags
         setup_wayfire
+        setup_systemd_user_services
     fi
+}
+
+# Symlink and enable systemd user services from systemd/user/
+setup_systemd_user_services() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+    local src_dir="$dotfiles_dir/systemd/user"
+    local target_dir="$HOME/.config/systemd/user"
+
+    if [ ! -d "$src_dir" ]; then
+        return 0
+    fi
+
+    print_info "Setting up systemd user services..."
+    mkdir -p "$target_dir"
+
+    local need_reload=0
+    for unit in "$src_dir"/*.service; do
+        [ -f "$unit" ] || continue
+        local name=$(basename "$unit")
+        local target="$target_dir/$name"
+
+        if [ -L "$target" ]; then
+            print_success "✓ Found existing $name symlink - preserving"
+        else
+            [ -f "$target" ] && mv "$target" "${target}.backup.$(date +%s)"
+            ln -sf "$unit" "$target"
+            print_success "$name symlinked"
+            need_reload=1
+        fi
+
+        if ! systemctl --user is-enabled "$name" >/dev/null 2>&1; then
+            systemctl --user enable "$name" >/dev/null 2>&1 \
+                && print_success "$name enabled" \
+                || print_warning "Could not enable $name (start it manually after next login)"
+        fi
+    done
+
+    [ "$need_reload" = "1" ] && systemctl --user daemon-reload >/dev/null 2>&1
 }
 
 # Setup Wayfire compositor config (Linux only)
