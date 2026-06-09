@@ -75,3 +75,33 @@ if [ "$SESSION_XP" -gt 0 ]; then
 fi
 
 printf '%b\n' "$LINE"
+
+# Second row: Claude.ai usage progress bars (5-hour + 7-day)
+FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+WEEK=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+
+if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
+    PURPLE='\033[38;2;160;32;240m'
+    make_bar() {
+        local pct=${1%.*}
+        local label=$2
+        local width=10
+        local filled=$(( pct * width / 100 ))
+        [ "$filled" -gt "$width" ] && filled=$width
+        local empty=$(( width - filled ))
+        local bar=""
+        for ((i=0; i<filled; i++)); do bar+="━"; done
+        for ((i=0; i<empty; i++)); do bar+="─"; done
+        printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}(%s)${RESET}" "$bar" "$pct" "$label"
+    }
+
+    LINE2=""
+    if [ -n "$FIVE_H" ]; then
+        LINE2="$(make_bar "$FIVE_H" "5h")"
+    fi
+    if [ -n "$WEEK" ]; then
+        [ -n "$LINE2" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} "
+        LINE2="${LINE2}$(make_bar "$WEEK" "7d")"
+    fi
+    printf '%b\n' "$LINE2"
+fi
