@@ -30,16 +30,10 @@ restart_hyprswitch() {
     [ $((now - last_restart)) -lt 1 ] && return
     last_restart=$now
 
-    pkill -x hyprswitch 2>/dev/null
-    sleep 0.3
-    # pkill doesn't clean up hyprswitch's IPC socket; the next instance will
-    # see it and refuse to start with "Daemon already running".
-    rm -f "${XDG_RUNTIME_DIR}/hyprswitch.sock"
-    nohup hyprswitch init --show-title --size-factor 8 \
-        --custom-css "$HOME/.config/hypr/hyprswitch/style.css" \
-        >/tmp/hyprswitch.log 2>&1 &
-    disown
-    logger -t monitor-event-listener "Monitor topology changed; restarted hyprswitch"
+    # hyprswitch runs as a systemd user service; let systemd handle the lifecycle
+    # (ExecStartPre clears the stale socket, MemoryMax caps runaway leaks).
+    systemctl --user restart hyprswitch.service 2>/dev/null
+    logger -t monitor-event-listener "Monitor topology changed; restarted hyprswitch.service"
 }
 
 socat -u UNIX-CONNECT:"$sock" - 2>/dev/null | while read -r line; do
