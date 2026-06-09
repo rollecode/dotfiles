@@ -25,14 +25,8 @@ while read -r name; do
 done < <(hyprctl monitors -j 2>/dev/null | jq -r '.[].name // empty')
 
 if [ "$removed" -gt 0 ]; then
-    pkill -x hyprswitch 2>/dev/null
-    sleep 0.5
-    # pkill doesn't clean up hyprswitch's IPC socket; the next instance will
-    # see it and refuse to start with "Daemon already running".
-    rm -f "${XDG_RUNTIME_DIR}/hyprswitch.sock"
-    nohup hyprswitch init --show-title --size-factor 8 \
-        --custom-css "$HOME/.config/hypr/hyprswitch/style.css" \
-        >/tmp/hyprswitch.log 2>&1 &
-    disown
-    logger -t cleanup-headless "Removed $removed orphan output(s); restarted hyprswitch"
+    # hyprswitch runs as a systemd user service; let systemd handle the lifecycle
+    # (including ExecStartPre socket cleanup and memory cap).
+    systemctl --user restart hyprswitch.service 2>/dev/null
+    logger -t cleanup-headless "Removed $removed orphan output(s); restarted hyprswitch.service"
 fi

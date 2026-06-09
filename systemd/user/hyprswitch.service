@@ -1,0 +1,21 @@
+[Unit]
+Description=Hyprland window switcher daemon (Alt+Tab GUI)
+Documentation=https://github.com/h3rmt/hyprswitch
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+# Clean up stale IPC socket from previous (possibly OOM-killed) instance.
+# Without this, the new hyprswitch refuses to start with "Daemon already running".
+ExecStartPre=-/usr/bin/rm -f %t/hyprswitch.sock
+ExecStart=/usr/bin/hyprswitch init --show-title --size-factor 8 --custom-css %h/.config/hypr/hyprswitch/style.css
+Restart=always
+RestartSec=1
+# Cap memory. hyprswitch idle is ~15M; sustained use stays under 100M.
+# 256M leaves plenty of headroom. Past this, systemd kills + restarts fresh.
+MemoryMax=256M
+
+[Install]
+WantedBy=graphical-session.target

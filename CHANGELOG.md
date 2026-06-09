@@ -1,3 +1,10 @@
+### 2.9.5: 2026-06-09
+
+* Add `hyprswitch.service` systemd user unit with `MemoryMax=256M` and `Restart=always` to cap the daemon's runaway memory leak (3.4 GB RAM + 14.3 GB swap after 2 hours of use)
+* `ExecStartPre` clears the stale `hyprswitch.sock` so a leaked/killed instance never blocks the restart with "Daemon already running"
+* Move `hyprswitch` out of Hyprland `exec-once` since systemd now manages it
+* `cleanup-headless.sh` and `monitor-event-listener.sh` now `systemctl --user restart hyprswitch.service` instead of `pkill` + relaunch, so the service config (memory cap, socket cleanup) actually applies on monitor topology changes
+
 ### 2.9.4: 2026-06-07
 
 * Add `wl-clip-persist.service` systemd user unit so Wayland clipboard contents survive after the source app exits, auto-restarts on crash via `Restart=always`, compositor-agnostic
