@@ -1,3 +1,9 @@
+### 2.9.6: 2026-06-13
+
+* Replace bash `claude-code/codestats-hook.sh` with `codestats-hook.py`, language is derived from a closed extension table and unknown extensions drop the event entirely instead of being coerced to "Plain text"
+* The previous bash hook had safeguards but still emitted a pulse for any file, polluting language stats and leaving room for future regressions; the Python version makes path-as-language bugs structurally impossible by construction
+* Add `claude-code/README.md` describing the hook, install steps, and how to add a new language
+
 ### 2.9.5: 2026-06-09
 
 * Add `hyprswitch.service` systemd user unit with `MemoryMax=256M` and `Restart=always` to cap the daemon's runaway memory leak (3.4 GB RAM + 14.3 GB swap after 2 hours of use)
