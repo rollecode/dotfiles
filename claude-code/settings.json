@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/codestats-hook.sh",
+            "command": "~/.claude/hooks/codestats-hook.py",
             "async": true
           }
         ]
