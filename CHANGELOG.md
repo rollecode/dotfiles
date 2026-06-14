@@ -1,3 +1,12 @@
+### 2.9.7: 2026-06-14
+
+* Add `systemd/user/dms.service` so DMS auto-restarts on crash and survives Hyprland safe-mode respawns, where the previous `exec-once` launcher would never re-fire
+* Unit waits for `$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY` to exist before starting (replaces the brittle `sleep 8` and the Hyprland `hyprctl monitors` polling loop) and ties into `graphical-session.target` so it dies cleanly with the session
+* Carry `QT_QPA_PLATFORMTHEME=gtk3` into the unit so DMS still picks the gtk3 Qt theme without the Hyprland exec
+* Remove the duplicate DMS `exec-once` from `hypr/hyprland.conf` so login no longer spawns two DMS instances (double bar, double dock)
+* Set `misc:disable_splash_rendering = true` to hide the rotating Hyprland splash quotes ("Thanks raf!" etc) from the wallpaper
+* Bind `Alt + Print` to `~/.local/bin/gifcap` for GIF screen recording, replacing the broken xdg-desktop-portal-hyprland path (cursor mode 0)
+
 ### 2.9.6: 2026-06-13
 
 * Replace bash `claude-code/codestats-hook.sh` with `codestats-hook.py`, language is derived from a closed extension table and unknown extensions drop the event entirely instead of being coerced to "Plain text"
