@@ -39,7 +39,26 @@ if [ -n "$current_ver" ] && [ "$current_ver" != "$last_ver" ]; then
             logger -t hyprpm-ensure "hyprbars-patch-deploy failed; upstream hyprbars left in place"
     fi
 
+    # Write the stamp UNCONDITIONALLY after the rebuild block, even if some
+    # patched-build script failed. Otherwise every login retries the heavy
+    # `hyprpm update` chain, which (a) clobbers good plugin .so files and
+    # (b) leaves the user with no plugins on screen if the rebuild and
+    # reload race the IPC socket. The retry loop below ensures plugins
+    # load even on partial-failure boots.
     printf '%s' "$current_ver" > "$STAMP"
 fi
 
-hyprpm reload -n 2>&1 | logger -t hyprpm-ensure
+# Reload plugins into the running Hyprland — with retries, because on the
+# very first session after login the Hyprland IPC socket can lag the moment
+# this exec-once fires. Up to 30s of polling. Once `hyprctl plugins list`
+# reports at least one loaded plugin, we're done.
+for attempt in $(seq 1 15); do
+    hyprpm reload -n 2>&1 | logger -t hyprpm-ensure
+    if [ "$(hyprctl plugins list 2>/dev/null | grep -c '^Plugin ')" -gt 0 ]; then
+        logger -t hyprpm-ensure "plugins loaded on attempt $attempt"
+        exit 0
+    fi
+    sleep 2
+done
+
+logger -t hyprpm-ensure "WARNING: hyprpm reload completed but no plugins are loaded after 15 retries (30s)"

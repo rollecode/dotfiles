@@ -1,3 +1,9 @@
+### 2.9.9: 2026-06-19
+
+* Fix `dms.service` regression from 2.9.7: revert to `WantedBy=default.target` and drop `PartOf=graphical-session.target` — `graphical-session.target` never auto-starts on this box (no uwsm), so the 2.9.7 unit was silently never invoked, leaving every boot with no DMS bar/dock
+* Harden `hyprpm-ensure.sh` so a Hyprland version bump can't leave the desktop without plugins: write the version stamp unconditionally after the rebuild block (partial failures no longer retry the heavy chain every login), and retry `hyprpm reload -n` up to 30 s until `hyprctl plugins list` confirms plugins actually loaded (covers the IPC race that left hyprbars + hymission unloaded on 0.55.1 → 0.55.4 today)
+* Disable the `launch-discord.sh` exec-once so Discord stops autostarting on Hyprland session start
+
 ### 2.9.8: 2026-06-19
 
 * Remove `dms restart` from `hyprlock-wrapper.sh` post-unlock — the default `KillMode=control-group` on `dms.service` SIGKILLs every app that DMS spawned (terminals, browsers, claude, element-desktop, dbus-daemon...) because they inherit DMS's cgroup. The original purpose was an NVIDIA-only workaround for a black background on monitor power cycle (commits 1f1198a / 8e991bb)
