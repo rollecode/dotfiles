@@ -58,5 +58,11 @@ if [[ -f /tmp/hypr-window-positions.json ]]; then
     done
 fi
 
-# After unlock, restart DMS to restore HUD (volume control, etc.)
-dms restart
+# Note: previously this called `dms restart` here as an NVIDIA-specific
+# workaround for a black background on monitor power cycle after unlock
+# (commits 1f1198a / 8e991bb, "Fix hyprlock black background after monitor
+# power cycle (NVIDIA)"). Removed 2026-06-19 because it had been killing every
+# app that DMS spawned: those apps inherit the dms.service cgroup, and the
+# default KillMode=control-group SIGKILLs the entire cgroup on restart. If the
+# NVIDIA black-background bug returns on monitor power cycle, re-add this and
+# also set `KillMode=process` on dms.service so children survive.
