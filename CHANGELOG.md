@@ -1,3 +1,7 @@
+### 2.9.8: 2026-06-19
+
+* Remove `dms restart` from `hyprlock-wrapper.sh` post-unlock — the default `KillMode=control-group` on `dms.service` SIGKILLs every app that DMS spawned (terminals, browsers, claude, element-desktop, dbus-daemon...) because they inherit DMS's cgroup. The original purpose was an NVIDIA-only workaround for a black background on monitor power cycle (commits 1f1198a / 8e991bb)
+
 ### 2.9.7: 2026-06-14
 
 * Add `systemd/user/dms.service` so DMS auto-restarts on crash and survives Hyprland safe-mode respawns, where the previous `exec-once` launcher would never re-fire
