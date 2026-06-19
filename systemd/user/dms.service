@@ -1,17 +1,20 @@
 [Unit]
 Description=Dank Material Shell (DMS)
-PartOf=graphical-session.target
-After=graphical-session.target
 StartLimitBurst=10
 StartLimitIntervalSec=60
 
 [Service]
 Type=simple
 Environment=QT_QPA_PLATFORMTHEME=gtk3
+# Block until the Wayland socket exists, so we don't race Hyprland startup.
+# This handles the timing problem that PartOf=graphical-session.target was
+# supposed to solve — but graphical-session.target never auto-starts on this
+# box (no uwsm), so binding to default.target + this socket-wait is the
+# reliable pattern.
 ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
 ExecStart=/usr/bin/dms run
 Restart=always
 RestartSec=3
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target
