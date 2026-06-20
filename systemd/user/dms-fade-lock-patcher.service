@@ -1,0 +1,13 @@
+[Unit]
+Description=DMS Fade-to-Lock Patcher - backport upstream PR #2653 onto installed v1.4.6
+Documentation=https://github.com/AvengeMedia/DankMaterialShell/pull/2653
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/dms-fade-lock-patcher.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
