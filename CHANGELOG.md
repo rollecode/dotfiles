@@ -1,3 +1,8 @@
+### 2.10.0: 2026-06-20
+
+* Activate `graphical-session.target` on Hyprland startup so `xdg-desktop-portal` can run (its packaged unit has `Requisite=graphical-session.target`). Without this, GTK4 apps like Nautilus 50 can't query the portal for `color-scheme` and the sidebar stays light while the rest of the app is dark
+* Add `systemd/user/graphical-session.target.d/allow-manual.conf` to lift `RefuseManualStart` so the `systemctl --user start graphical-session.target` exec-once is allowed (the target is normally blocked from manual activation, expecting a session manager to pull it in)
+
 ### 2.9.9: 2026-06-19
 
 * Fix `dms.service` regression from 2.9.7: revert to `WantedBy=default.target` and drop `PartOf=graphical-session.target` — `graphical-session.target` never auto-starts on this box (no uwsm), so the 2.9.7 unit was silently never invoked, leaving every boot with no DMS bar/dock
