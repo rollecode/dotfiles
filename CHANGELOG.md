@@ -1,3 +1,9 @@
+### 2.10.1: 2026-06-20
+
+* Add `bin/dms-fade-lock-patcher.sh` and `systemd/user/dms-fade-lock-patcher.service` to backport upstream DankMaterialShell PR #2653 onto installed `dms-shell` v1.4.6 — without it, a custom-lock command (hyprlock here) leaves the fade-to-lock black overlay up after unlock, breaking volume HUD and the rest of the desktop
+* Patcher edits four QML files in `/usr/share/quickshell/dms/` to add a `dismissFadeToLock` signal path: new `dismiss()` on `FadeToLockWindow`, signal on `IdleService`, emit from `Lock.qml`'s custom-lock branch, handler in `DMSShell.qml`. Idempotent, backs up originals, refuses to half-apply
+* Unit is on-disk but not enabled; run the script manually after each `dms-shell` package upgrade (or enable the unit to auto-reapply on login). Retire once `dms-shell` ships >= v1.4.7 / v1.5
+
 ### 2.10.0: 2026-06-20
 
 * Activate `graphical-session.target` on Hyprland startup so `xdg-desktop-portal` can run (its packaged unit has `Requisite=graphical-session.target`). Without this, GTK4 apps like Nautilus 50 can't query the portal for `color-scheme` and the sidebar stays light while the rest of the app is dark
