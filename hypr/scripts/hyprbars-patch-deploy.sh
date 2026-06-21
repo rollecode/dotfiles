@@ -55,6 +55,24 @@ if ! make 2>&1 | tail -1; then
 fi
 [ -f hyprbars.so ] || die "build produced no hyprbars.so" 2
 
+# Safety: never overwrite the cache while the plugin is mapped in a running
+# Hyprland process. A live cache overwrite under a fully booted Hyprland has
+# crashed the compositor (the kernel keeps the mapped inode alive, but
+# something in the loader/watch chain reacts to the file change and that has
+# taken Hyprland down). Stage instead; hyprpm-ensure.sh moves the staged .so
+# into the cache at the next clean Hyprland start, before plugins load.
+HYPR_PID="$(pgrep -x Hyprland | head -1)"
+STAGED_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/staged-plugins"
+if [ -n "$HYPR_PID" ] && grep -q '/hyprland-plugins/hyprbars\.so' "/proc/$HYPR_PID/maps" 2>/dev/null; then
+    mkdir -p "$STAGED_DIR"
+    cp hyprbars.so "$STAGED_DIR/hyprbars.so"
+    cp hyprbars.so "$HOME/Projects/hyprbars-patch/hyprbars.so" 2>/dev/null || true
+    log "Hyprland is running with hyprbars mapped - refusing live cache overwrite."
+    log "Patched .so staged at $STAGED_DIR/hyprbars.so"
+    log "hyprpm-ensure.sh will move it into the cache at next clean Hyprland start."
+    exit 0
+fi
+
 log "install into hyprpm cache (sudo)"
 sudo cp hyprbars.so "$CACHE"
 # Keep a preserved copy for reference / emergency.
