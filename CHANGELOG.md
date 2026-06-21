@@ -1,3 +1,8 @@
+### 2.10.3: 2026-06-22
+
+* Refuse live cache overwrites in `hypr/scripts/hyprbars-patch-deploy.sh` and `hypr/scripts/hymission-rebuild.sh` when the plugin is mapped in a running Hyprland process. Live overwrites have crashed the compositor (kernel keeps the mapped inode alive but the loader/watch chain reacts to the file change), so the deploy scripts now stage to `~/.local/state/hypr/staged-plugins/` and exit cleanly instead
+* `hypr/scripts/hyprpm-ensure.sh` now picks up any staged `.so` files at the top of the script and moves them into the hyprpm cache before `hyprpm reload`, so a manual deploy made while Hyprland is up activates on the next clean Hyprland start without further action
+
 ### 2.10.2: 2026-06-21
 
 * Add `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service` to fix the year-old "no OSD popup after hyprlock unlock" bug in `dms-shell` v1.4.6. The volume chime still plays and the bar widget updates, but the OSD never appears - because `DankOSD.show()` early-returns on a stuck `shouldBeVisible` flag whose underlying surface was cleared by hyprlock's exclusive grab
