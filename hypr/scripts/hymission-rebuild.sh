@@ -52,6 +52,21 @@ fi
 
 [ -f build-cmake/libhymission.so ] || die "build produced no libhymission.so" 2
 
+# Safety: refuse a live cache overwrite while the plugin is mapped in a
+# running Hyprland process. The hyprbars deploy script crashed the compositor
+# this way; same shape applies here. Stage to ~/.local/state/hypr/staged-plugins/
+# and let hyprpm-ensure.sh move it into the cache at next clean Hyprland start.
+HYPR_PID="$(pgrep -x Hyprland | head -1)"
+STAGED_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/staged-plugins"
+if [ -n "$HYPR_PID" ] && grep -q '/hymission/hymission\.so' "/proc/$HYPR_PID/maps" 2>/dev/null; then
+    mkdir -p "$STAGED_DIR"
+    cp build-cmake/libhymission.so "$STAGED_DIR/hymission.so"
+    log "Hyprland is running with hymission mapped - refusing live cache overwrite."
+    log "Patched .so staged at $STAGED_DIR/hymission.so"
+    log "hyprpm-ensure.sh will move it into the cache at next clean Hyprland start."
+    exit 0
+fi
+
 log "install into hyprpm cache (sudo)"
 sudo cp build-cmake/libhymission.so "$CACHE"
 sudo sed -i 's|enabled = false|enabled = true|' "$(dirname "$CACHE")/state.toml" 2>/dev/null || true
