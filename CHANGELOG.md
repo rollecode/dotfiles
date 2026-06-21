@@ -1,3 +1,9 @@
+### 2.10.2: 2026-06-21
+
+* Add `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service` to fix the year-old "no OSD popup after hyprlock unlock" bug in `dms-shell` v1.4.6. The volume chime still plays and the bar widget updates, but the OSD never appears - because `DankOSD.show()` early-returns on a stuck `shouldBeVisible` flag whose underlying surface was cleared by hyprlock's exclusive grab
+* Patches `/usr/share/quickshell/dms/Widgets/DankOSD.qml` to reset the flag and timers when `shouldBeVisible && !visible` (the desynced state). Idempotent, backs up the original, no DMS restart needed - the patched QML loads on the next DMS process spawn
+* Filed upstream as AvengeMedia/DankMaterialShell#2680
+
 ### 2.10.1: 2026-06-20
 
 * Add `bin/dms-fade-lock-patcher.sh` and `systemd/user/dms-fade-lock-patcher.service` to backport upstream DankMaterialShell PR #2653 onto installed `dms-shell` v1.4.6 — without it, a custom-lock command (hyprlock here) leaves the fade-to-lock black overlay up after unlock, breaking volume HUD and the rest of the desktop
