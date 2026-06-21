@@ -18,7 +18,27 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAMP="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/last-hyprland-version"
+STAGED_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/staged-plugins"
 mkdir -p "$(dirname "$STAMP")"
+
+# Move any plugins that a manual deploy refused to write live into the cache
+# now, before hyprpm reload below loads plugins. The deploy scripts stage
+# here when Hyprland is up with the plugin mapped, so a live cache overwrite
+# does not crash the compositor. This is the safe handoff point.
+if [ -d "$STAGED_DIR" ]; then
+    for staged in "$STAGED_DIR"/*.so; do
+        [ -f "$staged" ] || continue
+        case "$(basename "$staged")" in
+            hyprbars.so)  target="/var/cache/hyprpm/$USER/hyprland-plugins/hyprbars.so" ;;
+            hymission.so) target="/var/cache/hyprpm/$USER/hymission/hymission.so" ;;
+            *) target="" ;;
+        esac
+        if [ -n "$target" ] && [ -d "$(dirname "$target")" ]; then
+            sudo cp "$staged" "$target" && rm -f "$staged" && \
+                logger -t hyprpm-ensure "moved staged $(basename "$staged") into cache"
+        fi
+    done
+fi
 
 current_ver="$(Hyprland --version 2>/dev/null | head -1)"
 last_ver="$(cat "$STAMP" 2>/dev/null || true)"
