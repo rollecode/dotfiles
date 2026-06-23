@@ -1,3 +1,8 @@
+### 2.10.4: 2026-06-23
+
+* Add `KillMode=process` to `systemd/user/dms.service` so a `systemctl --user restart dms.service` only signals the main `dms` process. Default `KillMode=control-group` would SIGTERM every process in the cgroup (chromium, terminals, Signal, Telegram, claude sessions, MCP servers, etc), making any DMS restart destructive to the whole session
+* With this in place, restarting DMS to pick up patched QML (e.g. `dms-osd-unstick-patcher.sh`) keeps all apps alive. Tested by SIGTERM'ing the main dms PID: every app PID survived, `Restart=always` respawned a fresh dms + qs pair in 3-6 seconds, the next hyprlock cycle's volume OSD rendered correctly with the unstick guard active
+
 ### 2.10.3: 2026-06-22
 
 * Refuse live cache overwrites in `hypr/scripts/hyprbars-patch-deploy.sh` and `hypr/scripts/hymission-rebuild.sh` when the plugin is mapped in a running Hyprland process. Live overwrites have crashed the compositor (kernel keeps the mapped inode alive but the loader/watch chain reacts to the file change), so the deploy scripts now stage to `~/.local/state/hypr/staged-plugins/` and exit cleanly instead
