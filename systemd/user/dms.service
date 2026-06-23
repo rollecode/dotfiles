@@ -15,6 +15,11 @@ ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sl
 ExecStart=/usr/bin/dms run
 Restart=always
 RestartSec=3
+# Restart only kills the main dms process. Apps living in this cgroup
+# (chromium, foot, terminals, claude session, etc) are left running so a
+# DMS restart can pick up patched QML without nuking the whole session.
+# Default KillMode=control-group would SIGTERM the entire tree.
+KillMode=process
 
 [Install]
 WantedBy=default.target
