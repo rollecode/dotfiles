@@ -1,3 +1,8 @@
+### 2.10.6: 2026-06-24
+
+* Move the AvengeMedia/DankMaterialShell#2694 workaround from `hypr/hypridle.conf` `unlock_cmd` to `hypr/scripts/hyprlock-wrapper.sh` (after the existing monitor and window restore steps). The hypridle path never fires when hyprlock is invoked from the SUPER+L keybind because hyprlock by default does not flip logind LockedHint, so hypridle does not see the unlock. The wrapper runs on every unlock unconditionally
+* Revert `hypr/hypridle.conf` `unlock_cmd` to the original test touch
+
 ### 2.10.5: 2026-06-24
 
 * Change `hypr/hypridle.conf` `unlock_cmd` to `pkill -TERM dms` as a workaround for AvengeMedia/DankMaterialShell#2694: after a hyprlock unlock plus DPMS resume cycle, DMS Volume OSD popup stops appearing on volume keypress until DMS is restarted. With `KillMode=process` already in `dms.service`, SIGTERM on unlock refreshes the DMS process while every other app in the cgroup (chromium, terminals, MCP servers, etc) stays running. Brief bar and dock flicker on each unlock, OSD works for the rest of the session
