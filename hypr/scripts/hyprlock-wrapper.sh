@@ -58,11 +58,16 @@ if [[ -f /tmp/hypr-window-positions.json ]]; then
     done
 fi
 
-# Note: previously this called `dms restart` here as an NVIDIA-specific
-# workaround for a black background on monitor power cycle after unlock
-# (commits 1f1198a / 8e991bb, "Fix hyprlock black background after monitor
-# power cycle (NVIDIA)"). Removed 2026-06-19 because it had been killing every
-# app that DMS spawned: those apps inherit the dms.service cgroup, and the
-# default KillMode=control-group SIGKILLs the entire cgroup on restart. If the
-# NVIDIA black-background bug returns on monitor power cycle, re-add this and
-# also set `KillMode=process` on dms.service so children survive.
+# Workaround for AvengeMedia/DankMaterialShell#2694: after a hyprlock unlock
+# plus DPMS resume cycle, the DMS Volume OSD popup stops appearing on volume
+# keypress until DMS is restarted. SIGTERM the dms main process here, systemd
+# Restart=always respawns a fresh dms in about 3 seconds with a clean
+# VolumeOSD instance. KillMode=process on dms.service (added in dotfiles
+# 2.10.4) keeps every other app in the cgroup alive (chromium, terminals,
+# MCP servers, etc). Brief bar and dock flicker on each unlock.
+#
+# This used to live here as a generic `dms restart` for an NVIDIA black
+# background bug, removed 2026-06-19 because default KillMode=control-group
+# was nuking the whole session cgroup. With KillMode=process now in place
+# it is safe to re-add for this specific OSD workaround.
+pkill -TERM dms
