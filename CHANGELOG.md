@@ -1,3 +1,7 @@
+### 2.10.5: 2026-06-24
+
+* Change `hypr/hypridle.conf` `unlock_cmd` to `pkill -TERM dms` as a workaround for AvengeMedia/DankMaterialShell#2694: after a hyprlock unlock plus DPMS resume cycle, DMS Volume OSD popup stops appearing on volume keypress until DMS is restarted. With `KillMode=process` already in `dms.service`, SIGTERM on unlock refreshes the DMS process while every other app in the cgroup (chromium, terminals, MCP servers, etc) stays running. Brief bar and dock flicker on each unlock, OSD works for the rest of the session
+
 ### 2.10.4: 2026-06-23
 
 * Add `KillMode=process` to `systemd/user/dms.service` so a `systemctl --user restart dms.service` only signals the main `dms` process. Default `KillMode=control-group` would SIGTERM every process in the cgroup (chromium, terminals, Signal, Telegram, claude sessions, MCP servers, etc), making any DMS restart destructive to the whole session
