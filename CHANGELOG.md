@@ -1,3 +1,8 @@
+### 2.10.7: 2026-07-02
+
+* Retire `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service`. The v2 patch it applied to `DankOSD.show()` unconditionally tore down and rebuilt the OSD surface on every call, which caused visible flicker on rapid volume keypresses. The hyprlock-wrapper `pkill -TERM dms` workaround from 2.10.6 already refreshes DMS state on every unlock, so the DankOSD level patch is redundant
+* Local DMS QML files restored to upstream v1.4.6, no more flicker
+
 ### 2.10.6: 2026-06-24
 
 * Move the AvengeMedia/DankMaterialShell#2694 workaround from `hypr/hypridle.conf` `unlock_cmd` to `hypr/scripts/hyprlock-wrapper.sh` (after the existing monitor and window restore steps). The hypridle path never fires when hyprlock is invoked from the SUPER+L keybind because hyprlock by default does not flip logind LockedHint, so hypridle does not see the unlock. The wrapper runs on every unlock unconditionally
