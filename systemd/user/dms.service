@@ -12,6 +12,13 @@ Environment=QT_QPA_PLATFORMTHEME=gtk3
 # box (no uwsm), so binding to default.target + this socket-wait is the
 # reliable pattern.
 ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
+# Skip start if not under Hyprland: DMS depends on Hyprland IPC + protocols
+# (foreign_toplevel, ext_workspace, ext_session_lock, wlr_gamma, etc). Under
+# other compositors (e.g. y5/Nourish) it partly renders but the dock is empty
+# and half the widgets do not update. XDG_CURRENT_DESKTOP is imported into the
+# user systemd env by the compositor at session start, so it is populated by
+# the time the WAYLAND_DISPLAY socket exists.
+ExecStartPre=/bin/sh -c 'test "$XDG_CURRENT_DESKTOP" = "Hyprland" || exit 1'
 ExecStart=/usr/bin/dms run
 Restart=always
 RestartSec=3
