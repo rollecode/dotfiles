@@ -1,3 +1,7 @@
+### 2.10.8: 2026-07-03
+
+* Gate `systemd/user/dms.service` on `XDG_CURRENT_DESKTOP=Hyprland` via a second `ExecStartPre` that exits 1 under any other compositor. Under y5 (Nourish) or any non Hyprland session DMS was starting anyway and rendering a broken bar and dock (no `ext_foreign_toplevel_list`, no `ext_workspace`, no `ext_session_lock`, etc), plus wasting a chunk of RAM. Now it only starts under Hyprland
+
 ### 2.10.7: 2026-07-02
 
 * Retire `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service`. The v2 patch it applied to `DankOSD.show()` unconditionally tore down and rebuilt the OSD surface on every call, which caused visible flicker on rapid volume keypresses. The hyprlock-wrapper `pkill -TERM dms` workaround from 2.10.6 already refreshes DMS state on every unlock, so the DankOSD level patch is redundant
