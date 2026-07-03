@@ -1,4 +1,4 @@
-# driftwm config for Rolle, 3.7.2026. Grounded in docs/config.md for 0.13.0
+# driftwm config, 3.7.2026. Grounded in docs/config.md for 0.13.0
 # (validate with: driftwm --check-config). Everything omitted uses defaults.
 # Muscle memory mirrored from Hyprland: Super+Q terminal, Super+C close,
 # Super+K DMS launcher, Super+L DMS lock, Super+drag moves windows.
@@ -21,10 +21,19 @@ model = "pc105"
 options = "lv3:ralt_switch,caps:escape"
 
 [input.mouse]
-# Match Hyprland feel: it ran libinput defaults (adaptive accel, sensitivity
-# 0 = no modification). driftwm defaults to "flat", which felt off.
-accel_profile = "adaptive"
+# FPS-tier raw input: flat = no acceleration curve at all, 1 mm of mouse is
+# always the same cursor distance: one millimeter of mouse is one unit of
+# cursor, FPS style. Earlier flat tests were contaminated
+# by the composited-cursor latency; this is the clean run on the hardware
+# cursor. Speed adjust under flat: accel_speed scales linearly.
+accel_profile = "flat"
 accel_speed = 0.0
+
+# disable_hardware_cursor was tried 3.7.2026 and REVERTED: compositing the
+# cursor ties it to frame rate and the added latency was felt immediately
+# ("even more floaty"). The KMS hardware cursor is the responsive one here.
+[backend]
+disable_hardware_cursor = false
 
 [navigation]
 # No momentum coast on canvas pans: the default 0.5 felt "floaty". Raise
@@ -34,6 +43,7 @@ drift = 0.0
 # Titlebars matched to the Hyprland hyprbars look: same height, same dark
 # bar, white text, Archivo. driftwm's corner radius kept (default 10).
 [decorations]
+# Solid dark bar for regular windows (foot is barless via its rule below).
 bg_color = "#0c0e12"
 fg_color = "#ffffff"
 title_bar_height = 28
@@ -45,8 +55,8 @@ shadow = false
 # Frosted-glass strength for blurred windows: approximates Hyprland's
 # blur size 12 / passes 4 (Kawase passes + spread here).
 [effects]
-blur_radius = 4
-blur_strength = 1.4
+blur_radius = 1
+blur_strength = 3.0
 
 # Living space shader: parallax stars with independent twinkle, purple
 # nebula, galaxies, rare supernovae. Edit the .glsl, then Mod+Shift+R
@@ -60,7 +70,7 @@ path = "~/Pictures/Wallpapers/starmap_2020_16k_gal_purple.tif"
 cache_budget_mb = 512
 
 [keybindings]
-# Rolle's core binds (override driftwm defaults where they collide).
+# Core binds (override driftwm defaults where they collide).
 "mod+q" = "exec foot"                                      # default was close-window
 "mod+c" = "close-window"                                   # default was center-window
 "mod+shift+c" = "center-window"                            # center-window relocated
@@ -89,12 +99,22 @@ cache_budget_mb = 512
 [[window_rules]]
 app_id = "thelounge-app"
 pinned_to_screen = true
-position = [1359, 48]
-size = [721, 1167]
+position = [1327, 48]
+size = [785, 1166]
 
-# foot: frosted glass like on Hyprland. driftwm flattens client alpha
-# (windows default to opacity 1.0), so transparency comes from this rule.
+# foot: barless frosted glass. decoration "minimal" = no title strip, just
+# shadowless rounded glass (Super+C closes, Super+drag moves). driftwm
+# flattens client alpha, so transparency comes from this rule's opacity.
+# Blur edge-fade bevel is upstream-known (driftwm #125).
 [[window_rules]]
 app_id = "foot"
+decoration = "minimal"
 blur = true
-opacity = 0.88
+opacity = 0.80
+
+# Force 144 Hz like the Hyprland config did (monitor=DP-1,3440x1440@144).
+# driftwm's "preferred" pick can land on 60 Hz, which makes the hardware
+# cursor and everything else feel subtly laggy no matter the accel profile.
+[[outputs]]
+name = "DP-1"
+mode = "3440x1440@144"
