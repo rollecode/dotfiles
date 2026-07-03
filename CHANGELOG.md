@@ -1,3 +1,7 @@
+### 2.12.2: 2026-07-03
+
+* Add `driftwm/wallpapers/starmap-regrade.sh`: regenerates the canvas starmap variants (neutral, vivid, purple) from the NASA source EXR
+
 ### 2.12.1: 2026-07-03
 
 * driftwm: flat 1:1 mouse, force `3440x1440@144`, barless frosted foot, solid dark titlebars elsewhere, single-pass blur (works around upstream edge-fade #125), The Lounge at 785px
