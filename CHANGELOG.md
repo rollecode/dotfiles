@@ -1,3 +1,7 @@
+### 2.11.1: 2026-07-03
+
+* Add `niri.service` and `driftwm.service` to the Hyprland login compositor sweep, a leftover compositor session (and the DMS instance it spawned) would otherwise ghost-eat app launches the same way the y5 zombie did
+
 ### 2.11.0: 2026-07-03
 
 * Add `thelounge-sticky` windowrule: The Lounge IRC (Electron, class `thelounge-app`) floats pinned on every workspace at the right edge (`size 721 1167`, `move 100%-721 89`, geometry frozen from the live window), so IRC is always visible and usable
