@@ -37,7 +37,7 @@ nice -n 19 realesrgan-ncnn-vulkan -i "$IN" -o "$W/up.png" -s "$SCALE" -n "$MODEL
 
 OUT="$OUTDIR/${NAME}_x${SCALE}_pyr.tif"
 VIPS_CONCURRENCY="${VIPS_CONCURRENCY:-3}" nice -n 19 vips tiffsave "$W/up.png" "$OUT" \
-  --tile --pyramid --compression deflate --tile-width 256 --tile-height 256
+  --tile --pyramid --bigtiff --compression deflate --tile-width 256 --tile-height 256
 
 echo "done: $OUT ($(vipsheader -f width "$OUT")x$(vipsheader -f height "$OUT"))"
 echo
