@@ -3,10 +3,12 @@
 # GPU-upscales the image with Real-ESRGAN, then bakes a pyramidal TIFF that
 # driftwm streams as LOD chunks (tile mode), so it stays sharp under zoom.
 #
-# Usage: canvasify.sh <image-file-or-URL> [scale] [model]
+# Usage: canvasify.sh <image-file-or-URL> [scale] [mode]
 #   scale: 2, 3 or 4 (default 4)
-#   model: realesrgan-x4plus (default, photographic/painterly)
-#          realesrgan-x4plus-anime (flat/illustrated art, crisper lines)
+#   mode:  resize (default: vips lanczos, artifact-free, right for smooth
+#          gradients like space imagery) or ai (Real-ESRGAN: real detail
+#          invention but paints tile-luminance squares into smooth gradients,
+#          only for busy textured content)
 #
 # Output: ~/Pictures/Wallpapers/canvas/<name>_x<scale>_pyr.tif
 # plus the ready-to-paste [background] config snippet.
@@ -15,9 +17,9 @@
 # minute on big images. Tile size 256 keeps VRAM modest.
 set -euo pipefail
 
-SRC="${1:?usage: canvasify.sh <image-or-url> [scale] [model]}"
+SRC="${1:?usage: canvasify.sh <image-or-url> [scale] [mode]}"
 SCALE="${2:-4}"
-MODEL="${3:-realesrgan-x4plus}"
+MODE="${3:-resize}"
 OUTDIR="$HOME/Pictures/Wallpapers/canvas"
 W="$(mktemp -d "$HOME/.cache/canvasify.XXXXXX")"
 trap 'rm -rf "$W"' EXIT
@@ -33,7 +35,11 @@ esac
 NAME="$(basename "${SRC%%\?*}")"
 NAME="${NAME%.*}"
 
-nice -n 19 realesrgan-ncnn-vulkan -i "$IN" -o "$W/up.png" -s "$SCALE" -n "$MODEL" -t 256
+if [ "$MODE" = "ai" ]; then
+  nice -n 19 realesrgan-ncnn-vulkan -i "$IN" -o "$W/up.png" -s "$SCALE" -n realesrgan-x4plus -t 0
+else
+  VIPS_CONCURRENCY="${VIPS_CONCURRENCY:-3}" nice -n 19 vips resize "$IN" "$W/up.png" "$SCALE" --kernel lanczos3
+fi
 
 OUT="$OUTDIR/${NAME}_x${SCALE}_pyr.tif"
 VIPS_CONCURRENCY="${VIPS_CONCURRENCY:-3}" nice -n 19 vips tiffsave "$W/up.png" "$OUT" \
