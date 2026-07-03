@@ -1,3 +1,8 @@
+### 2.11.0: 2026-07-03
+
+* Add `thelounge-sticky` windowrule: The Lounge IRC (Electron, class `thelounge-app`) floats pinned on every workspace at the right edge (`size 721 1167`, `move 100%-721 89`, geometry frozen from the live window), so IRC is always visible and usable
+* Autostart The Lounge at login via exec-once (6 s delay so DMS is up first)
+
 ### 2.10.9: 2026-07-03
 
 * Add a recovery exec-once to `hypr/hyprland.conf`: on every Hyprland login stop leftover `y5.service` and `y5-dev.service` (a Y5 compositor survives logout as a zombie and its stale Wayland socket makes app singletons like chromium and 1Password open windows on an invisible compositor), import `XDG_CURRENT_DESKTOP` and `WAYLAND_DISPLAY` into the user manager so the dms.service Hyprland guard passes, reset-failed and restart `dms.service`. Also fixes DMS not starting on re-login: `default.target` only fires at user manager start (reboot), not per login, so a stopped DMS stayed stopped forever
