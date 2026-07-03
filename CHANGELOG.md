@@ -4,7 +4,7 @@
 * Add `driftwm/wallpapers/canvasify.sh` (any image or URL to pyramidal canvas, lanczos default, AI opt-in) and `wallset.sh` (fixed wallpapers)
 * Canvas background finalized: purple starmap "whisper" variant (0.5px veil kills the 1:1 noise-blanket, overview unchanged)
 * Add `systemd/user/dms-driftwm.service` (auto-restarting DMS under driftwm, exclusive with the Hyprland unit); Super+L now runs the real hyprlock (works on driftwm)
-* hyprlock: starmap-slice background (screenshot mode grabs black on driftwm), solid dark input field (translucent inner rendered pale there), fixes white-on-white input
+* hyprlock: starmap-slice background (screenshot mode grabs black on driftwm) and explicit capslock/numlock/bothlock colors: `-1` ("no change") paints the pill WHITE when numlock is on, and driftwm enables numlock at login, which made the input unreadable
 * Remove hypridle everywhere: no idle management, no auto-lock, no DPMS timers, screens stay on until Super+L
 * driftwm: Alt+drag pans the canvas from anywhere, even over windows
 * Add `driftwm/wallpapers/wallset.sh` (fixed viewport wallpapers with auto ultrawide crop); moon-in-clouds set as the fixed wallpaper
