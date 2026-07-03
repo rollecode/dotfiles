@@ -65,10 +65,12 @@ blur_strength = 3.0
 # projection converted to a pyramidal TIFF so driftwm streams tiles and
 # stays sharp under zoom. Wraps seamlessly left-right (equirectangular).
 [background]
-# Fixed viewport wallpaper (never scrolls/zooms/tiles): moon in clouds,
-# center-cropped to 21.5:9. Source: https://i.redd.it/mt9xq8tqyec71.jpg
-type = "wallpaper"
-path = "~/Pictures/Wallpapers/reddit-moon-clouds-ultrawide.jpg"
+# Canvas-native background: scrolls and zooms with the space you fly
+# through. Uniform all-sky texture so the tiling repeat is invisible.
+# Alternate fixed wallpaper (moon in clouds) lives in wallpapers/fixed/,
+# switch with wallset.sh; regrade variants via starmap-regrade.sh.
+type = "tile"
+path = "~/Pictures/Wallpapers/starmap_2020_16k_gal_purple.tif"
 cache_budget_mb = 512
 
 [keybindings]
