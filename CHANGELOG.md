@@ -4,6 +4,7 @@
 * Add `driftwm/wallpapers/canvasify.sh` (any image or URL to pyramidal canvas, lanczos default, AI opt-in) and `wallset.sh` (fixed wallpapers)
 * Canvas background finalized: purple starmap "whisper" variant (0.5px veil kills the 1:1 noise-blanket, overview unchanged)
 * Add `systemd/user/dms-driftwm.service` (auto-restarting DMS under driftwm, exclusive with the Hyprland unit); Super+L now runs the real hyprlock (works on driftwm)
+* hyprlock background switched to `screenshot`: the lock always blurs the live screen instead of a hardcoded image
 * driftwm: Alt+drag pans the canvas from anywhere, even over windows
 * Add `driftwm/wallpapers/wallset.sh` (fixed viewport wallpapers with auto ultrawide crop); moon-in-clouds set as the fixed wallpaper
 
