@@ -70,7 +70,7 @@ blur_strength = 3.0
 # Alternate fixed wallpaper (moon in clouds) lives in wallpapers/fixed/,
 # switch with wallset.sh; regrade variants via starmap-regrade.sh.
 type = "tile"
-path = "~/Pictures/Wallpapers/starmap_2020_16k_gal_purple.tif"
+path = "~/Pictures/Wallpapers/starmap_purple_whisper.tif"
 cache_budget_mb = 512
 
 [keybindings]

@@ -46,4 +46,10 @@ run linear "$W/gam.v" "$W/tint.v" "1.12 0.70 1.38" "0 0 0"
 run recomb "$W/tint.v" "$W/psat.v" "$W/sat135.mat"
 pyramid "$W/psat.v" "$DIR/starmap_2020_16k_gal_purple.tif"
 
-echo "done: $DIR/starmap_2020_16k_gal_{pyr,vivid,purple}.tif"
+# Whisper: the daily driver. Purple grade with a 0.5px gaussian veil so the
+# star field does not read as sharp noise at 100% zoom (chosen by taste test
+# against 1.0 and 2.0: sharpest wins, but raw was too noisy).
+run gaussblur "$W/psat.v" "$W/whisper.v" 0.5
+pyramid "$W/whisper.v" "$DIR/starmap_purple_whisper.tif"
+
+echo "done: $DIR/starmap_2020_16k_gal_{pyr,vivid,purple}.tif + starmap_purple_whisper.tif"
