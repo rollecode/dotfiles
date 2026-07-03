@@ -10,7 +10,7 @@ focus_follows_mouse = true
 # session first (it survives logout by design), then own a fresh instance.
 # The Lounge starts after DMS; its window rule below pins it to the screen.
 autostart = [
-  "systemctl --user stop dms.service 2>/dev/null; exec dms run",
+  "systemctl --user start dms-driftwm.service",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
 ]
 
@@ -79,7 +79,7 @@ cache_budget_mb = 512
 "mod+c" = "close-window"                                   # default was center-window
 "mod+shift+c" = "center-window"                            # center-window relocated
 "mod+k" = "spawn dms ipc call spotlight toggle"            # DMS launcher
-"mod+l" = "spawn dms ipc call lock lock"                   # default was swaylock
+"mod+l" = "spawn hyprlock"                                 # the exact Hyprland lock, works on driftwm
 "mod+n" = "spawn dms ipc call notifications open"
 "mod+shift+r" = "spawn touch /home/rolle/.config/driftwm/config.toml"  # reload config + shader
 # Volume: 1% steps with a 100% cap, matching the Hyprland setup.

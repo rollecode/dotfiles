@@ -1,0 +1,17 @@
+[Unit]
+Description=Dank Material Shell under driftwm
+StartLimitBurst=10
+StartLimitIntervalSec=60
+# Never run both DMS instances: the Hyprland unit and this one are exclusive.
+Conflicts=dms.service
+
+[Service]
+Type=simple
+Environment=QT_QPA_PLATFORMTHEME=gtk3
+ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
+ExecStartPre=/bin/sh -c 'test "$XDG_CURRENT_DESKTOP" = "driftwm" || exit 1'
+ExecStart=/usr/bin/dms run
+Restart=always
+RestartSec=3
+# Apps spawned into this cgroup survive DMS restarts.
+KillMode=process
