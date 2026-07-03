@@ -3,6 +3,7 @@
 * Add `niri.service` and `driftwm.service` to the Hyprland login compositor sweep (leftover sessions ghost-eat app launches)
 * Add `driftwm/` config for the canvas compositor trial: DMS shell, Hyprland-matched keybinds and mouse feel, The Lounge pinned to screen, foot blur
 * Add `driftwm/wallpapers/space.glsl` endless space shader
+* driftwm polish: NASA 16k starmap canvas background with a purple grade, hyprbars-matched titlebars, no shadows, foot blur
 
 ### 2.11.0: 2026-07-03
 
