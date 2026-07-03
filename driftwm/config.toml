@@ -1,0 +1,83 @@
+# driftwm config for Rolle, 3.7.2026. Grounded in docs/config.md for 0.13.0
+# (validate with: driftwm --check-config). Everything omitted uses defaults.
+# Muscle memory mirrored from Hyprland: Super+Q terminal, Super+C close,
+# Super+K DMS launcher, Super+L DMS lock, Super+drag moves windows.
+# Canvas extras: Mod+0 zoom reset, Mod+W fit all, wheel on canvas zooms.
+
+focus_follows_mouse = true
+
+# DMS is the shell. Stop any leftover dms.service from a previous Hyprland
+# session first (it survives logout by design), then own a fresh instance.
+# The Lounge starts after DMS; its window rule below pins it to the screen.
+autostart = [
+  "systemctl --user stop dms.service 2>/dev/null; exec dms run",
+  "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
+]
+
+[input.keyboard]
+layout = "fi"
+model = "pc105"
+# Same xkb options as Hyprland: AltGr as level3, Caps acts as Escape.
+options = "lv3:ralt_switch,caps:escape"
+
+[input.mouse]
+# Match Hyprland feel: it ran libinput defaults (adaptive accel, sensitivity
+# 0 = no modification). driftwm defaults to "flat", which felt off.
+accel_profile = "adaptive"
+accel_speed = 0.0
+
+[navigation]
+# No momentum coast on canvas pans: the default 0.5 felt "floaty". Raise
+# toward 0.5 later if some glide turns out to be missed.
+drift = 0.0
+
+# Frosted-glass strength for blurred windows: approximates Hyprland's
+# blur size 12 / passes 4 (Kawase passes + spread here).
+[effects]
+blur_radius = 4
+blur_strength = 1.4
+
+# Living space shader: parallax stars with independent twinkle, purple
+# nebula, galaxies, rare supernovae. Edit the .glsl, then Mod+Shift+R
+# (or touch this file) to hot-reload it.
+[background]
+type = "shader"
+path = "~/.config/driftwm/wallpapers/space.glsl"
+
+[keybindings]
+# Rolle's core binds (override driftwm defaults where they collide).
+"mod+q" = "exec foot"                                      # default was close-window
+"mod+c" = "close-window"                                   # default was center-window
+"mod+shift+c" = "center-window"                            # center-window relocated
+"mod+k" = "spawn dms ipc call spotlight toggle"            # DMS launcher
+"mod+l" = "spawn dms ipc call lock lock"                   # default was swaylock
+"mod+n" = "spawn dms ipc call notifications open"
+"mod+shift+r" = "spawn touch /home/rolle/.config/driftwm/config.toml"  # reload config + shader
+# Volume: 1% steps with a 100% cap, matching the Hyprland setup.
+"XF86AudioRaiseVolume" = "spawn wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1%+"
+"XF86AudioLowerVolume" = "spawn wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"
+"XF86AudioMicMute" = "spawn wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+# GIF recording like on Hyprland (wf-recorder based).
+"alt+Print" = "spawn /home/rolle/.local/bin/gifcap"
+
+[mouse.on-window]
+# Hyprland muscle memory: Super+LeftDrag moves the window under the cursor
+# (on empty canvas Super+drag still pans, contexts keep both). Shift variant
+# drags the whole snapped cluster. Super+RightDrag resizes.
+"mod+left" = "move-window"
+"mod+shift+left" = "move-snapped-windows"
+"mod+right" = "resize-window"
+
+# The Lounge IRC: pinned to the screen like on Hyprland, ignores pan/zoom,
+# floats above the canvas. position is output-relative (origin = screen
+# center, Y-up), computed from its Hyprland spot: right edge, upper area.
+[[window_rules]]
+app_id = "thelounge-app"
+pinned_to_screen = true
+position = [1359, 48]
+size = [721, 1167]
+
+# foot: frosted glass like on Hyprland (foot.ini alpha 0.3 + compositor blur).
+[[window_rules]]
+app_id = "foot"
+blur = true
