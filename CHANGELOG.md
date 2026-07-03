@@ -1,3 +1,7 @@
+### 2.10.9: 2026-07-03
+
+* Add a recovery exec-once to `hypr/hyprland.conf`: on every Hyprland login stop leftover `y5.service` and `y5-dev.service` (a Y5 compositor survives logout as a zombie and its stale Wayland socket makes app singletons like chromium and 1Password open windows on an invisible compositor), import `XDG_CURRENT_DESKTOP` and `WAYLAND_DISPLAY` into the user manager so the dms.service Hyprland guard passes, reset-failed and restart `dms.service`. Also fixes DMS not starting on re-login: `default.target` only fires at user manager start (reboot), not per login, so a stopped DMS stayed stopped forever
+
 ### 2.10.8: 2026-07-03
 
 * Gate `systemd/user/dms.service` on `XDG_CURRENT_DESKTOP=Hyprland` via a second `ExecStartPre` that exits 1 under any other compositor. Under y5 (Nourish) or any non Hyprland session DMS was starting anyway and rendering a broken bar and dock (no `ext_foreign_toplevel_list`, no `ext_workspace`, no `ext_session_lock`, etc), plus wasting a chunk of RAM. Now it only starts under Hyprland
