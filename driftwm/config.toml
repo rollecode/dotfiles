@@ -65,8 +65,10 @@ blur_strength = 3.0
 # projection converted to a pyramidal TIFF so driftwm streams tiles and
 # stays sharp under zoom. Wraps seamlessly left-right (equirectangular).
 [background]
-type = "tile"
-path = "~/Pictures/Wallpapers/starmap_2020_16k_gal_purple.tif"
+# Fixed viewport wallpaper (never scrolls/zooms/tiles): moon in clouds,
+# center-cropped to 21.5:9. Source: https://i.redd.it/mt9xq8tqyec71.jpg
+type = "wallpaper"
+path = "~/Pictures/Wallpapers/reddit-moon-clouds-ultrawide.jpg"
 cache_budget_mb = 512
 
 [keybindings]

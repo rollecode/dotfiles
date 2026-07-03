@@ -3,6 +3,7 @@
 * Add `driftwm/wallpapers/starmap-regrade.sh`: regenerates the canvas starmap variants (neutral, vivid, purple) from the NASA source EXR
 * Add `driftwm/wallpapers/canvasify.sh`: GPU-upscales any image or URL into a pyramidal canvas background (Real-ESRGAN + vips)
 * driftwm: Alt+drag pans the canvas from anywhere, even over windows
+* Add `driftwm/wallpapers/wallset.sh` (fixed viewport wallpapers with auto ultrawide crop); moon-in-clouds set as the fixed wallpaper
 
 ### 2.12.1: 2026-07-03
 
