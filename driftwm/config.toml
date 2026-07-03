@@ -92,6 +92,12 @@ cache_budget_mb = 512
 "mod+left" = "move-window"
 "mod+shift+left" = "move-snapped-windows"
 "mod+right" = "resize-window"
+# Unbind the default alt+drag window-move so alt+drag pans from anywhere.
+"alt+left" = "none"
+
+[mouse.anywhere]
+# Alt+LeftDrag pans the canvas no matter what is under the cursor.
+"alt+left" = "pan-viewport"
 
 # The Lounge IRC: pinned to the screen like on Hyprland, ignores pan/zoom,
 # floats above the canvas. position is output-relative (origin = screen
