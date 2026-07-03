@@ -1,6 +1,8 @@
-### 2.11.1: 2026-07-03
+### 2.12.0: 2026-07-03
 
-* Add `niri.service` and `driftwm.service` to the Hyprland login compositor sweep, a leftover compositor session (and the DMS instance it spawned) would otherwise ghost-eat app launches the same way the y5 zombie did
+* Add `niri.service` and `driftwm.service` to the Hyprland login compositor sweep (leftover sessions ghost-eat app launches)
+* Add `driftwm/` config for the canvas compositor trial: DMS shell, Hyprland-matched keybinds and mouse feel, The Lounge pinned to screen, foot blur
+* Add `driftwm/wallpapers/space.glsl` endless space shader
 
 ### 2.11.0: 2026-07-03
 
