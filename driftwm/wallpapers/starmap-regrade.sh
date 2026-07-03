@@ -28,7 +28,7 @@ run math2_const "$W/exp.v" "$W/gam.v" pow 0.4545
 pyramid() { # $1 input.v  $2 output.tif
   run linear "$1" "$W/lin.v" 255 0
   run cast "$W/lin.v" "$W/u8.v" uchar
-  run tiffsave "$W/u8.v" "$2" --tile --pyramid --compression deflate \
+  run tiffsave "$W/u8.v" "$2" --tile --pyramid --bigtiff --compression deflate \
     --tile-width 256 --tile-height 256
 }
 
