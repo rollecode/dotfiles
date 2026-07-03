@@ -31,6 +31,17 @@ accel_speed = 0.0
 # toward 0.5 later if some glide turns out to be missed.
 drift = 0.0
 
+# Titlebars matched to the Hyprland hyprbars look: same height, same dark
+# bar, white text, Archivo. driftwm's corner radius kept (default 10).
+[decorations]
+bg_color = "#0c0e12"
+fg_color = "#ffffff"
+title_bar_height = 28
+font = "Archivo"
+font_size = 9
+title_align = "left"
+shadow = false
+
 # Frosted-glass strength for blurred windows: approximates Hyprland's
 # blur size 12 / passes 4 (Kawase passes + spread here).
 [effects]
@@ -40,9 +51,13 @@ blur_strength = 1.4
 # Living space shader: parallax stars with independent twinkle, purple
 # nebula, galaxies, rare supernovae. Edit the .glsl, then Mod+Shift+R
 # (or touch this file) to hot-reload it.
+# Real sky: NASA SVS Deep Star Maps 2020 (public domain), 16k galactic
+# projection converted to a pyramidal TIFF so driftwm streams tiles and
+# stays sharp under zoom. Wraps seamlessly left-right (equirectangular).
 [background]
-type = "shader"
-path = "~/.config/driftwm/wallpapers/space.glsl"
+type = "tile"
+path = "~/Pictures/Wallpapers/starmap_2020_16k_gal_purple.tif"
+cache_budget_mb = 512
 
 [keybindings]
 # Rolle's core binds (override driftwm defaults where they collide).
@@ -77,7 +92,9 @@ pinned_to_screen = true
 position = [1359, 48]
 size = [721, 1167]
 
-# foot: frosted glass like on Hyprland (foot.ini alpha 0.3 + compositor blur).
+# foot: frosted glass like on Hyprland. driftwm flattens client alpha
+# (windows default to opacity 1.0), so transparency comes from this rule.
 [[window_rules]]
 app_id = "foot"
 blur = true
+opacity = 0.88
