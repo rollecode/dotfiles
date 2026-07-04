@@ -5,6 +5,7 @@
 * Landmarks are canvas-anchored (no parallax): driftwm scales the background externally, so objects stick under pan and zoom instead of sliding
 * Cut shader GPU cost from 48% to 11-29% SM (~165 W to ~58-79 W total draw): landmark cell scans reduced from 3x3 to the nearest 2x2 block, two-octave warp vectors, simpler near veil
 * Add `driftwm/wallpapers/lockbg-refresh.sh`: hyprlock background is a fresh quantum realm frame captured at each login (screenshot mode grabs black on driftwm)
+* Add `systemd/user/xwayland-satellite.service`: self-healing X11 support under driftwm (satellite crashed 3.7. and every X11 app was dead until manual restart). Owns `:0`, exports `DISPLAY`, restarts on failure; driftwm's fire-and-forget built-in spawn is disabled via `[xwayland] enabled = false`
 
 ### 2.12.2: 2026-07-03
 

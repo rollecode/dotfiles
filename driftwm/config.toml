@@ -10,11 +10,19 @@ focus_follows_mouse = true
 # session first (it survives logout by design), then own a fresh instance.
 # The Lounge starts after DMS; its window rule below pins it to the screen.
 autostart = [
+  "systemctl --user start xwayland-satellite.service",
   "systemctl --user start dms-driftwm.service",
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
 ]
+
+# X11 support is owned by the self-healing xwayland-satellite.service above
+# (Restart=on-failure, exports DISPLAY). driftwm's built-in spawn is disabled
+# so the two never fight over :0 (the built-in one is fire-and-forget: it
+# crashed 3.7.2026 and every X11 app was dead until a manual restart).
+[xwayland]
+enabled = false
 
 [input.keyboard]
 layout = "fi"
