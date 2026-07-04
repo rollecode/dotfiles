@@ -1,4 +1,5 @@
-// Quantum realm v9: transparent evolving fog over a swaybg starmap layer.
+// Quantum realm (final): transparent evolving fog over a swaybg starmap
+// layer, with color regions, pockets, filaments and distant lightning.
 // TEXTURED driftwm shader: `tex` is the 8k purple starmap, sampled as the
 // deepest layer and revealed through fog gaps. All fog structure derives
 // from absolute canvas coordinates (no tiles); the domain warp is
