@@ -151,7 +151,10 @@ void main() {
                 float rd = length(rc - rpos);
                 float amp = 0.7 + 0.6 * hash(rcp + 219.1);
                 float core = exp(-rd * rd * 26.0) * amp;
-                float halo = exp(-rd * rd * 5.0) * amp;
+                // Fade to zero before the 2x2 scan window can drop the cell
+                // (worst case 0.75 cells), else the cutoff draws a straight
+                // seam across the halo.
+                float halo = exp(-rd * rd * 5.0) * amp * (1.0 - smoothstep(0.52, 0.72, rd));
                 float ch = hash(rcp + 223.3);
                 vec3 coreCol =
                     ch < 0.40 ? vec3(1.00, 0.85, 0.96) :
@@ -262,7 +265,7 @@ void main() {
                 vec2 adir = vec2(cos(aang), sin(aang));
                 float along = dot(ad, adir);
                 float across = dot(ad, vec2(-adir.y, adir.x));
-                float band = exp(-across * across * 40.0) * exp(-along * along * 3.0);
+                float band = exp(-across * across * 40.0) * exp(-along * along * 5.5);
                 if (band > 0.05) {
                     // Tiny distant rocks: organic clumps (density noise),
                     // sizes skewed small, heavy jitter so no lattice shows.
@@ -305,7 +308,8 @@ void main() {
             if (h > 0.58) {
                 vec2 centre = c + 0.25 + 0.5 * vec2(hash(c + 7.7), hash(c + 13.1));
                 float d = length(pc - centre);
-                float glow = exp(-d * d * 6.0);
+                // Same 2x2 window guard as the cores: fade out before drop.
+                float glow = exp(-d * d * 6.0) * (1.0 - smoothstep(0.52, 0.72, d));
                 float hue = hash(c + 29.3);
                 vec3 pcol =
                     hue < 0.26 ? vec3(0.30, 0.14, 0.58) :
