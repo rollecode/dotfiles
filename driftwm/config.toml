@@ -11,6 +11,8 @@ focus_follows_mouse = true
 # The Lounge starts after DMS; its window rule below pins it to the screen.
 autostart = [
   "systemctl --user start dms-driftwm.service",
+  "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
+  "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
 ]
 
@@ -72,8 +74,9 @@ blur_strength = 3.0
 # through. Uniform all-sky texture so the tiling repeat is invisible.
 # Alternate fixed wallpaper (moon in clouds) lives in wallpapers/fixed/,
 # switch with wallset.sh; regrade variants via starmap-regrade.sh.
-type = "tile"
-path = "~/Pictures/Wallpapers/starmap_purple_whisper.tif"
+type = "shader"
+path = "~/.config/driftwm/wallpapers/quantum-realm.glsl"
+transparent_shader = true
 cache_budget_mb = 512
 
 [keybindings]
