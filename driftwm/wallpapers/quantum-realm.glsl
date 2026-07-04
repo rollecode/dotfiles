@@ -11,6 +11,7 @@ varying vec2 v_coords;
 uniform vec2 size;
 uniform vec2 u_camera;
 uniform float u_time;
+uniform float u_zoom;
 
 const vec3 BASE = vec3(0.010, 0.009, 0.026);   // deep near-black
 
@@ -337,7 +338,10 @@ void main() {
     // where BOTH fog planes thin out at once.
     float gap = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
     gap = gap < 0.46 ? 0.0 : (gap - 0.46) / 0.54;
-    float alpha = 0.90 - gap * 0.70 + veil * 0.2;
+    // Gaps close when zooming out: at overview zoom the shrunken gap
+    // windows read as dozens of punched holes, not depth.
+    float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
+    float alpha = 0.90 - gap * 0.70 * gapZoom + veil * 0.2;
     alpha = alpha > 0.97 ? 0.97 : (alpha < 0.26 ? 0.26 : alpha);
     alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);

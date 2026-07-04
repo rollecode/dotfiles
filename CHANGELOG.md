@@ -7,7 +7,7 @@
 * Add `driftwm/wallpapers/lockbg-refresh.sh`: hyprlock background is a fresh quantum realm frame captured at each login (screenshot mode grabs black on driftwm)
 * Add `systemd/user/xwayland-satellite.service`: self-healing X11 support under driftwm (satellite crashed 3.7. and every X11 app was dead until manual restart). Owns `:0`, exports `DISPLAY`, restarts on failure; driftwm's fire-and-forget built-in spawn is disabled via `[xwayland] enabled = false`
 * driftwm screenshot binds (were never actually bound): Print full screen, Shift+Print cropped region, Ctrl+Print isolated focused window, all to clipboard
-* Quantum realm: sparser and fainter energy filaments (dense bright veins read as snakes at far zoom-out), subtler starfield through the fog gaps
+* Quantum realm: sparser and fainter energy filaments (dense bright veins read as snakes at far zoom-out), subtler starfield through the fog gaps, and gaps close entirely below ~35% zoom (`u_zoom`-aware alpha: shrunken gap windows at overview read as punched holes)
 
 ### 2.12.2: 2026-07-03
 
