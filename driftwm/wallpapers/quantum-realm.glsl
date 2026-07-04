@@ -334,15 +334,13 @@ void main() {
     // Anti-banding dither.
     col += (hash(screenPx * 0.7231) - 0.5) * 0.008;
 
-    // Mostly opaque dark realm; stars peek only through rare true gaps
-    // where BOTH fog planes thin out at once.
-    float gap = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
-    gap = gap < 0.70 ? 0.0 : (gap - 0.70) / 0.30;
-    // Gaps close when zooming out: at overview zoom the shrunken gap
-    // windows read as dozens of punched holes, not depth.
+    // No see-through windows: the far fog plane's features are 4000+ px, so
+    // any thresholded gap opens as a screen-sized hole of bare starmap.
+    // Instead the stars glimmer faintly INSIDE thin fog, smoothly, capped.
+    float thin = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
     float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
-    float alpha = 0.90 - gap * 0.55 * gapZoom + veil * 0.2;
-    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.40 ? 0.40 : alpha);
+    float alpha = 0.94 - thin * 0.22 * gapZoom + veil * 0.2;
+    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.72 ? 0.72 : alpha);
     alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);
 }
