@@ -8,7 +8,11 @@ Conflicts=dms.service
 [Service]
 Type=simple
 Environment=QT_QPA_PLATFORMTHEME=gtk3
-ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
+# Bounded wait with an env guard: after a logout crash the restart's wait
+# loop ran with the dead session's env (WAYLAND_DISPLAY unset) and hung for
+# the 90 s default timeout, so DMS took minutes to appear on the next login.
+TimeoutStartSec=30
+ExecStartPre=/usr/bin/timeout 20 /bin/sh -c 'until [ -n "$WAYLAND_DISPLAY" ] && [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
 ExecStartPre=/bin/sh -c 'test "$XDG_CURRENT_DESKTOP" = "driftwm" || exit 1'
 ExecStart=/usr/bin/dms run
 Restart=always
