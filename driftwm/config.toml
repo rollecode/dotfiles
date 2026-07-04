@@ -9,11 +9,11 @@ focus_follows_mouse = true
 # DMS is the shell. Stop any leftover dms.service from a previous Hyprland
 # session first (it survives logout by design), then own a fresh instance.
 # The Lounge starts after DMS; its window rule below pins it to the screen.
-# reset-failed first: a unit that hit its start-rate limit during logout
-# rejects a plain start. --no-block so a stuck unit can never delay the rest
-# (a stuck satellite activation once held DMS hostage for 90 s).
+# reset-failed clears a start-rate-limited unit from the logout crash;
+# restart (not start) tears down a stuck activation instead of joining it;
+# --no-block so nothing can delay the rest of autostart.
 autostart = [
-  "systemctl --user reset-failed xwayland-satellite.service dms-driftwm.service; systemctl --user start --no-block xwayland-satellite.service dms-driftwm.service",
+  "systemctl --user reset-failed xwayland-satellite.service dms-driftwm.service; systemctl --user restart --no-block xwayland-satellite.service dms-driftwm.service",
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",

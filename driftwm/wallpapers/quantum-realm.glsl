@@ -119,14 +119,14 @@ void main() {
     for (int ly = 0; ly <= 1; ly++) {
         for (int lx = 0; lx <= 1; lx++) {
             vec2 lcp = lcell + vec2(float(lx), float(ly));
-            if (hash(lcp + 61.7) > 0.55) {
-                float period = 16.0 + 22.0 * hash(lcp + 71.3);
+            if (hash(lcp + 61.7) > 0.40) {
+                float period = 12.0 + 18.0 * hash(lcp + 71.3);
                 float lt = mod(t + hash(lcp + 83.9) * period, period);
                 if (lt < 2.6) {
                     float env = pow(max(0.0, 1.0 - lt / 2.6), 2.0) * (lt < 0.25 ? lt / 0.25 : 1.0);
                     vec2 lpos = lcp + 0.2 + 0.6 * vec2(hash(lcp + 91.1), hash(lcp + 97.7));
                     float ld = length(lc - lpos);
-                    col += vec3(0.50, 0.55, 0.90) * exp(-ld * ld * 4.0) * env * pow(max(f1, 0.0), 1.5) * 0.62;
+                    col += vec3(0.50, 0.55, 0.90) * exp(-ld * ld * 4.0) * env * pow(max(f1, 0.0), 1.5) * 0.75;
                 }
             }
         }
@@ -337,12 +337,12 @@ void main() {
     // Mostly opaque dark realm; stars peek only through rare true gaps
     // where BOTH fog planes thin out at once.
     float gap = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
-    gap = gap < 0.58 ? 0.0 : (gap - 0.58) / 0.42;
+    gap = gap < 0.70 ? 0.0 : (gap - 0.70) / 0.30;
     // Gaps close when zooming out: at overview zoom the shrunken gap
     // windows read as dozens of punched holes, not depth.
     float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
-    float alpha = 0.90 - gap * 0.70 * gapZoom + veil * 0.2;
-    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.26 ? 0.26 : alpha);
+    float alpha = 0.90 - gap * 0.55 * gapZoom + veil * 0.2;
+    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.40 ? 0.40 : alpha);
     alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);
 }
