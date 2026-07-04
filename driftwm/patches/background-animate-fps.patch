@@ -1,0 +1,203 @@
+diff --git a/config.reference.toml b/config.reference.toml
+index 043ed75..c4da43c 100644
+--- a/config.reference.toml
++++ b/config.reference.toml
+@@ -236,6 +236,12 @@
+ # # blurrier).
+ # cache_budget_mb = 128
+ 
++# # Frame-rate cap for animated (`u_time`) shader backgrounds. 0 = every output
++# # frame (default). Slow-moving shaders look identical well below the refresh
++# # rate; between ticks the compositor reuses the composited result instead of
++# # re-evaluating the shader, so this directly scales the background's GPU cost.
++# animate_fps = 0
++
+ [bindings]
+ # # Opt out of built-in default bindings by category, for a clean slate.
+ # # Normally your [keybindings]/[mouse]/[gestures] entries merge with the
+diff --git a/docs/config.md b/docs/config.md
+index 8a7667e..7eae839 100644
+--- a/docs/config.md
++++ b/docs/config.md
+@@ -494,7 +494,7 @@ per-pass texel spread (default: 1.1)
+ 
+ Default: `false`
+ 
+-keep blur live under an animated wallpaper (default: false — blur is captured once and only refreshed when geometry/camera/static bg change). The background is blurred once into a shared full-output texture and each window slices its rect from it, so cost stays flat as windows are added. A window stacked over other windows falls back to an exact per-window blur at the same cadence.
++keep blur live under an animated wallpaper (default: false — blur is captured once and only refreshed when geometry/camera/ static bg change). The background is blurred once into a shared full-output texture and each window slices its rect from it, so cost stays flat as windows are added. A window stacked over other windows falls back to an exact per-window blur at the same cadence.
+ 
+ ### `animate_blur_fps`
+ 
+@@ -567,6 +567,12 @@ Default: `128`
+ 
+ Memory ceiling (MB) shared by cache_shader and gigapixel-TIFF wallpapers, with LRU eviction. Raise it for sharper revisits on large / HiDPI displays; lower it on memory-constrained machines (too low just keeps the background blurrier).
+ 
++### `animate_fps`
++
++Default: `0`
++
++Frame-rate cap for animated (`u_time`) shader backgrounds. 0 = every output frame (default). Slow-moving shaders look identical well below the refresh rate; between ticks the compositor reuses the composited result instead of re-evaluating the shader, so this directly scales the background's GPU cost.
++
+ ## `[bindings]`
+ 
+ ### `disable_defaults`
+diff --git a/src/backend/udev.rs b/src/backend/udev.rs
+index 3453bf7..b31ab50 100644
+--- a/src/backend/udev.rs
++++ b/src/backend/udev.rs
+@@ -163,7 +163,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
+             .any(|c| c.has_pending_bakes());
+     if data.redraws_needed.is_empty()
+         && !data.has_active_animations()
+-        && !data.render.background_is_animated
++        && !data.background_animation_due()
+         && !data.output_config_dirty
+         && data.pending_dpms.is_empty()
+         && !any_chunked_pending
+@@ -259,7 +259,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
+         || data.cursor_is_animated()
+     {
+         data.mark_all_dirty();
+-    } else if data.render.background_is_animated {
++    } else if data.background_animation_due() {
+         // Fullscreen outputs skip the background entirely, so an animated bg
+         // gives them nothing to redraw — marking them just burns battery.
+         let dirty: Vec<_> = data
+@@ -1449,7 +1449,7 @@ fn render_frame(
+     // the background shader advances a frame the stale composited result is reused and
+     // the background appears "frozen" inside those windows.
+     // Fix: reset buffer ages so every pixel is redrawn from scratch this frame.
+-    if data.render.background_is_animated {
++    if data.background_animation_due() {
+         let has_transparent = data.space.elements().any(|w| {
+             w.wl_surface()
+                 .as_deref()
+diff --git a/src/backend/winit.rs b/src/backend/winit.rs
+index c10b713..f35a1a7 100644
+--- a/src/backend/winit.rs
++++ b/src/backend/winit.rs
+@@ -231,7 +231,7 @@ pub fn init_winit(
+             // Force full redraw when animated background is visible through transparent windows.
+             // Without this, buffer-age optimisation reuses the stale composited result for
+             // transparent windows — the background appears frozen inside them.
+-            if age > 0 && data.render.background_is_animated {
++            if age > 0 && data.background_animation_due() {
+                 let has_transparent = data.space.elements().any(|w| {
+                     w.wl_surface()
+                         .as_deref()
+diff --git a/src/config/mod.rs b/src/config/mod.rs
+index b42c5f7..0a10a8c 100644
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -487,6 +487,7 @@ impl Config {
+             cache_shader: raw.background.cache_shader.unwrap_or(false),
+             transparent_shader: raw.background.transparent_shader.unwrap_or(false),
+             cache_budget_mb: raw.background.cache_budget_mb.unwrap_or(128),
++            animate_fps: raw.background.animate_fps.unwrap_or(0).min(1000),
+             kind: resolve_background_kind(raw.background, &mut errors),
+         };
+ 
+@@ -965,6 +966,7 @@ fn resolve_background_kind(
+         cache_shader: _,
+         transparent_shader: _,
+         cache_budget_mb: _,
++        animate_fps: _,
+     } = raw;
+     let texture = texture.as_deref().map(expand_tilde);
+     if let Some(t) = kind.as_deref() {
+diff --git a/src/config/toml.rs b/src/config/toml.rs
+index 9d0ee34..af6cdc9 100644
+--- a/src/config/toml.rs
++++ b/src/config/toml.rs
+@@ -199,6 +199,7 @@ pub(super) struct BackgroundFileConfig {
+     pub cache_shader: Option<bool>,
+     pub transparent_shader: Option<bool>,
+     pub cache_budget_mb: Option<u32>,
++    pub animate_fps: Option<u32>,
+ }
+ 
+ #[derive(Serialize, Deserialize, Default)]
+diff --git a/src/config/types.rs b/src/config/types.rs
+index bbb2083..da554e2 100644
+--- a/src/config/types.rs
++++ b/src/config/types.rs
+@@ -1013,4 +1013,9 @@ pub struct BackgroundConfig {
+     /// shader-bake cache (`cache_shader`) and gigapixel-TIFF wallpapers. The
+     /// cache LRU-evicts to stay under this; lower it on low-memory machines.
+     pub cache_budget_mb: u32,
++    /// Frame-rate cap for animated (`u_time`) background shaders. 0 = every
++    /// output frame (default). Slow-moving shaders look identical well below
++    /// the refresh rate, and between animation ticks the compositor reuses the
++    /// composited result instead of re-evaluating the shader.
++    pub animate_fps: u32,
+ }
+diff --git a/src/render/background.rs b/src/render/background.rs
+index 459379a..6b28b2f 100644
+--- a/src/render/background.rs
++++ b/src/render/background.rs
+@@ -162,9 +162,16 @@ pub fn update_background_element(
+     // Only push uniforms the shader actually consumes — update_uniforms bumps
+     // the element's CommitCounter, which would damage the full-screen bg every
+     // frame and force re-composition of every element above (blur especially).
++    // Animated shaders advance only when their fps budget allows; between
++    // ticks the CommitCounter stays put and the compositor reuses the last
++    // composited result instead of re-evaluating the shader every frame.
++    let animate_due = state.background_animation_due();
++    if animate_due {
++        state.render.background_last_animate = Some(std::time::Instant::now());
++    }
+     let uniforms_stale = (camera_moved && state.render.background_uses_camera)
+         || (zoom_changed && state.render.background_uses_zoom)
+-        || state.render.background_is_animated;
++        || animate_due;
+ 
+     let frame = BgFrame {
+         canvas_area,
+diff --git a/src/state/mod.rs b/src/state/mod.rs
+index 766153d..3b1ac46 100644
+--- a/src/state/mod.rs
++++ b/src/state/mod.rs
+@@ -1148,6 +1148,22 @@ impl DriftWm {
+             || os.momentum.velocity.y != 0.0
+     }
+ 
++    /// True when the animated background is due for its next tick under
++    /// `[background] animate_fps` (0 = every frame). The timestamp is stamped
++    /// where the uniforms are actually pushed, in `update_background_element`.
++    pub fn background_animation_due(&self) -> bool {
++        if !self.render.background_is_animated {
++            return false;
++        }
++        let fps = self.config.background.animate_fps;
++        if fps == 0 {
++            return true;
++        }
++        self.render
++            .background_last_animate
++            .is_none_or(|t| t.elapsed() >= std::time::Duration::from_secs_f64(1.0 / fps as f64))
++    }
++
+     pub fn has_active_animations(&self) -> bool {
+         self.space
+             .outputs()
+diff --git a/src/state/render_cache.rs b/src/state/render_cache.rs
+index 07184f6..c81f3c6 100644
+--- a/src/state/render_cache.rs
++++ b/src/state/render_cache.rs
+@@ -37,6 +37,8 @@ pub struct RenderCache {
+     pub shared_blur: Option<(GlesTexture, GlesTexture, Size<i32, Physical>)>,
+     pub shared_blur_at: Option<std::time::Instant>,
+     pub shared_blur_camera_generation: u64,
++    /// Last time animated-background uniforms were pushed ([background] animate_fps).
++    pub background_last_animate: Option<std::time::Instant>,
+     pub shadow_cache: HashMap<ObjectId, ShadowCacheEntry>,
+     pub border_cache: HashMap<ObjectId, BorderCacheEntry>,
+     /// One element per output for the configured background (shader / tile /
+@@ -76,6 +78,7 @@ impl RenderCache {
+             shared_blur: None,
+             shared_blur_at: None,
+             shared_blur_camera_generation: 0,
++            background_last_animate: None,
+             shadow_cache: HashMap::new(),
+             border_cache: HashMap::new(),
+             cached_bg: HashMap::new(),
