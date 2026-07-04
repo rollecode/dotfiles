@@ -42,10 +42,10 @@ index 8a7667e..7eae839 100644
  
  ### `disable_defaults`
 diff --git a/src/backend/udev.rs b/src/backend/udev.rs
-index 3453bf7..b31ab50 100644
+index 3453bf7..72086d1 100644
 --- a/src/backend/udev.rs
 +++ b/src/backend/udev.rs
-@@ -163,7 +163,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
+@@ -163,12 +163,37 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
              .any(|c| c.has_pending_bakes());
      if data.redraws_needed.is_empty()
          && !data.has_active_animations()
@@ -54,7 +54,37 @@ index 3453bf7..b31ab50 100644
          && !data.output_config_dirty
          && data.pending_dpms.is_empty()
          && !any_chunked_pending
-@@ -259,7 +259,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
+         && !data.pending_pointer_resync
+     {
++        // A capped animated background still needs a wake-up for its next
++        // tick: no event fires on an idle desktop, and without this the
++        // animation would only advance alongside other redraws (stutter).
++        let fps = data.config.background.animate_fps;
++        if data.render.background_is_animated && fps > 0 && !data.render.background_tick_armed {
++            let interval = Duration::from_secs_f64(1.0 / fps as f64);
++            let elapsed = data
++                .render
++                .background_last_animate
++                .map_or(interval, |t| t.elapsed());
++            let wait = interval
++                .saturating_sub(elapsed)
++                .max(Duration::from_millis(1));
++            if data
++                .loop_handle
++                .insert_source(Timer::from_duration(wait), |_, _, data: &mut DriftWm| {
++                    data.render.background_tick_armed = false;
++                    render_if_needed(data);
++                    TimeoutAction::Drop
++                })
++                .is_ok()
++            {
++                data.render.background_tick_armed = true;
++            }
++        }
+         return;
+     }
+ 
+@@ -259,7 +284,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
          || data.cursor_is_animated()
      {
          data.mark_all_dirty();
@@ -63,7 +93,7 @@ index 3453bf7..b31ab50 100644
          // Fullscreen outputs skip the background entirely, so an animated bg
          // gives them nothing to redraw — marking them just burns battery.
          let dirty: Vec<_> = data
-@@ -1449,7 +1449,7 @@ fn render_frame(
+@@ -1449,7 +1474,7 @@ fn render_frame(
      // the background shader advances a frame the stale composited result is reused and
      // the background appears "frozen" inside those windows.
      // Fix: reset buffer ages so every pixel is redrawn from scratch this frame.
@@ -181,23 +211,27 @@ index 766153d..3b1ac46 100644
          self.space
              .outputs()
 diff --git a/src/state/render_cache.rs b/src/state/render_cache.rs
-index 07184f6..c81f3c6 100644
+index 07184f6..832796d 100644
 --- a/src/state/render_cache.rs
 +++ b/src/state/render_cache.rs
-@@ -37,6 +37,8 @@ pub struct RenderCache {
+@@ -37,6 +37,11 @@ pub struct RenderCache {
      pub shared_blur: Option<(GlesTexture, GlesTexture, Size<i32, Physical>)>,
      pub shared_blur_at: Option<std::time::Instant>,
      pub shared_blur_camera_generation: u64,
 +    /// Last time animated-background uniforms were pushed ([background] animate_fps).
 +    pub background_last_animate: Option<std::time::Instant>,
++    /// A one-shot tick timer is armed for the next animation frame. Without
++    /// it the capped animation only advances alongside other redraws.
++    pub background_tick_armed: bool,
      pub shadow_cache: HashMap<ObjectId, ShadowCacheEntry>,
      pub border_cache: HashMap<ObjectId, BorderCacheEntry>,
      /// One element per output for the configured background (shader / tile /
-@@ -76,6 +78,7 @@ impl RenderCache {
+@@ -76,6 +81,8 @@ impl RenderCache {
              shared_blur: None,
              shared_blur_at: None,
              shared_blur_camera_generation: 0,
 +            background_last_animate: None,
++            background_tick_armed: false,
              shadow_cache: HashMap::new(),
              border_cache: HashMap::new(),
              cached_bg: HashMap::new(),
