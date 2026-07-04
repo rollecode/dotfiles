@@ -1,0 +1,16 @@
+[Unit]
+Description=Xwayland satellite for driftwm (X11 support, self-healing)
+StartLimitBurst=10
+StartLimitIntervalSec=60
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
+ExecStartPre=/bin/sh -c 'test "$XDG_CURRENT_DESKTOP" = "driftwm" || exit 1'
+ExecStart=/usr/bin/xwayland-satellite :0
+# driftwm's built-in spawn is disabled ([xwayland] enabled = false), so this
+# unit owns :0 and must export DISPLAY for the session in its place.
+ExecStartPost=/bin/sh -c 'until [ -S /tmp/.X11-unix/X0 ]; do sleep 0.2; done'
+ExecStartPost=/bin/sh -c 'systemctl --user set-environment DISPLAY=:0; command -v dbus-update-activation-environment >/dev/null && dbus-update-activation-environment DISPLAY || true'
+Restart=on-failure
+RestartSec=2
