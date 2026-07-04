@@ -115,9 +115,11 @@ void main() {
 
     // Distant sheet-lightning behind the far fog.
     vec2 lc = (screenPx + u_camera * 0.2) / 5200.0;
-    vec2 lcell = floor(lc - 0.5);
-    for (int ly = 0; ly <= 1; ly++) {
-        for (int lx = 0; lx <= 1; lx++) {
+    // Full 3x3 scan: a flash at peak brightness reaches past the 2x2
+    // window and clips along the cell edge as a huge faint square.
+    vec2 lcell = floor(lc);
+    for (int ly = -1; ly <= 1; ly++) {
+        for (int lx = -1; lx <= 1; lx++) {
             vec2 lcp = lcell + vec2(float(lx), float(ly));
             if (hash(lcp + 61.7) > 0.40) {
                 float period = 12.0 + 18.0 * hash(lcp + 71.3);
@@ -339,8 +341,8 @@ void main() {
     // Instead the stars glimmer faintly INSIDE thin fog, smoothly, capped.
     float thin = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
     float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
-    float alpha = 0.94 - thin * 0.22 * gapZoom + veil * 0.2;
-    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.72 ? 0.72 : alpha);
+    float alpha = 0.97 - thin * 0.09 * gapZoom + veil * 0.1;
+    alpha = alpha > 0.99 ? 0.99 : (alpha < 0.90 ? 0.90 : alpha);
     alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);
 }
