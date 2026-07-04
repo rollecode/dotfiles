@@ -337,8 +337,8 @@ void main() {
     // where BOTH fog planes thin out at once.
     float gap = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
     gap = gap < 0.46 ? 0.0 : (gap - 0.46) / 0.54;
-    float alpha = 0.90 - gap * 0.82 + veil * 0.2;
-    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.18 ? 0.18 : alpha);
+    float alpha = 0.90 - gap * 0.70 + veil * 0.2;
+    alpha = alpha > 0.97 ? 0.97 : (alpha < 0.26 ? 0.26 : alpha);
     alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);
 }
