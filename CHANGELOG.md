@@ -1,6 +1,9 @@
 ### 2.13.0: 2026-07-04
 
-* Quantum realm: living procedural wallpaper for the driftwm canvas. Transparent evolving fbm fog (colored regions, breathing pockets, energy filaments, distant sheet-lightning, star-gap windows) over a swaybg starmap layer. Endless and non-repeating by construction, ~30% GPU. Only the final shader is kept in `driftwm/wallpapers/`, iterations live in git history
+* Quantum realm: living procedural wallpaper for the driftwm canvas. Transparent evolving fbm fog (colored regions, breathing pockets, energy filaments, distant sheet-lightning, star-gap windows) over a swaybg starmap layer. Endless and non-repeating by construction. Only the final shader is kept in `driftwm/wallpapers/`, iterations live in git history
+* Quantum realm landmarks, tuned from 14 reference photos: radiant cores in four colors (the bright areas), super-rare gargantua black holes (streaming accretion disc, photon ring, pure black horizon), rare asteroid swarms (organic clumps of tiny distant rocks), and a single hand-placed hero planet at canvas `16000 -9000`
+* Landmarks are canvas-anchored (no parallax): driftwm scales the background externally, so objects stick under pan and zoom instead of sliding
+* Cut shader GPU cost from 48% to 11-29% SM (~165 W to ~58-79 W total draw): landmark cell scans reduced from 3x3 to the nearest 2x2 block, two-octave warp vectors, simpler near veil
 * Add `driftwm/wallpapers/lockbg-refresh.sh`: hyprlock background is a fresh quantum realm frame captured at each login (screenshot mode grabs black on driftwm)
 
 ### 2.12.2: 2026-07-03
