@@ -104,7 +104,7 @@ animate_fps = 30
 "mod+c" = "close-window"                                   # default was center-window
 "mod+shift+c" = "center-window"                            # center-window relocated
 "mod+k" = "spawn dms ipc call spotlight toggle"            # DMS launcher
-"mod+l" = "spawn hyprlock"                                 # the exact Hyprland lock, works on driftwm
+"mod+l" = "spawn /home/rolle/Projects/dotfiles/driftwm/wallpapers/lock-with-capture.sh"  # hyprlock over a grim capture of the current screen (its screenshot mode grabs black on driftwm)
 "mod+n" = "spawn dms ipc call notifications open"
 "mod+shift+r" = "spawn touch /home/rolle/.config/driftwm/config.toml"  # reload config + shader
 # Volume: 1% steps with a 100% cap, matching the Hyprland setup.
