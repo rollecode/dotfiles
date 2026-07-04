@@ -1,3 +1,7 @@
+### 2.13.1: 2026-07-04
+
+* Remove quantum realm iteration snapshots, keep only the final shader (header comment fixed, it still said v9)
+
 ### 2.13.0: 2026-07-04
 
 * Quantum realm: living procedural wallpaper for the driftwm canvas. Transparent evolving fbm fog (colored regions, breathing pockets, energy filaments, distant sheet-lightning, star-gap windows) over a swaybg starmap layer. Endless and non-repeating by construction, ~30% GPU. Snapshots v1-v13 in `driftwm/wallpapers/`, active = v13
