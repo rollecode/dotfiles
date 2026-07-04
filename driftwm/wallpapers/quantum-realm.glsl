@@ -318,10 +318,11 @@ void main() {
     }
     col += tint * (0.30 + 0.70 * pow(max(fog, 0.0), 1.8)) * 1.25;
 
-    // Energy filaments: thin luminous veins inside the mid fog.
+    // Energy filaments: thin luminous veins inside the mid fog. Kept sparse
+    // and faint: dense bright veins read as snakes at far zoom-out.
     vec2 fp = (screenPx + u_camera * 0.5) / 900.0 + vec2(t * 0.009, -t * 0.006);
-    float fil = pow(ridge(fp * 2.2), 6.0);
-    col += vec3(0.36, 0.42, 0.85) * fil * pow(max(f2, 0.0), 1.4) * 0.9;
+    float fil = pow(ridge(fp * 2.2), 9.0);
+    col += vec3(0.36, 0.42, 0.85) * fil * pow(max(f2, 0.0), 1.4) * 0.55;
 
 
     // Sparse near wisps, thin veil only.
