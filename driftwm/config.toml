@@ -93,6 +93,9 @@ type = "shader"
 path = "~/.config/driftwm/wallpapers/quantum-realm.glsl"
 transparent_shader = true
 cache_budget_mb = 512
+# Realm computes 30 frames/s; the compositor reuses the composited result
+# between ticks (our animate_fps patch). Identical look, ~1/4 the GPU.
+animate_fps = 30
 
 [keybindings]
 # Core binds (override driftwm defaults where they collide).
