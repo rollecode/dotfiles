@@ -7,7 +7,7 @@
 * Add `driftwm/wallpapers/lockbg-refresh.sh`: hyprlock background is a fresh quantum realm frame captured at each login (screenshot mode grabs black on driftwm)
 * Add `systemd/user/xwayland-satellite.service`: self-healing X11 support under driftwm (satellite crashed 3.7. and every X11 app was dead until manual restart). Owns `:0`, exports `DISPLAY`, restarts on failure; driftwm's fire-and-forget built-in spawn is disabled via `[xwayland] enabled = false`
 * driftwm screenshot binds (were never actually bound): Print full screen, Shift+Print cropped region, Ctrl+Print isolated focused window, all to clipboard
-* Quantum realm: sparser and fainter energy filaments (dense bright veins read as snakes at far zoom-out), subtler starfield through the fog gaps, and gaps close entirely below ~35% zoom (`u_zoom`-aware alpha: shrunken gap windows at overview read as punched holes)
+* Quantum realm: sparser and fainter energy filaments (dense bright veins read as snakes at far zoom-out), subtler starfield through the fog gaps, gaps close entirely below ~35% zoom (`u_zoom`-aware alpha: shrunken gap windows at overview read as punched holes), and gap windows open far more rarely (threshold 0.46 to 0.58: too much bare space showed through)
 * Add `driftwm/patches/blur-edge-fade-125.patch`: real fix for the blur edge-fade bevel (upstream driftwm #125, open). The blur cropped exactly the window rect so edge samples clamped to border pixels and smeared the backdrop inward; the patch blurs a padded crop and keeps only the centre. Built from `~/Projects/driftwm-patched`, installed as `/usr/local/bin/driftwm` shadowing the pacman binary
 
 ### 2.12.2: 2026-07-03
