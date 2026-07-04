@@ -337,7 +337,7 @@ void main() {
     // Mostly opaque dark realm; stars peek only through rare true gaps
     // where BOTH fog planes thin out at once.
     float gap = (1.0 - pow(max(f1, 0.0), 0.8)) * (1.0 - pow(max(f2, 0.0), 0.8));
-    gap = gap < 0.46 ? 0.0 : (gap - 0.46) / 0.54;
+    gap = gap < 0.58 ? 0.0 : (gap - 0.58) / 0.42;
     // Gaps close when zooming out: at overview zoom the shrunken gap
     // windows read as dozens of punched holes, not depth.
     float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
