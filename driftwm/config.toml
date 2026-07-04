@@ -35,6 +35,9 @@ accel_speed = 0.0
 [backend]
 disable_hardware_cursor = false
 
+[snap]
+gap = 42
+
 [navigation]
 # No momentum coast on canvas pans: the default 0.5 felt "floaty". Raise
 # toward 0.5 later if some glide turns out to be missed.
