@@ -100,6 +100,11 @@ cache_budget_mb = 512
 "XF86AudioRaiseVolume" = "spawn wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1%+"
 "XF86AudioLowerVolume" = "spawn wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"
 "XF86AudioMicMute" = "spawn wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+# Screenshots to clipboard: Print = full screen, Shift+Print = cropped
+# region (slurp), Ctrl+Print = focused window isolated with shadow.
+"Print" = "spawn grim - | wl-copy"
+"shift+Print" = "spawn grim -g \"$(slurp -d)\" - | wl-copy"
+"ctrl+Print" = "spawn driftwm msg screenshot window -o - | wl-copy"
 # GIF recording like on Hyprland (wf-recorder based).
 "alt+Print" = "spawn /home/rolle/.local/bin/gifcap"
 
