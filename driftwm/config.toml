@@ -9,9 +9,11 @@ focus_follows_mouse = true
 # DMS is the shell. Stop any leftover dms.service from a previous Hyprland
 # session first (it survives logout by design), then own a fresh instance.
 # The Lounge starts after DMS; its window rule below pins it to the screen.
+# reset-failed first: a unit that hit its start-rate limit during logout
+# rejects a plain start. --no-block so a stuck unit can never delay the rest
+# (a stuck satellite activation once held DMS hostage for 90 s).
 autostart = [
-  "systemctl --user start xwayland-satellite.service",
-  "systemctl --user start dms-driftwm.service",
+  "systemctl --user reset-failed xwayland-satellite.service dms-driftwm.service; systemctl --user start --no-block xwayland-satellite.service dms-driftwm.service",
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
@@ -70,6 +72,11 @@ shadow = false
 [effects]
 blur_radius = 1
 blur_strength = 3.0
+# Living realm through the frost. Sane only with our patched build: stock
+# driftwm re-renders the scene per frosted window per frame (87% GPU / 216 W);
+# the patch blurs one shared full-output texture at animate_blur_fps instead.
+animate_blur = true
+animate_blur_fps = 20
 
 # Living space shader: parallax stars with independent twinkle, purple
 # nebula, galaxies, rare supernovae. Edit the .glsl, then Mod+Shift+R

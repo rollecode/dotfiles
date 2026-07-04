@@ -5,7 +5,11 @@ StartLimitIntervalSec=60
 
 [Service]
 Type=simple
-ExecStartPre=/bin/sh -c 'until [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
+# Bounded wait with an env guard: at logout WAYLAND_DISPLAY is unset in the
+# manager, which made the bare -S test poll a directory forever and the
+# activation hang for the full 90 s default timeout into the next login.
+TimeoutStartSec=30
+ExecStartPre=/usr/bin/timeout 20 /bin/sh -c 'until [ -n "$WAYLAND_DISPLAY" ] && [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; do sleep 0.2; done'
 ExecStartPre=/bin/sh -c 'test "$XDG_CURRENT_DESKTOP" = "driftwm" || exit 1'
 ExecStart=/usr/bin/xwayland-satellite :0
 # driftwm's built-in spawn is disabled ([xwayland] enabled = false), so this
