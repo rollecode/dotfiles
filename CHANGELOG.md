@@ -1,5 +1,6 @@
 ### 2.13.1: 2026-07-05
 
+* Bind Super+MiddleClick to `focus-center`: zoom into any window by pointing at it from the Super+W overview (mouse twin of Super+X; the displaced default duplicated Super+F fullscreen)
 * Screenshots reworked: Print = crop select to clipboard AND `~/Pictures/Screenshots` (timestamped), Shift+Print = full screen to `~/Pictures/Screenshots`, Ctrl+Print = focused window to clipboard (unchanged); Esc during crop aborts cleanly
 * Drop an obsolete Hyprland-only keybind left over from before the driftwm migration
 * Comms neighborhood: Signal, Ayugram and Discord autostart at login into side-by-side canvas slots one screen left of home, sizes frozen from the live windows (Signal 1045x851, Ayugram 870x916, Discord 1635x1170: matching what the apps restore themselves, so mapping is flash-free); final autostart step parks the camera back at home

@@ -135,6 +135,10 @@ animate_fps = 30
 "mod+left" = "move-window"
 "mod+shift+left" = "move-snapped-windows"
 "mod+right" = "resize-window"
+# Zoom into a window by pointing at it: focus + center + zoom reset.
+# Same as Super+X but on the mouse. (Default mod+middle was fullscreen
+# toggle, which duplicates Super+F.)
+"mod+middle" = "focus-center"
 # Unbind the default alt+drag window-move so alt+drag pans from anywhere.
 "alt+left" = "none"
 
