@@ -1,6 +1,9 @@
 ### 2.13.1: 2026-07-05
 
 * Drop an obsolete Hyprland-only keybind left over from before the driftwm migration
+* Comms neighborhood: Signal, Ayugram and Discord autostart at login into side-by-side canvas slots one screen left of home (window rules, positions only: the apps restore their own sizes and a rule size just causes a wrong-size flash); final autostart step parks the camera back at home
+* Add `driftwm/patches/blur-scaling.patch` (upstream PR #185): masks captured only on geometry changes instead of per animated tick (nine idle terminals cost ~180 full-screen ops/s before), pad textures allocated lazily, dead scratch texture removed: idle frosted windows now cost ~nothing regardless of count
+* Add `driftwm/patches/wheel-notch-bindings.patch`: new `wheel-up`/`wheel-down` mouse triggers run any action once per notch: volume with OSD on `mod+shift+wheel` (bindings applied after the binary is installed; the running compositor rejects unknown triggers)
 
 ### 2.13.0: 2026-07-04
 

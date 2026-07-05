@@ -17,6 +17,14 @@ autostart = [
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
   "sleep 6; exec /home/rolle/Projects/thelounge-native-linux-app/node_modules/.bin/electron /home/rolle/Projects/thelounge-native-linux-app --ozone-platform=wayland",
+  # Comms neighborhood: Signal, Ayugram, Discord spawn one screen left of
+  # home (window rules below place them side by side). Staggered so the
+  # login isn't a thundering herd; final step parks the camera back home
+  # since new windows navigate the camera to themselves.
+  "sleep 9; exec signal-desktop",
+  "sleep 11; exec /usr/bin/AyuGram",
+  "sleep 13; exec discord",
+  "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
 ]
 
 # X11 support is owned by the self-healing xwayland-satellite.service above
@@ -141,6 +149,22 @@ app_id = "thelounge-app"
 pinned_to_screen = true
 position = [1327, 48]
 size = [785, 1166]
+
+# Comms neighborhood: plain canvas windows (not pinned), side by side one
+# screen left of home. position = window center, canvas coords, Y-up.
+# Sizes intentionally absent: these apps restore their own remembered
+# geometry after mapping, and a rule size only causes a wrong-size flash.
+[[window_rules]]
+app_id = "signal"
+position = [-4561, 0]
+
+[[window_rules]]
+app_id = "com.ay*"
+position = [-3440, 0]
+
+[[window_rules]]
+app_id = "discord"
+position = [-2319, 0]
 
 # foot: barless frosted glass. decoration "minimal" = no title strip, just
 # shadowless rounded glass (Super+C closes, Super+drag moves). driftwm

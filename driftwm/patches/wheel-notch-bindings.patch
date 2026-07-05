@@ -1,0 +1,110 @@
+diff --git a/config.reference.toml b/config.reference.toml
+index c4da43c..6c2aa4f 100644
+--- a/config.reference.toml
++++ b/config.reference.toml
+@@ -373,7 +373,9 @@
+ # # Context-aware: on-window, on-canvas, anywhere.
+ # # Specific context checked first, then "anywhere" as fallback.
+ # # Click-to-focus and SSD decoration clicks are always hardcoded.
+-# # Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll
++# # Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll,
++# #           wheel-up, wheel-down (one discrete notch — unlike wheel-scroll
++# #           these can run any action, e.g. volume on mod+shift+scroll)
+ # # Merges with defaults. Use "none" to unbind.
+ # #
+ # # Mouse actions: move-window, move-snapped-windows, resize-window,
+diff --git a/src/config/mod.rs b/src/config/mod.rs
+index 0a10a8c..4d0baa1 100644
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -181,6 +181,24 @@ impl Config {
+         self.mouse.lookup(&binding, context)
+     }
+ 
++    /// Look up a discrete wheel-notch action (wheel-up / wheel-down).
++    pub fn mouse_wheel_step_lookup_ctx(
++        &self,
++        modifiers: &ModifiersState,
++        up: bool,
++        context: BindingContext,
++    ) -> Option<&MouseAction> {
++        let binding = MouseBinding {
++            modifiers: Modifiers::from_state(modifiers),
++            trigger: if up {
++                MouseTrigger::WheelUp
++            } else {
++                MouseTrigger::WheelDown
++            },
++        };
++        self.mouse.lookup(&binding, context)
++    }
++
+     /// Look up a mouse scroll action by modifier state, axis source, and context.
+     pub fn mouse_scroll_lookup_ctx(
+         &self,
+diff --git a/src/config/parse.rs b/src/config/parse.rs
+index 7b26876..e1948da 100644
+--- a/src/config/parse.rs
++++ b/src/config/parse.rs
+@@ -83,6 +83,8 @@ pub fn parse_mouse_binding(s: &str, mod_key: ModKey) -> Result<MouseBinding, Str
+         "middle" => MouseTrigger::Button(BTN_MIDDLE),
+         "trackpad-scroll" => MouseTrigger::TrackpadScroll,
+         "wheel-scroll" => MouseTrigger::WheelScroll,
++        "wheel-up" => MouseTrigger::WheelUp,
++        "wheel-down" => MouseTrigger::WheelDown,
+         other => return Err(format!("unknown mouse trigger: {other}")),
+     };
+ 
+diff --git a/src/config/types.rs b/src/config/types.rs
+index da554e2..36a9c93 100644
+--- a/src/config/types.rs
++++ b/src/config/types.rs
+@@ -221,6 +221,11 @@ pub enum MouseTrigger {
+     Button(u32),
+     TrackpadScroll,
+     WheelScroll,
++    /// One discrete wheel notch away from the user. Unlike WheelScroll
++    /// (continuous pan/zoom), notch triggers can run any Action.
++    WheelUp,
++    /// One discrete wheel notch toward the user.
++    WheelDown,
+ }
+ 
+ #[derive(Clone, Debug, PartialEq, Eq, Hash)]
+diff --git a/src/input/pointer.rs b/src/input/pointer.rs
+index 15167bf..b1976e1 100644
+--- a/src/input/pointer.rs
++++ b/src/input/pointer.rs
+@@ -802,6 +802,32 @@ impl DriftWm {
+             self.pointer_context(pos)
+         };
+ 
++        // Discrete wheel-notch bindings (wheel-up / wheel-down) run any
++        // action once per notch — volume on mod+shift+scroll and the like.
++        // Finger scrolling stays continuous; notches are a wheel concept.
++        if source != AxisSource::Finger {
++            let v = event
++                .amount_v120(Axis::Vertical)
++                .map(|v| v / 120.0)
++                .or_else(|| event.amount(Axis::Vertical).map(|v| v / 15.0))
++                .unwrap_or(0.0);
++            if v != 0.0
++                && let Some(MouseAction::Action(act)) = self
++                    .config
++                    .mouse_wheel_step_lookup_ctx(&mods, v < 0.0, context)
++                    .cloned()
++            {
++                let notches = (v.abs().ceil() as u32).min(10);
++                for _ in 0..notches {
++                    self.execute_action(&act);
++                }
++                let frame = AxisFrame::new(Event::time_msec(&event));
++                pointer.axis(self, frame);
++                pointer.frame(self);
++                return;
++            }
++        }
++
+         // Single lookup: context-aware
+         if let Some(action) = self
+             .config
