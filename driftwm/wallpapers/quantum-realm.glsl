@@ -297,6 +297,36 @@ void main() {
         }
     }
 
+    // Alioth: a vast shadow leviathan patrolling rare cells. Devours the
+    // realm's light; faint violet rim, green inner flicker. Organic: its
+    // silhouette is noise-wobbled fog-darkness, no geometry.
+    vec2 al = (screenPx + u_camera) / 16000.0;
+    vec2 alcell = floor(al - 0.5);
+    float darkMask = 0.0;
+    for (int ay2 = 0; ay2 <= 1; ay2++) {
+        for (int ax2 = 0; ax2 <= 1; ax2++) {
+            vec2 acp2 = alcell + vec2(float(ax2), float(ay2));
+            if (hash(acp2 + 601.7) > 0.94) {
+                float aph = hash(acp2 + 607.3) * 6.2831;
+                vec2 centre2 = acp2 + 0.5
+                    + 0.15 * vec2(sin(t * 0.005 + aph), cos(t * 0.004 + aph));
+                vec2 rel = al - centre2;
+                float ad2 = length(rel);
+                float wob = 0.75 + 0.30 * noise(normalize(rel + 0.0001) * 1.6 + aph * 7.0 + t * 0.02);
+                float body2 = 1.0 - smoothstep(0.20 * wob, 0.34 * wob, ad2);
+                body2 *= 1.0 - smoothstep(0.50, 0.70, ad2);
+                if (body2 > 0.003) {
+                    float rim3 = smoothstep(0.14 * wob, 0.30 * wob, ad2) * body2;
+                    col = mix(col, BASE * 0.6, body2 * 0.85);
+                    col += vec3(0.30, 0.22, 0.55) * rim3 * 0.35;
+                    float flick = pow(max(sin(t * 0.7 + aph * 3.0), 0.0), 8.0);
+                    col += vec3(0.20, 0.55, 0.30) * rim3 * flick * 0.4;
+                    darkMask = max(darkMask, body2);
+                }
+            }
+        }
+    }
+
     // Quantum pockets: unique, breathing.
     vec2 pc = (screenPx + u_camera * 0.4) / 3200.0;
     vec2 cell = floor(pc - 0.5);
@@ -347,6 +377,6 @@ void main() {
     float gapZoom = clamp((u_zoom - 0.35) / 0.45, 0.0, 1.0);
     float alpha = 0.97 - thin * 0.09 * gapZoom + veil * 0.1;
     alpha = alpha > 0.99 ? 0.99 : (alpha < 0.90 ? 0.90 : alpha);
-    alpha = max(alpha, max(max(planetMask, gargMask), rockMask) * 0.99);
+    alpha = max(alpha, max(max(planetMask, gargMask), max(rockMask, darkMask)) * 0.99);
     gl_FragColor = vec4(col * alpha, alpha);
 }
