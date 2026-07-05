@@ -152,19 +152,23 @@ size = [785, 1166]
 
 # Comms neighborhood: plain canvas windows (not pinned), side by side one
 # screen left of home. position = window center, canvas coords, Y-up.
-# Sizes intentionally absent: these apps restore their own remembered
-# geometry after mapping, and a rule size only causes a wrong-size flash.
+# Sizes frozen from the live windows 5.7.2026 (Rolle-approved): they match
+# what the apps restore themselves, so mapping is flash-free. Slots are
+# side by side with 42 px gaps, row centered one screen left of home.
 [[window_rules]]
 app_id = "signal"
-position = [-4561, 0]
+position = [-4735, 0]
+size = [1045, 851]
 
 [[window_rules]]
 app_id = "com.ay*"
-position = [-3440, 0]
+position = [-3735, 0]
+size = [870, 916]
 
 [[window_rules]]
 app_id = "discord"
-position = [-2319, 0]
+position = [-2440, 0]
+size = [1635, 1170]
 
 # foot: barless frosted glass. decoration "minimal" = no title strip, just
 # shadowless rounded glass (Super+C closes, Super+drag moves). driftwm
