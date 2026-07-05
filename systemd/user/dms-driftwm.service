@@ -8,6 +8,11 @@ Conflicts=dms.service
 [Service]
 Type=simple
 Environment=QT_QPA_PLATFORMTHEME=gtk3
+# Everything the DMS launcher spawns inherits this env. DMS races the
+# xwayland-satellite DISPLAY export at login; without this, X11-forced apps
+# (Todoist etc) launched from the launcher die with no X server. The
+# satellite unit pins :0, so this is always right.
+Environment=DISPLAY=:0
 # Bounded wait with an env guard: after a logout crash the restart's wait
 # loop ran with the dead session's env (WAYLAND_DISPLAY unset) and hung for
 # the 90 s default timeout, so DMS took minutes to appear on the next login.
