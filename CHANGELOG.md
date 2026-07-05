@@ -1,3 +1,7 @@
+### 2.13.1: 2026-07-05
+
+* Drop an obsolete Hyprland-only keybind left over from before the driftwm migration
+
 ### 2.13.0: 2026-07-04
 
 * Quantum realm: living procedural wallpaper for the driftwm canvas. Transparent evolving fbm fog (colored regions, breathing pockets, energy filaments, distant sheet-lightning, star-gap windows) over a swaybg starmap layer. Endless and non-repeating by construction. Only the final shader is kept in `driftwm/wallpapers/`, iterations live in git history
