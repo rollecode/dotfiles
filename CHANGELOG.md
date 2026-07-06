@@ -1,5 +1,6 @@
 ### 2.13.2: 2026-07-06
 
+* Boot nvtop terminal: autostart opens `foot --app-id=nvtop-boot nvtop` right after Discord, frosted like other terminals, geometry frozen from the live window (902x822 below the comms row); custom app-id keeps the rule off regular foot windows
 * Add `driftwm/discord-launch.sh` and use it in autostart: Discord's renderer segfaulted twice at voice engine init when launched 13 s after login (audio stack still settling) and the app then exits permanently ("double crashed ... RIP"); the launcher retries up to 3 times, keyed on runtime (a run over 120 s counts as healthy so quitting Discord manually is not fought)
 * Add `driftwm/patches/background-animate-paused.patch`: new `[background] animate_paused` freezes animated shader backgrounds entirely (no ticks, no time advance, no animated-blur refreshes; realm stays visible and pans still work), toggleable via config hot-reload. Gaming mode sets it while a game runs and falls back to a 1 fps throttle when the running compositor predates the patch (it rejects unknown config keys)
 
