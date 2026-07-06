@@ -23,7 +23,7 @@ autostart = [
   # since new windows navigate the camera to themselves.
   "sleep 9; exec signal-desktop",
   "sleep 11; exec /usr/bin/AyuGram",
-  "sleep 13; exec discord",
+  "sleep 13; exec /home/rolle/Projects/dotfiles/driftwm/discord-launch.sh",
   "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
 ]
 
