@@ -1,3 +1,7 @@
+### 2.13.2: 2026-07-06
+
+* Add `driftwm/discord-launch.sh` and use it in autostart: Discord's renderer segfaulted twice at voice engine init when launched 13 s after login (audio stack still settling) and the app then exits permanently ("double crashed ... RIP"); the launcher retries up to 3 times, keyed on runtime (a run over 120 s counts as healthy so quitting Discord manually is not fought)
+
 ### 2.13.1: 2026-07-05
 
 * Bind Super+MiddleClick to `focus-center`: zoom into any window by pointing at it from the Super+W overview (mouse twin of Super+X; the displaced default duplicated Super+F fullscreen)
