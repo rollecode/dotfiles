@@ -24,6 +24,7 @@ autostart = [
   "sleep 9; exec signal-desktop",
   "sleep 11; exec /usr/bin/AyuGram",
   "sleep 13; exec /home/rolle/Projects/dotfiles/driftwm/discord-launch.sh",
+  "sleep 15; exec foot --app-id=nvtop-boot nvtop",
   "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
 ]
 
@@ -179,6 +180,16 @@ size = [722, 853]
 app_id = "discord"
 position = [-2440, 0]
 size = [1362, 885]
+
+# Boot nvtop terminal: frosted like foot, parked under the Discord slot.
+# Custom app-id so this rule doesn't catch regular foot terminals.
+[[window_rules]]
+app_id = "nvtop-boot"
+position = [-3653, -913]
+size = [902, 822]
+decoration = "minimal"
+blur = true
+opacity = 0.80
 
 # foot: barless frosted glass. decoration "minimal" = no title strip, just
 # shadowless rounded glass (Super+C closes, Super+drag moves). driftwm
