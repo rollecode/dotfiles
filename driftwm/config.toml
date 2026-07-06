@@ -83,7 +83,7 @@ blur_strength = 3.0
 # Living realm through the frost. Sane only with our patched build: stock
 # driftwm re-renders the scene per frosted window per frame (87% GPU / 216 W);
 # the patch blurs one shared full-output texture at animate_blur_fps instead.
-animate_blur = false
+animate_blur = true
 animate_blur_fps = 20
 
 # Living space shader: parallax stars with independent twinkle, purple
@@ -104,7 +104,8 @@ cache_budget_mb = 512
 # Realm frame cap (our animate_fps patch, timer-driven ticks): the realm
 # computes 30 steady frames/s, the compositor reuses composited frames
 # between ticks. Camera moves lift the cap for full-rate smooth panning.
-animate_fps = 1
+animate_fps = 30
+animate_paused = false
 
 [keybindings]
 # Core binds (override driftwm defaults where they collide).
@@ -177,7 +178,7 @@ size = [722, 853]
 [[window_rules]]
 app_id = "discord"
 position = [-2440, 0]
-size = [1635, 1170]
+size = [1362, 885]
 
 # foot: barless frosted glass. decoration "minimal" = no title strip, just
 # shadowless rounded glass (Super+C closes, Super+drag moves). driftwm
