@@ -145,6 +145,10 @@ animate_fps = 30
 [mouse.anywhere]
 # Alt+LeftDrag pans the canvas no matter what is under the cursor.
 "alt+left" = "pan-viewport"
+# Volume on the wheel (our wheel-notch patch, PR #186): one notch = 1%,
+# DMS OSD follows the mixer change automatically.
+"mod+shift+wheel-up" = "spawn wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1%+"
+"mod+shift+wheel-down" = "spawn wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"
 
 # The Lounge IRC: pinned to the screen like on Hyprland, ignores pan/zoom,
 # floats above the canvas. position is output-relative (origin = screen
