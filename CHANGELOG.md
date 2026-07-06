@@ -3,7 +3,7 @@
 * Bind Super+MiddleClick to `focus-center`: zoom into any window by pointing at it from the Super+W overview (mouse twin of Super+X; the displaced default duplicated Super+F fullscreen)
 * Screenshots reworked: Print = crop select to clipboard AND `~/Pictures/Screenshots` (timestamped), Shift+Print = full screen to `~/Pictures/Screenshots`, Ctrl+Print = focused window to clipboard (unchanged); Esc during crop aborts cleanly
 * Drop an obsolete Hyprland-only keybind left over from before the driftwm migration
-* Comms neighborhood: Signal, Ayugram and Discord autostart at login into side-by-side canvas slots one screen left of home, sizes frozen from the live windows (Signal 1045x851, Ayugram 870x916, Discord 1635x1170: matching what the apps restore themselves, so mapping is flash-free); final autostart step parks the camera back at home
+* Comms neighborhood: Signal, Ayugram and Discord autostart at login into side-by-side canvas slots one screen left of home, sizes frozen from the live windows (Signal 1045x851, Ayugram 722x853, Discord 1635x1170: matching what the apps restore themselves, so mapping is flash-free); final autostart step parks the camera back at home
 * Add `driftwm/patches/blur-scaling.patch` (upstream PR #185): masks captured only on geometry changes instead of per animated tick (nine idle terminals cost ~180 full-screen ops/s before), pad textures allocated lazily, dead scratch texture removed: idle frosted windows now cost ~nothing regardless of count
 * Add `driftwm/patches/wheel-notch-bindings.patch` (upstream PR #186): new `wheel-up`/`wheel-down` mouse triggers run any action once per notch; `mod+shift+wheel` now changes volume 1% per notch with the DMS OSD, verified live
 
