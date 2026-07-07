@@ -1,3 +1,62 @@
+From 78fe2631f5742e7c0f7ac6c2daef8fdb405590b9 Mon Sep 17 00:00:00 2001
+From: Rolle Laukkarinen <roni@dude.fi>
+Date: Sat, 4 Jul 2026 23:03:15 +0300
+Subject: [PATCH 1/3] Share one throttled full-output blur across windows for
+ animated backgrounds
+
+---
+ config.reference.toml       |  12 +++--
+ docs/config.md              |   8 ++-
+ src/config/parse_helpers.rs |   1 +
+ src/config/toml.rs          |   1 +
+ src/config/types.rs         |   5 ++
+ src/render/blur.rs          | 104 ++++++++++++++++++++++++++++++++++--
+ src/render/mod.rs           |   8 +++
+ src/state/render_cache.rs   |   9 ++++
+ 8 files changed, 141 insertions(+), 7 deletions(-)
+
+diff --git a/config.reference.toml b/config.reference.toml
+index 1b10e14..bb7d60a 100644
+--- a/config.reference.toml
++++ b/config.reference.toml
+@@ -176,9 +176,15 @@
+ [effects]
+ # blur_radius = 2                # number of Kawase down+up passes (default: 2)
+ # blur_strength = 1.1            # per-pass texel spread (default: 1.1)
+-# animate_blur = false           # re-blur every frame when the wallpaper is animated
+-                                 # (expensive; default: false — blur is captured once and
+-                                 # only refreshed when geometry/camera/static bg change)
++# animate_blur = false           # keep blur live under an animated wallpaper (default: false —
++                                 # blur is captured once and only refreshed when geometry/camera/
++                                 # static bg change). The background is blurred once into a shared
++                                 # full-output texture and each window slices its rect from it, so
++                                 # cost stays flat as windows are added. A window stacked over other
++                                 # windows falls back to an exact per-window blur at the same cadence.
++# animate_blur_fps = 20          # refresh rate of the shared animated blur (1-144). Animated
++                                 # wallpapers evolve slowly; well below the output rate still looks
++                                 # continuous through frosted glass. Camera moves force a refresh.
+ 
+ [background]
+ # # Five types: "default" (built-in dot-grid — the default), "shader", "tile",
+diff --git a/docs/config.md b/docs/config.md
+index ab19b23..a62fdee 100644
+--- a/docs/config.md
++++ b/docs/config.md
+@@ -506,7 +506,13 @@ per-pass texel spread (default: 1.1)
+ 
+ Default: `false`
+ 
+-re-blur every frame when the wallpaper is animated (expensive; default: false — blur is captured once and only refreshed when geometry/camera/static bg change)
++keep blur live under an animated wallpaper (default: false — blur is captured once and only refreshed when geometry/camera/static bg change). The background is blurred once into a shared full-output texture and each window slices its rect from it, so cost stays flat as windows are added. A window stacked over other windows falls back to an exact per-window blur at the same cadence.
++
++### `animate_blur_fps`
++
++Default: `20`
++
++refresh rate of the shared animated blur (1-144). Animated wallpapers evolve slowly; well below the output rate still looks continuous through frosted glass. Camera moves force a refresh.
+ 
+ ## `[background]`
+ 
 diff --git a/src/config/parse_helpers.rs b/src/config/parse_helpers.rs
 index 2241b91..d69fdce 100644
 --- a/src/config/parse_helpers.rs
@@ -11,7 +70,7 @@ index 2241b91..d69fdce 100644
  }
  
 diff --git a/src/config/toml.rs b/src/config/toml.rs
-index 56a4aab..9d0ee34 100644
+index 847dd94..4946407 100644
 --- a/src/config/toml.rs
 +++ b/src/config/toml.rs
 @@ -51,6 +51,7 @@ pub(super) struct EffectsFileConfig {
@@ -46,10 +105,10 @@ index e9daec1..bbb2083 100644
      }
  }
 diff --git a/src/render/blur.rs b/src/render/blur.rs
-index 028854b..36e62b0 100644
+index 7dcfadf..24dc25b 100644
 --- a/src/render/blur.rs
 +++ b/src/render/blur.rs
-@@ -324,6 +324,7 @@ pub(crate) fn process_blur_requests(
+@@ -317,6 +317,7 @@ pub(crate) fn process_blur_requests(
      pinned_prefix: usize,
      normal_prefix: usize,
      widget_prefix: usize,
@@ -57,7 +116,7 @@ index 028854b..36e62b0 100644
  ) {
      use smithay::backend::renderer::Color32F;
      use smithay::backend::renderer::damage::OutputDamageTracker;
-@@ -354,9 +355,68 @@ pub(crate) fn process_blur_requests(
+@@ -347,9 +348,68 @@ pub(crate) fn process_blur_requests(
      let geom_gen = state.render.blur_geometry_generation;
      let camera_gen = state.render.blur_camera_generation;
      // Animated background shaders update per frame but the element Id is stable,
@@ -128,7 +187,7 @@ index 028854b..36e62b0 100644
  
      // Precompute per-request behind depth (index into all_elements where "below this window" begins)
      let behind_starts: Vec<usize> = blur_requests
-@@ -411,7 +471,7 @@ pub(crate) fn process_blur_requests(
+@@ -404,7 +464,7 @@ pub(crate) fn process_blur_requests(
              BlurLayer::Overlay | BlurLayer::Top | BlurLayer::Pinned
          ) && cache.last_camera_generation != camera_gen;
  
@@ -137,7 +196,7 @@ index 028854b..36e62b0 100644
              cache.dirty = true;
          }
          if cache.force_dirty_frames > 0 {
-@@ -443,6 +503,44 @@ pub(crate) fn process_blur_requests(
+@@ -436,6 +496,44 @@ pub(crate) fn process_blur_requests(
              continue;
          };
  
@@ -183,10 +242,10 @@ index 028854b..36e62b0 100644
          if last_bg_depth != Some(behind) {
              let Ok(mut target) = renderer.bind(&mut bg_tex) else {
 diff --git a/src/render/mod.rs b/src/render/mod.rs
-index 6294aa2..3c87a36 100644
+index cfdbaa9..33ecbb9 100644
 --- a/src/render/mod.rs
 +++ b/src/render/mod.rs
-@@ -1197,6 +1197,12 @@ pub fn compose_frame(
+@@ -1207,6 +1207,12 @@ pub fn compose_frame(
              + background_layer_elements.len(),
      );
      let cursor_count = cursor_elements.len();
@@ -199,7 +258,7 @@ index 6294aa2..3c87a36 100644
      all_elements.extend(cursor_elements);
      all_elements.extend(overlay_elements);
      all_elements.extend(top_elements);
-@@ -1208,6 +1214,7 @@ pub fn compose_frame(
+@@ -1218,6 +1224,7 @@ pub fn compose_frame(
      all_elements.extend(outline_elements);
      all_elements.extend(bg_elements);
      all_elements.extend(background_layer_elements);
@@ -207,7 +266,7 @@ index 6294aa2..3c87a36 100644
  
      if !all_blur_requests.is_empty() {
          #[cfg(feature = "profile-with-tracy")]
-@@ -1224,6 +1231,7 @@ pub fn compose_frame(
+@@ -1234,6 +1241,7 @@ pub fn compose_frame(
              pinned_prefix,
              normal_prefix,
              widget_prefix,
@@ -242,23 +301,27 @@ index 149f273..07184f6 100644
              shadow_cache: HashMap::new(),
              border_cache: HashMap::new(),
              cached_bg: HashMap::new(),
-From dda5d5290a147bc79308159e7be544f36b1ffe65 Mon Sep 17 00:00:00 2001
+-- 
+2.55.0
+
+
+From 90040dc7a7df6041a249e6dcc0d8867bbb78e44d Mon Sep 17 00:00:00 2001
 From: Rolle Laukkarinen <roni@dude.fi>
 Date: Tue, 7 Jul 2026 14:35:54 +0300
-Subject: [PATCH] Key shared animated-blur state per output
+Subject: [PATCH 2/3] Key shared animated-blur state per output
 
 ---
  docs/config.md            |   2 +-
- src/render/blur.rs        | 145 ++++++++++++++++++++++----------------
+ src/render/blur.rs        | 100 +++++++++++++++++++++++---------------
  src/render/mod.rs         |   2 +-
- src/state/render_cache.rs |  12 ++--
- 4 files changed, 92 insertions(+), 69 deletions(-)
+ src/state/render_cache.rs |  12 ++---
+ 4 files changed, 69 insertions(+), 47 deletions(-)
 
 diff --git a/docs/config.md b/docs/config.md
-index 8a7667e..bf30030 100644
+index a62fdee..82c23bf 100644
 --- a/docs/config.md
 +++ b/docs/config.md
-@@ -494,7 +494,7 @@ per-pass texel spread (default: 1.1)
+@@ -506,7 +506,7 @@ per-pass texel spread (default: 1.1)
  
  Default: `false`
  
@@ -268,10 +331,10 @@ index 8a7667e..bf30030 100644
  ### `animate_blur_fps`
  
 diff --git a/src/render/blur.rs b/src/render/blur.rs
-index 36e62b0..8ee1f73 100644
+index 24dc25b..5cd9269 100644
 --- a/src/render/blur.rs
 +++ b/src/render/blur.rs
-@@ -149,6 +149,19 @@ impl BlurCache {
+@@ -142,6 +142,19 @@ impl BlurCache {
      }
  }
  
@@ -291,7 +354,7 @@ index 36e62b0..8ee1f73 100644
  /// Padding around the blur crop so the Kawase reach never touches a texture
  /// edge: window-edge samples must see real backdrop, not clamped border
  /// pixels. Sized to the blur's worst-case reach at the deepest mip.
-@@ -362,59 +375,70 @@ pub(crate) fn process_blur_requests(
+@@ -355,59 +368,70 @@ pub(crate) fn process_blur_requests(
      // camera moves) and each window slices its rect out of it. Trade-off: a
      // window overlapping another window frosts only the background beneath.
      let animated_bg = state.render.background_is_animated && state.config.effects.animate_blur;
@@ -398,7 +461,7 @@ index 36e62b0..8ee1f73 100644
          }
      }
  
-@@ -511,10 +535,10 @@ pub(crate) fn process_blur_requests(
+@@ -504,10 +528,10 @@ pub(crate) fn process_blur_requests(
              // Slice this window's rect out of the shared blurred background.
              // Already blurred full-screen, so edges see real neighbours and
              // no padding is needed.
@@ -411,60 +474,8 @@ index 36e62b0..8ee1f73 100644
              let Ok(mut target) = renderer.bind(&mut cache.texture) else {
                  continue;
              };
-@@ -577,28 +601,29 @@ pub(crate) fn process_blur_requests(
-                 (req.screen_rect.loc.x - pad, req.screen_rect.loc.y - pad).into(),
-                 pad_size,
-             );
--            if let Some(clipped) = want.intersection(Rectangle::from_size(output_size)) {
--                if clipped.size.w > 0 && clipped.size.h > 0 {
--                    let src_rect: Rectangle<f64, smithay::utils::Buffer> = Rectangle::new(
--                        (clipped.loc.x as f64, clipped.loc.y as f64).into(),
--                        (clipped.size.w as f64, clipped.size.h as f64).into(),
--                    );
--                    let dst = Rectangle::<i32, Physical>::new(
--                        (clipped.loc.x - want.loc.x, clipped.loc.y - want.loc.y).into(),
--                        clipped.size,
--                    );
--                    let _ = frame.render_texture_from_to(
--                        &bg_src,
--                        src_rect,
--                        dst,
--                        &[dst],
--                        &[],
--                        Transform::Normal,
--                        1.0,
--                        None,
--                        &[],
--                    );
--                }
-+            if let Some(clipped) = want.intersection(Rectangle::from_size(output_size))
-+                && clipped.size.w > 0
-+                && clipped.size.h > 0
-+            {
-+                let src_rect: Rectangle<f64, smithay::utils::Buffer> = Rectangle::new(
-+                    (clipped.loc.x as f64, clipped.loc.y as f64).into(),
-+                    (clipped.size.w as f64, clipped.size.h as f64).into(),
-+                );
-+                let dst = Rectangle::<i32, Physical>::new(
-+                    (clipped.loc.x - want.loc.x, clipped.loc.y - want.loc.y).into(),
-+                    clipped.size,
-+                );
-+                let _ = frame.render_texture_from_to(
-+                    &bg_src,
-+                    src_rect,
-+                    dst,
-+                    &[dst],
-+                    &[],
-+                    Transform::Normal,
-+                    1.0,
-+                    None,
-+                    &[],
-+                );
-             }
-             let _ = frame.finish();
-         }
 diff --git a/src/render/mod.rs b/src/render/mod.rs
-index 3c87a36..95c68e4 100644
+index 33ecbb9..e30dbd1 100644
 --- a/src/render/mod.rs
 +++ b/src/render/mod.rs
 @@ -15,8 +15,8 @@ mod tile_chunks_tiff;
@@ -514,6 +525,61 @@ index 07184f6..0a0f398 100644
          self.cached_error_bar.remove(output_name);
          self.remove_background_chunks(output_name);
          self.remove_capture_state(output_name);
+-- 
+2.55.0
+
+
+From f20161ba5b0b75abf3b5495cdc85eacd672eaee5 Mon Sep 17 00:00:00 2001
+From: Rolle Laukkarinen <roni@dude.fi>
+Date: Tue, 7 Jul 2026 18:42:25 +0300
+Subject: [PATCH 3/3] Free shared blur textures on reload, fall through to
+ per-window path when they are missing
+
+---
+ src/render/blur.rs  | 11 +++++++----
+ src/state/reload.rs |  4 ++++
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/render/blur.rs b/src/render/blur.rs
+index 5cd9269..75e071f 100644
+--- a/src/render/blur.rs
++++ b/src/render/blur.rs
+@@ -524,13 +524,16 @@ pub(crate) fn process_blur_requests(
+         // lies beneath this window; a window stacked over other windows
+         // falls through to the per-window path (throttled by the same
+         // shared_refreshed cadence), so lower windows show in its frost.
+-        if animated_bg && behind_starts[i] >= background_start {
++        // Missing shared textures (GL alloc failure) also fall through —
++        // skipping would insert this window's never-rendered texture as an
++        // invisible blur.
++        if animated_bg
++            && behind_starts[i] >= background_start
++            && let Some(shared) = state.render.shared_blur.get(&output_name)
++        {
+             // Slice this window's rect out of the shared blurred background.
+             // Already blurred full-screen, so edges see real neighbours and
+             // no padding is needed.
+-            let Some(shared) = state.render.shared_blur.get(&output_name) else {
+-                continue;
+-            };
+             let shared_src = shared.tex_a.clone();
+             let Ok(mut target) = renderer.bind(&mut cache.texture) else {
+                 continue;
+diff --git a/src/state/reload.rs b/src/state/reload.rs
+index 1814717..fa085f0 100644
+--- a/src/state/reload.rs
++++ b/src/state/reload.rs
+@@ -90,6 +90,10 @@ impl DriftWm {
+         self.render.background_uses_camera = false;
+         self.render.background_uses_zoom = false;
+         self.render.cached_bg.clear();
++        // Shared animated-blur textures are only touched while `animate_blur`
++        // is on; without this, disabling it would strand two full-output
++        // textures (~66 MB at 4K) until exit.
++        self.render.shared_blur.clear();
+         self.render.tile_shader = None;
+         self.render.tile_mirror_shader = None;
+         self.render.wallpaper_shader = None;
 -- 
 2.55.0
 
