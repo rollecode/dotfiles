@@ -10,4 +10,9 @@ set -u
 # lock and keyboard input lands in the invisible one (6.7.2026 lockout).
 pgrep -x hyprlock >/dev/null && exit 0
 grim /home/rolle/Pictures/Wallpapers/lockscreen-bg.png 2>/dev/null || true
-exec hyprlock
+hyprlock
+# hyprlock exited = unlocked. DMS's volume OSD component silently dies
+# across a session-lock cycle (upstream DankMaterialShell #2694, no fix);
+# refresh the shell to revive it. Safe: the unit has KillMode=process, so
+# launcher-spawned apps (chromium etc. share its cgroup) are not signaled.
+systemctl --user restart dms-driftwm.service
