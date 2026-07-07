@@ -1,8 +1,27 @@
+From ca28db0256e57195c3177132e46ab912aa976145 Mon Sep 17 00:00:00 2001
+From: Rolle Laukkarinen <roni@dude.fi>
+Date: Sun, 5 Jul 2026 00:27:46 +0300
+Subject: [PATCH] Add [background] animate_fps: frame-rate cap for animated
+ shader backgrounds
+
+---
+ config.reference.toml     |  6 ++++++
+ docs/config.md            |  6 ++++++
+ src/backend/udev.rs       | 39 +++++++++++++++++++++++++++++++++++----
+ src/backend/winit.rs      |  9 +++++----
+ src/config/mod.rs         |  2 ++
+ src/config/toml.rs        |  1 +
+ src/config/types.rs       |  5 +++++
+ src/render/background.rs  | 21 +++++++++++++++++----
+ src/state/mod.rs          | 27 +++++++++++++++++++++++++++
+ src/state/render_cache.rs | 11 +++++++++++
+ 10 files changed, 115 insertions(+), 12 deletions(-)
+
 diff --git a/config.reference.toml b/config.reference.toml
-index 043ed75..c4da43c 100644
+index 1b10e14..f75bd46 100644
 --- a/config.reference.toml
 +++ b/config.reference.toml
-@@ -236,6 +236,12 @@
+@@ -232,6 +232,12 @@
  # # blurrier).
  # cache_budget_mb = 128
  
@@ -16,19 +35,10 @@ index 043ed75..c4da43c 100644
  # # Opt out of built-in default bindings by category, for a clean slate.
  # # Normally your [keybindings]/[mouse]/[gestures] entries merge with the
 diff --git a/docs/config.md b/docs/config.md
-index 8a7667e..7eae839 100644
+index ab19b23..9db9c87 100644
 --- a/docs/config.md
 +++ b/docs/config.md
-@@ -494,7 +494,7 @@ per-pass texel spread (default: 1.1)
- 
- Default: `false`
- 
--keep blur live under an animated wallpaper (default: false — blur is captured once and only refreshed when geometry/camera/static bg change). The background is blurred once into a shared full-output texture and each window slices its rect from it, so cost stays flat as windows are added. A window stacked over other windows falls back to an exact per-window blur at the same cadence.
-+keep blur live under an animated wallpaper (default: false — blur is captured once and only refreshed when geometry/camera/ static bg change). The background is blurred once into a shared full-output texture and each window slices its rect from it, so cost stays flat as windows are added. A window stacked over other windows falls back to an exact per-window blur at the same cadence.
- 
- ### `animate_blur_fps`
- 
-@@ -567,6 +567,12 @@ Default: `128`
+@@ -573,6 +573,12 @@ Default: `128`
  
  Memory ceiling (MB) shared by cache_shader and gigapixel-TIFF wallpapers, with LRU eviction. Raise it for sharper revisits on large / HiDPI displays; lower it on memory-constrained machines (too low just keeps the background blurrier).
  
@@ -42,15 +52,15 @@ index 8a7667e..7eae839 100644
  
  ### `disable_defaults`
 diff --git a/src/backend/udev.rs b/src/backend/udev.rs
-index 3453bf7..72086d1 100644
+index 3453bf7..706d986 100644
 --- a/src/backend/udev.rs
 +++ b/src/backend/udev.rs
-@@ -163,12 +163,37 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
+@@ -163,12 +163,41 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
              .any(|c| c.has_pending_bakes());
      if data.redraws_needed.is_empty()
          && !data.has_active_animations()
 -        && !data.render.background_is_animated
-+        && !data.background_animation_due()
++        && !data.background_animation_due_any()
          && !data.output_config_dirty
          && data.pending_dpms.is_empty()
          && !any_chunked_pending
@@ -62,10 +72,14 @@ index 3453bf7..72086d1 100644
 +        let fps = data.config.background.animate_fps;
 +        if data.render.background_is_animated && fps > 0 && !data.render.background_tick_armed {
 +            let interval = Duration::from_secs_f64(1.0 / fps as f64);
++            // Wake for the soonest-due output; stamps are per-output.
 +            let elapsed = data
 +                .render
 +                .background_last_animate
-+                .map_or(interval, |t| t.elapsed());
++                .values()
++                .map(|t| t.elapsed())
++                .max()
++                .unwrap_or(interval);
 +            let wait = interval
 +                .saturating_sub(elapsed)
 +                .max(Duration::from_millis(1));
@@ -84,42 +98,67 @@ index 3453bf7..72086d1 100644
          return;
      }
  
-@@ -259,7 +284,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
-         || data.cursor_is_animated()
-     {
-         data.mark_all_dirty();
--    } else if data.render.background_is_animated {
-+    } else if data.background_animation_due() {
-         // Fullscreen outputs skip the background entirely, so an animated bg
-         // gives them nothing to redraw — marking them just burns battery.
+@@ -265,7 +294,7 @@ pub(crate) fn render_if_needed(data: &mut DriftWm) {
          let dirty: Vec<_> = data
-@@ -1449,7 +1474,7 @@ fn render_frame(
+             .active_outputs
+             .iter()
+-            .filter(|o| !data.is_output_fullscreen(o))
++            .filter(|o| !data.is_output_fullscreen(o) && data.background_animation_due(&o.name()))
+             .cloned()
+             .collect();
+         data.redraws_needed.extend(dirty);
+@@ -1433,7 +1462,7 @@ fn render_frame(
+     };
+ 
+     // Update background element
+-    let (camera_moved, zoom_changed) = crate::render::update_background_element(
++    let (camera_moved, zoom_changed, bg_animated) = crate::render::update_background_element(
+         data, output, cur_camera, cur_zoom, last_cam, last_zoom,
+     );
+ 
+@@ -1449,7 +1478,9 @@ fn render_frame(
      // the background shader advances a frame the stale composited result is reused and
      // the background appears "frozen" inside those windows.
      // Fix: reset buffer ages so every pixel is redrawn from scratch this frame.
 -    if data.render.background_is_animated {
-+    if data.background_animation_due() {
++    // Only on frames where the animation actually advanced — between capped
++    // ticks the composited result is intentionally reused.
++    if bg_animated {
          let has_transparent = data.space.elements().any(|w| {
              w.wl_surface()
                  .as_deref()
 diff --git a/src/backend/winit.rs b/src/backend/winit.rs
-index c10b713..f35a1a7 100644
+index c10b713..5d5001e 100644
 --- a/src/backend/winit.rs
 +++ b/src/backend/winit.rs
-@@ -231,7 +231,7 @@ pub fn init_winit(
+@@ -205,9 +205,10 @@ pub fn init_winit(
+             };
+ 
+             // --- Update cached background element ---
+-            let (camera_moved, zoom_changed) = crate::render::update_background_element(
+-                data, &output, cur_camera, cur_zoom, last_cam, last_zoom,
+-            );
++            let (camera_moved, zoom_changed, bg_animated) =
++                crate::render::update_background_element(
++                    data, &output, cur_camera, cur_zoom, last_cam, last_zoom,
++                );
+ 
+             // --- Take backend to split borrow from state ---
+             let Backend::Winit(mut backend) = data.backend.take().unwrap() else {
+@@ -231,7 +232,7 @@ pub fn init_winit(
              // Force full redraw when animated background is visible through transparent windows.
              // Without this, buffer-age optimisation reuses the stale composited result for
              // transparent windows — the background appears frozen inside them.
 -            if age > 0 && data.render.background_is_animated {
-+            if age > 0 && data.background_animation_due() {
++            if age > 0 && bg_animated {
                  let has_transparent = data.space.elements().any(|w| {
                      w.wl_surface()
                          .as_deref()
 diff --git a/src/config/mod.rs b/src/config/mod.rs
-index b42c5f7..0a10a8c 100644
+index ed0956d..a245d65 100644
 --- a/src/config/mod.rs
 +++ b/src/config/mod.rs
-@@ -487,6 +487,7 @@ impl Config {
+@@ -491,6 +491,7 @@ impl Config {
              cache_shader: raw.background.cache_shader.unwrap_or(false),
              transparent_shader: raw.background.transparent_shader.unwrap_or(false),
              cache_budget_mb: raw.background.cache_budget_mb.unwrap_or(128),
@@ -127,7 +166,7 @@ index b42c5f7..0a10a8c 100644
              kind: resolve_background_kind(raw.background, &mut errors),
          };
  
-@@ -965,6 +966,7 @@ fn resolve_background_kind(
+@@ -979,6 +980,7 @@ fn resolve_background_kind(
          cache_shader: _,
          transparent_shader: _,
          cache_budget_mb: _,
@@ -136,10 +175,10 @@ index b42c5f7..0a10a8c 100644
      let texture = texture.as_deref().map(expand_tilde);
      if let Some(t) = kind.as_deref() {
 diff --git a/src/config/toml.rs b/src/config/toml.rs
-index 9d0ee34..af6cdc9 100644
+index 847dd94..1df9754 100644
 --- a/src/config/toml.rs
 +++ b/src/config/toml.rs
-@@ -199,6 +199,7 @@ pub(super) struct BackgroundFileConfig {
+@@ -200,6 +200,7 @@ pub(super) struct BackgroundFileConfig {
      pub cache_shader: Option<bool>,
      pub transparent_shader: Option<bool>,
      pub cache_budget_mb: Option<u32>,
@@ -148,10 +187,10 @@ index 9d0ee34..af6cdc9 100644
  
  #[derive(Serialize, Deserialize, Default)]
 diff --git a/src/config/types.rs b/src/config/types.rs
-index bbb2083..da554e2 100644
+index e9daec1..b7a8720 100644
 --- a/src/config/types.rs
 +++ b/src/config/types.rs
-@@ -1013,4 +1013,9 @@ pub struct BackgroundConfig {
+@@ -1008,4 +1008,9 @@ pub struct BackgroundConfig {
      /// shader-bake cache (`cache_shader`) and gigapixel-TIFF wallpapers. The
      /// cache LRU-evicts to stay under this; lower it on low-memory machines.
      pub cache_budget_mb: u32,
@@ -162,19 +201,43 @@ index bbb2083..da554e2 100644
 +    pub animate_fps: u32,
  }
 diff --git a/src/render/background.rs b/src/render/background.rs
-index 459379a..6b28b2f 100644
+index 3d68051..4f26b96 100644
 --- a/src/render/background.rs
 +++ b/src/render/background.rs
-@@ -162,9 +162,16 @@ pub fn update_background_element(
+@@ -168,7 +168,10 @@ impl BackgroundElement {
+ }
+ 
+ /// Update the cached background element for the current camera/zoom.
+-/// Returns (camera_moved, zoom_changed) for the caller's damage logic.
++/// Returns (camera_moved, zoom_changed, animated) for the caller's damage
++/// logic. `animated` reports whether this call advanced the animation —
++/// callers can't re-check `background_animation_due` afterwards because the
++/// stamp below has already consumed the tick.
+ pub fn update_background_element(
+     state: &mut crate::state::DriftWm,
+     output: &Output,
+@@ -176,7 +179,7 @@ pub fn update_background_element(
+     cur_zoom: f64,
+     last_rendered_camera: Point<f64, Logical>,
+     last_rendered_zoom: f64,
+-) -> (bool, bool) {
++) -> (bool, bool, bool) {
+     let camera_moved = cur_camera != last_rendered_camera;
+     let zoom_changed = cur_zoom != last_rendered_zoom;
+     let output_name = output.name();
+@@ -188,9 +191,19 @@ pub fn update_background_element(
      // Only push uniforms the shader actually consumes — update_uniforms bumps
      // the element's CommitCounter, which would damage the full-screen bg every
      // frame and force re-composition of every element above (blur especially).
 +    // Animated shaders advance only when their fps budget allows; between
 +    // ticks the CommitCounter stays put and the compositor reuses the last
 +    // composited result instead of re-evaluating the shader every frame.
-+    let animate_due = state.background_animation_due();
++    let animate_due = state.background_animation_due(&output_name);
 +    if animate_due {
-+        state.render.background_last_animate = Some(std::time::Instant::now());
++        state
++            .render
++            .background_last_animate
++            .insert(output_name.clone(), std::time::Instant::now());
 +    }
      let uniforms_stale = (camera_moved && state.render.background_uses_camera)
          || (zoom_changed && state.render.background_uses_zoom)
@@ -183,18 +246,30 @@ index 459379a..6b28b2f 100644
  
      let frame = BgFrame {
          canvas_area,
+@@ -207,7 +220,7 @@ pub fn update_background_element(
+     if let Some(bg) = state.render.cached_bg.get_mut(&output_name) {
+         bg.update(&frame);
+     }
+-    (camera_moved, zoom_changed)
++    (camera_moved, zoom_changed, animate_due)
+ }
+ 
+ /// Compile background shader and/or load tile/wallpaper image.
 diff --git a/src/state/mod.rs b/src/state/mod.rs
-index 766153d..3b1ac46 100644
+index 766153d..90c14d3 100644
 --- a/src/state/mod.rs
 +++ b/src/state/mod.rs
-@@ -1148,6 +1148,22 @@ impl DriftWm {
+@@ -1148,6 +1148,33 @@ impl DriftWm {
              || os.momentum.velocity.y != 0.0
      }
  
-+    /// True when the animated background is due for its next tick under
-+    /// `[background] animate_fps` (0 = every frame). The timestamp is stamped
-+    /// where the uniforms are actually pushed, in `update_background_element`.
-+    pub fn background_animation_due(&self) -> bool {
++    /// True when `output_name`'s animated background is due for its next tick
++    /// under `[background] animate_fps` (0 = every frame). The timestamp is
++    /// stamped where the uniforms are actually pushed, in
++    /// `update_background_element`. Keyed per output: outputs render on their
++    /// own vblanks, and a global stamp would let whichever renders first
++    /// satisfy the interval and starve the rest.
++    pub fn background_animation_due(&self, output_name: &str) -> bool {
 +        if !self.render.background_is_animated {
 +            return false;
 +        }
@@ -204,34 +279,56 @@ index 766153d..3b1ac46 100644
 +        }
 +        self.render
 +            .background_last_animate
++            .get(output_name)
 +            .is_none_or(|t| t.elapsed() >= std::time::Duration::from_secs_f64(1.0 / fps as f64))
++    }
++
++    /// True when any output's animated background is due (idle wake-up check).
++    pub fn background_animation_due_any(&self) -> bool {
++        self.space
++            .outputs()
++            .any(|o| self.background_animation_due(&o.name()))
 +    }
 +
      pub fn has_active_animations(&self) -> bool {
          self.space
              .outputs()
 diff --git a/src/state/render_cache.rs b/src/state/render_cache.rs
-index 07184f6..832796d 100644
+index 149f273..1091ffb 100644
 --- a/src/state/render_cache.rs
 +++ b/src/state/render_cache.rs
-@@ -37,6 +37,11 @@ pub struct RenderCache {
-     pub shared_blur: Option<(GlesTexture, GlesTexture, Size<i32, Physical>)>,
-     pub shared_blur_at: Option<std::time::Instant>,
-     pub shared_blur_camera_generation: u64,
-+    /// Last time animated-background uniforms were pushed ([background] animate_fps).
-+    pub background_last_animate: Option<std::time::Instant>,
+@@ -31,6 +31,14 @@ pub struct RenderCache {
+     pub blur_bg_fbo: Option<(GlesTexture, Size<i32, Physical>)>,
+     pub blur_geometry_generation: u64,
+     pub blur_camera_generation: u64,
++    /// Per-output timestamp of the last animated-background uniform push
++    /// ([background] animate_fps). Keyed by output name: a single global
++    /// stamp would let one output's render satisfy the interval and starve
++    /// the others on multi-monitor setups.
++    pub background_last_animate: HashMap<String, std::time::Instant>,
 +    /// A one-shot tick timer is armed for the next animation frame. Without
 +    /// it the capped animation only advances alongside other redraws.
 +    pub background_tick_armed: bool,
      pub shadow_cache: HashMap<ObjectId, ShadowCacheEntry>,
      pub border_cache: HashMap<ObjectId, BorderCacheEntry>,
      /// One element per output for the configured background (shader / tile /
-@@ -76,6 +81,8 @@ impl RenderCache {
-             shared_blur: None,
-             shared_blur_at: None,
-             shared_blur_camera_generation: 0,
-+            background_last_animate: None,
+@@ -67,6 +75,8 @@ impl RenderCache {
+             blur_bg_fbo: None,
+             blur_geometry_generation: 0,
+             blur_camera_generation: 0,
++            background_last_animate: HashMap::new(),
 +            background_tick_armed: false,
              shadow_cache: HashMap::new(),
              border_cache: HashMap::new(),
              cached_bg: HashMap::new(),
+@@ -109,6 +119,7 @@ impl RenderCache {
+     /// of reusing a stale element with the previous geometry.
+     pub fn remove_output(&mut self, output_name: &str) {
+         self.cached_bg.remove(output_name);
++        self.background_last_animate.remove(output_name);
+         self.cached_error_bar.remove(output_name);
+         self.remove_background_chunks(output_name);
+         self.remove_capture_state(output_name);
+-- 
+2.55.0
+

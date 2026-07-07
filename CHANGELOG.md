@@ -1,3 +1,9 @@
+### 2.13.3: 2026-07-07
+
+* Update `driftwm/patches/background-animate-fps.patch` after upstream review of PR #184: rebased onto main (no longer stacked on #182, lands independently), animation tick timestamps now keyed per output name (a single global stamp let whichever monitor renders first satisfy the interval and starve the rest under a cap), idle tick timer arms for the soonest-due output, output disconnect drops the stamp
+* Fix a latent bug found while addressing the review: the transparent-window full-redraw checked due-ness after the tick was already stamped, so with a cap set it never fired; `update_background_element` now returns whether it advanced the animation and both backends key the buffer-age reset off that
+* Update `driftwm/patches/animated-blur-shared.patch` (PR #182) the same way per the reviewer's consistency note: shared blurred-background state keyed per output name (one global entry recreates and fully re-blurs every frame once two different-sized outputs exist), plus docs regen and a clippy let-chain fix on that branch
+
 ### 2.13.2: 2026-07-06
 
 * Boot nvtop terminal: autostart opens `foot --app-id=nvtop-boot nvtop` right after Discord, frosted like other terminals, geometry frozen from the live window (902x822 below the comms row); custom app-id keeps the rule off regular foot windows
