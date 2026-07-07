@@ -269,12 +269,26 @@ void main() {
                 if (band > 0.05) {
                     // Tiny distant rocks: organic clumps (density noise),
                     // sizes skewed small, heavy jitter so no lattice shows.
+                    // The clump pattern itself drifts glacially so the swarm
+                    // reshapes over tens of minutes: the realm evolves.
                     vec2 rg = ad * 46.0 + hash(acp + 511.3) * 71.0;
                     vec2 rgc = floor(rg);
-                    float clumpN = smoothstep(0.35, 0.75, noise(rg * 0.33 + hash(acp + 513.9) * 19.0));
+                    float clumpN = smoothstep(0.35, 0.75, noise(rg * 0.33 + hash(acp + 513.9) * 19.0 + t * 0.003));
                     float rh = hash(rgc + 517.1);
-                    if (rh > 1.0 - band * clumpN * 0.9) {
-                        vec2 rpos2 = rgc + 0.2 + 0.6 * vec2(hash(rgc + 521.3), hash(rgc + 523.9));
+                    float rockThresh = 1.0 - band * clumpN * 0.9;
+                    if (rh > rockThresh) {
+                        // Rocks born or dissolved by the evolving clumps fade
+                        // in and out instead of popping.
+                        float rockFade = smoothstep(0.0, 0.04, rh - rockThresh);
+                        // Placement pulled in from cell edges to leave room
+                        // for the sway without edge clipping.
+                        vec2 rpos2 = rgc + 0.3 + 0.4 * vec2(hash(rgc + 521.3), hash(rgc + 523.9));
+                        // Slow per-rock sway: each rock orbits its anchor at
+                        // its own glacial pace, so swarms read alive even
+                        // with a still camera.
+                        float rph = hash(rgc + 541.3) * 6.2831;
+                        float rspd = 0.010 + 0.010 * hash(rgc + 543.7);
+                        rpos2 += 0.08 * vec2(sin(t * rspd + rph), cos(t * rspd * 1.3 + rph));
                         float rr = 0.04 + 0.16 * pow(hash(rgc + 527.7), 2.2);
                         vec2 rrel = rg - rpos2;
                         float rdist = length(rrel);
@@ -287,9 +301,9 @@ void main() {
                             vec3 rockCol = vec3(0.045, 0.040, 0.070) * lump;
                             float elit = max(dot(rdirJ, vec2(0.71, 0.55)), 0.0);
                             float redge = smoothstep(rrJ * 0.40, rrJ * 0.85, rdist) * rockBody;
-                            col = mix(col, rockCol, rockBody * 0.75);
-                            col += vec3(0.55, 0.48, 0.65) * redge * elit * 0.22;
-                            rockMask = max(rockMask, rockBody * 0.6);
+                            col = mix(col, rockCol, rockBody * 0.75 * rockFade);
+                            col += vec3(0.55, 0.48, 0.65) * redge * elit * 0.22 * rockFade;
+                            rockMask = max(rockMask, rockBody * 0.6 * rockFade);
                         }
                     }
                 }
