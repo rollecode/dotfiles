@@ -1,23 +1,53 @@
+From d82a28ae62c5aef987a7846ce32a2cd44bd0938a Mon Sep 17 00:00:00 2001
+From: Rolle Laukkarinen <roni@dude.fi>
+Date: Sun, 5 Jul 2026 20:27:30 +0300
+Subject: [PATCH] Add wheel-up/wheel-down mouse triggers that run any action
+ per notch
+
+---
+ config.reference.toml |  4 +++-
+ docs/config.md        |  2 +-
+ src/config/mod.rs     | 18 +++++++++++++++++
+ src/config/parse.rs   |  2 ++
+ src/config/types.rs   |  5 +++++
+ src/input/pointer.rs  | 45 +++++++++++++++++++++++++++++++++++++++++++
+ src/state/init.rs     |  1 +
+ src/state/mod.rs      |  6 ++++++
+ 8 files changed, 81 insertions(+), 2 deletions(-)
+
 diff --git a/config.reference.toml b/config.reference.toml
-index c4da43c..6c2aa4f 100644
+index 1b10e14..513d0b4 100644
 --- a/config.reference.toml
 +++ b/config.reference.toml
-@@ -373,7 +373,9 @@
+@@ -363,7 +363,9 @@
  # # Context-aware: on-window, on-canvas, anywhere.
  # # Specific context checked first, then "anywhere" as fallback.
  # # Click-to-focus and SSD decoration clicks are always hardcoded.
 -# # Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll
 +# # Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll,
-+# #           wheel-up, wheel-down (one discrete notch — unlike wheel-scroll
-+# #           these can run any action, e.g. volume on mod+shift+scroll)
++# # wheel-up, wheel-down. The wheel-up/wheel-down triggers fire once per
++# # discrete wheel notch and can run any action, e.g. volume on mod+shift+scroll.
  # # Merges with defaults. Use "none" to unbind.
  # #
  # # Mouse actions: move-window, move-snapped-windows, resize-window,
+diff --git a/docs/config.md b/docs/config.md
+index ab19b23..ef878a9 100644
+--- a/docs/config.md
++++ b/docs/config.md
+@@ -713,7 +713,7 @@ Default: `false`
+ 
+ When true, maximize/unmaximize initiated via window decoration (CSD maximize button, SSD title-bar double-click, or xdg/foreign-toplevel set_maximized) propagates to every window connected via snap adjacency. Keybinding/gesture fit is unaffected — bind `fit-window-snapped` explicitly if you want cluster-aware fit there too.
+ 
+-Mouse bindings: "Modifier+...+Trigger" = "action" Context-aware: on-window, on-canvas, anywhere. Specific context checked first, then "anywhere" as fallback. Click-to-focus and SSD decoration clicks are always hardcoded. Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll Merges with defaults. Use "none" to unbind.
++Mouse bindings: "Modifier+...+Trigger" = "action" Context-aware: on-window, on-canvas, anywhere. Specific context checked first, then "anywhere" as fallback. Click-to-focus and SSD decoration clicks are always hardcoded. Triggers: left, right, middle (buttons), trackpad-scroll, wheel-scroll, wheel-up, wheel-down. The wheel-up/wheel-down triggers fire once per discrete wheel notch and can run any action, e.g. volume on mod+shift+scroll. Merges with defaults. Use "none" to unbind.
+ 
+ Mouse actions: move-window, move-snapped-windows, resize-window, resize-window-snapped, pan-viewport, zoom, center-nearest Any keyboard action also works for button triggers: exec, close-window, toggle-fullscreen, etc.
+ 
 diff --git a/src/config/mod.rs b/src/config/mod.rs
-index 0a10a8c..4d0baa1 100644
+index ed0956d..5c5cbb6 100644
 --- a/src/config/mod.rs
 +++ b/src/config/mod.rs
-@@ -181,6 +181,24 @@ impl Config {
+@@ -185,6 +185,24 @@ impl Config {
          self.mouse.lookup(&binding, context)
      }
  
@@ -56,7 +86,7 @@ index 7b26876..e1948da 100644
      };
  
 diff --git a/src/config/types.rs b/src/config/types.rs
-index da554e2..36a9c93 100644
+index e9daec1..6dcde89 100644
 --- a/src/config/types.rs
 +++ b/src/config/types.rs
 @@ -221,6 +221,11 @@ pub enum MouseTrigger {
@@ -72,32 +102,51 @@ index da554e2..36a9c93 100644
  
  #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 diff --git a/src/input/pointer.rs b/src/input/pointer.rs
-index 15167bf..b1976e1 100644
+index 7f24d54..b8f4337 100644
 --- a/src/input/pointer.rs
 +++ b/src/input/pointer.rs
-@@ -802,6 +802,32 @@ impl DriftWm {
-             self.pointer_context(pos)
-         };
+@@ -774,6 +774,51 @@ impl DriftWm {
+         let pos = pointer.current_location();
+         let source = event.source();
  
 +        // Discrete wheel-notch bindings (wheel-up / wheel-down) run any
 +        // action once per notch — volume on mod+shift+scroll and the like.
-+        // Finger scrolling stays continuous; notches are a wheel concept.
-+        if source != AxisSource::Finger {
++        // Wheel sources only: finger and continuous scrolling have no
++        // notches. Checked before the fullscreen block so a notch action
++        // fires like a keybinding, without exiting fullscreen.
++        if matches!(source, AxisSource::Wheel | AxisSource::WheelTilt) {
 +            let v = event
 +                .amount_v120(Axis::Vertical)
 +                .map(|v| v / 120.0)
 +                .or_else(|| event.amount(Axis::Vertical).map(|v| v / 15.0))
 +                .unwrap_or(0.0);
++            let notch_context = if self.is_fullscreen() {
++                // The fullscreen window fills the screen.
++                BindingContext::OnWindow
++            } else {
++                self.pointer_context(pos)
++            };
 +            if v != 0.0
 +                && let Some(MouseAction::Action(act)) = self
 +                    .config
-+                    .mouse_wheel_step_lookup_ctx(&mods, v < 0.0, context)
++                    .mouse_wheel_step_lookup_ctx(&mods, v < 0.0, notch_context)
 +                    .cloned()
 +            {
-+                let notches = (v.abs().ceil() as u32).min(10);
++                // High-resolution wheels emit sub-notch v120 deltas;
++                // accumulate to whole notches so a flick fires the action
++                // once per notch, not once per event.
++                if self.wheel_notch_accum != 0.0 && self.wheel_notch_accum.signum() != v.signum() {
++                    self.wheel_notch_accum = 0.0;
++                }
++                self.wheel_notch_accum += v;
++                let whole = self.wheel_notch_accum.abs().floor();
++                self.wheel_notch_accum -= self.wheel_notch_accum.signum() * whole;
++                let notches = (whole as u32).min(10);
 +                for _ in 0..notches {
 +                    self.execute_action(&act);
 +                }
++                // Consume sub-notch events too — the binding owns this
++                // scroll; forwarding the fractions would double-handle it.
 +                let frame = AxisFrame::new(Event::time_msec(&event));
 +                pointer.axis(self, frame);
 +                pointer.frame(self);
@@ -105,6 +154,38 @@ index 15167bf..b1976e1 100644
 +            }
 +        }
 +
-         // Single lookup: context-aware
-         if let Some(action) = self
-             .config
+         // During fullscreen: bound scroll exits fullscreen first; plain scroll forwards.
+         if self.is_fullscreen() {
+             if self
+diff --git a/src/state/init.rs b/src/state/init.rs
+index 49f0cd5..6524c3f 100644
+--- a/src/state/init.rs
++++ b/src/state/init.rs
+@@ -328,6 +328,7 @@ impl DriftWm {
+             on_demand_layer: None,
+             popup_grab: None,
+             held_action: None,
++            wheel_notch_accum: 0.0,
+             tap: TapTracker::default(),
+             pending_tap_action: None,
+             suppressed_keys: HashSet::new(),
+diff --git a/src/state/mod.rs b/src/state/mod.rs
+index 766153d..19f4b0f 100644
+--- a/src/state/mod.rs
++++ b/src/state/mod.rs
+@@ -512,6 +512,12 @@ pub struct DriftWm {
+ 
+     pub held_action: Option<(u32, driftwm::config::Action, Instant)>,
+ 
++    /// Fractional wheel-notch credit for wheel-up/wheel-down bindings.
++    /// High-resolution wheels emit sub-notch v120 deltas; they accumulate
++    /// here and the bound action fires once per whole notch. Direction
++    /// flips discard the residual.
++    pub wheel_notch_accum: f64,
++
+     pub tap: TapTracker,
+     /// Action queued by a completed tap chord, run after the closure forwards
+     /// the modifier events so the focused client still sees them.
+-- 
+2.55.0
+
