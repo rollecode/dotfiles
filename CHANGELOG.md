@@ -1,3 +1,8 @@
+### 2.13.4: 2026-07-08
+
+* Update `driftwm/patches/background-animate-fps.patch` (PR #184) after a second review round: rebased onto main past the maintainer's own per-output blur follow-up, the shared-blur refresh now also requires the background to have ticked since its last refresh (animate_blur_fps stopped re-blurring frames the background hadn't changed), and the idle due-check plus the tick-timer's wait calculation are now scoped to outputs that actually render the background (active, not fullscreen) via one shared helper — a DPMS-off or fullscreen output can no longer read as permanently due and starve the others, and a stale stamp from an output that went fullscreen can no longer collapse the wait to a 1ms busy-reschedule
+* Update `driftwm/patches/blur-scaling.patch` (PR #185) per review: rebased just the mask-caching commit onto main, rekeyed its `blur_cache` lookups onto main's `(output_name, surface_id)` tuple key, and added a comment documenting the accepted alpha-only staleness tradeoff (subsurface map/unmap or a CSD corner-radius change at constant geometry)
+
 ### 2.13.3: 2026-07-07
 
 * Update `driftwm/patches/background-animate-fps.patch` after upstream review of PR #184: rebased onto main (no longer stacked on #182, lands independently), animation tick timestamps now keyed per output name (a single global stamp let whichever monitor renders first satisfy the interval and starve the rest under a cap), idle tick timer arms for the soonest-due output, output disconnect drops the stamp
