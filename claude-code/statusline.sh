@@ -7,10 +7,15 @@ input=$(cat)
 # Extract session data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
 
-# Detect the z.ai GLM backend (direct native endpoint) from the raw model id.
-# Bare "glm-*" is z.ai direct; "z-ai/glm-*" via OpenRouter is billed elsewhere, so excluded.
+# Detect the z.ai GLM and x.ai Grok backends (direct native endpoints) from the raw model id.
+# Bare "glm-*"/"grok-*" are direct; prefixed "z-ai/glm-*"/"x-ai/grok-*" via OpenRouter are
+# billed by OpenRouter so their quota APIs do not apply, hence excluded.
 IS_GLM=0
-case "$MODEL" in glm-*) IS_GLM=1 ;; esac
+IS_GROK=0
+case "$MODEL" in
+  glm-*)  IS_GLM=1 ;;
+  grok-*) IS_GROK=1 ;;
+esac
 
 # Prettify custom (non-Anthropic) model ids like "glm-5.2[1m]" or "z-ai/glm-5.2[1m]"
 # into "GLM 5.2 (1M context)" to match Claude's own label style. Anthropic display
@@ -33,6 +38,8 @@ if [[ "$MODEL" != *" "* ]]; then     # only reformat raw ids, never pretty Anthr
   MODEL="${MODEL/ turbo/ Turbo}"
   MODEL="${MODEL/ pro/ Pro}"
   MODEL="${MODEL/ flash/ Flash}"
+  MODEL="${MODEL/ non reasoning/ Non-Reasoning}"
+  MODEL="${MODEL/ multi agent/ Multi-Agent}"
 fi
 MODEL="${MODEL}${CTX1M}"
 DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
@@ -152,6 +159,39 @@ if [ "$IS_GLM" = 1 ] && [ -s "$GLM_KEY_FILE" ]; then
             fi
             [ -n "$GLVL" ] && LINE2="${LINE2} ${DIM}\xC2\xB7 GLM ${GLVL}${RESET}"
             printf '%b\n' "$LINE2"
+        fi
+    fi
+elif [ "$IS_GROK" = 1 ] && [ -s "$HOME/.config/xai/management-key" ] && [ -s "$HOME/.config/xai/team-id" ]; then
+    # x.ai prepaid credit balance in dollars. The Management API
+    # (https://management-api.x.ai) needs a separate Management Key, not the inference
+    # key, plus the team id. Both live in ~/.config/xai/. Cached + background-refreshed.
+    XAI_MKEY="$HOME/.config/xai/management-key"
+    XAI_TEAM="$(cat "$HOME/.config/xai/team-id" 2>/dev/null)"
+    CACHE="/tmp/xai-credits.json"
+    LOCK="/tmp/xai-credits.lock"
+    TTL=60
+    now=$(date +%s)
+    lock_age=$TTL
+    [ -f "$LOCK" ] && lock_age=$(( now - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) ))
+    if [ "$lock_age" -ge "$TTL" ]; then
+        touch "$LOCK"
+        ( curl -s --max-time 8 "https://management-api.x.ai/v1/billing/teams/${XAI_TEAM}/prepaid/balance" \
+            -H "Authorization: Bearer $(cat "$XAI_MKEY")" -H "Content-Type: application/json" \
+            -o "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE" ) >/dev/null 2>&1 &
+        disown 2>/dev/null
+    fi
+    if [ -s "$CACHE" ]; then
+        # Balance is in USD cents; "total" shape is not documented, so fetch it once and
+        # branch on its type (avoid indexing a string with .value, which errors in jq).
+        CENTS=$(jq -r '
+          .total as $t |
+          if   ($t|type)=="object" then ($t.value // $t.amount // $t.cents // $t.balance // empty)
+          elif ($t|type)=="string" or ($t|type)=="number" then $t
+          else empty end
+          | tostring | capture("(?<n>[0-9]+)") | .n // empty' "$CACHE" 2>/dev/null)
+        if [ -n "$CENTS" ] && [ "$CENTS" -ge 0 ] 2>/dev/null; then
+            DOLLARS=$(awk -v c="$CENTS" 'BEGIN{printf "%.2f", c/100}')
+            printf "${PURPLE}\$%s${RESET} ${DIM}credits left${RESET}\n" "$DOLLARS"
         fi
     fi
 else
