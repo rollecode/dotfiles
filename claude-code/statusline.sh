@@ -6,6 +6,35 @@ input=$(cat)
 
 # Extract session data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
+
+# Detect the z.ai GLM backend (direct native endpoint) from the raw model id.
+# Bare "glm-*" is z.ai direct; "z-ai/glm-*" via OpenRouter is billed elsewhere, so excluded.
+IS_GLM=0
+case "$MODEL" in glm-*) IS_GLM=1 ;; esac
+
+# Prettify custom (non-Anthropic) model ids like "glm-5.2[1m]" or "z-ai/glm-5.2[1m]"
+# into "GLM 5.2 (1M context)" to match Claude's own label style. Anthropic display
+# names already contain spaces, so they are detected and left untouched.
+CTX1M=""
+case "$MODEL" in
+  *"[1m]") CTX1M=" (1M context)"; MODEL="${MODEL%\[1m\]}" ;;
+esac
+MODEL="${MODEL##*/}"                 # drop provider prefix (z-ai/, deepseek/, ...)
+if [[ "$MODEL" != *" "* ]]; then     # only reformat raw ids, never pretty Anthropic names
+  case "$MODEL" in
+    glm-*)      MODEL="GLM ${MODEL#glm-}" ;;
+    deepseek-*) MODEL="DeepSeek ${MODEL#deepseek-}" ;;
+    kimi-*)     MODEL="Kimi ${MODEL#kimi-}" ;;
+    grok-*)     MODEL="Grok ${MODEL#grok-}" ;;
+    qwen*)      MODEL="Qwen ${MODEL#qwen}" ;;
+  esac
+  MODEL="${MODEL//-/ }"              # remaining dashes to spaces
+  MODEL="${MODEL/ air/ Air}"
+  MODEL="${MODEL/ turbo/ Turbo}"
+  MODEL="${MODEL/ pro/ Pro}"
+  MODEL="${MODEL/ flash/ Flash}"
+fi
+MODEL="${MODEL}${CTX1M}"
 DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
@@ -76,32 +105,67 @@ fi
 
 printf '%b\n' "$LINE"
 
-# Second row: Claude.ai usage progress bars (5-hour + 7-day)
-FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-WEEK=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+# Second row: usage progress bars. On the z.ai GLM backend this shows the coding-plan
+# quota (5-hour token cycle + weekly); otherwise Claude.ai's own 5-hour + 7-day limits.
+PURPLE='\033[38;2;160;32;240m'
+make_bar() {
+    local pct=${1%.*}
+    local label=$2
+    local width=10
+    local filled=$(( pct * width / 100 ))
+    [ "$filled" -gt "$width" ] && filled=$width
+    local empty=$(( width - filled ))
+    local bar=""
+    for ((i=0; i<filled; i++)); do bar+="━"; done
+    for ((i=0; i<empty; i++)); do bar+="─"; done
+    printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}(%s)${RESET}" "$bar" "$pct" "$label"
+}
 
-if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
-    PURPLE='\033[38;2;160;32;240m'
-    make_bar() {
-        local pct=${1%.*}
-        local label=$2
-        local width=10
-        local filled=$(( pct * width / 100 ))
-        [ "$filled" -gt "$width" ] && filled=$width
-        local empty=$(( width - filled ))
-        local bar=""
-        for ((i=0; i<filled; i++)); do bar+="━"; done
-        for ((i=0; i<empty; i++)); do bar+="─"; done
-        printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}(%s)${RESET}" "$bar" "$pct" "$label"
-    }
-
-    LINE2=""
-    if [ -n "$FIVE_H" ]; then
-        LINE2="$(make_bar "$FIVE_H" "5h")"
+GLM_KEY_FILE="$HOME/.config/zai/coding-key"
+if [ "$IS_GLM" = 1 ] && [ -s "$GLM_KEY_FILE" ]; then
+    # z.ai coding-plan quota: 5-hour token cycle (unit 3) + weekly quota (unit 6).
+    # Cached with a background refresh so the statusline never blocks on the network.
+    CACHE="/tmp/zai-quota.json"
+    LOCK="/tmp/zai-quota.lock"
+    TTL=60
+    now=$(date +%s)
+    lock_age=$TTL
+    [ -f "$LOCK" ] && lock_age=$(( now - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) ))
+    if [ "$lock_age" -ge "$TTL" ]; then
+        touch "$LOCK"
+        ( curl -s --max-time 8 'https://api.z.ai/api/monitor/usage/quota/limit' \
+            -H "Authorization: $(cat "$GLM_KEY_FILE")" \
+            -H "Accept-Language: en-US,en" -H "Content-Type: application/json" \
+            -o "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE" ) >/dev/null 2>&1 &
+        disown 2>/dev/null
     fi
-    if [ -n "$WEEK" ]; then
-        [ -n "$LINE2" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} "
-        LINE2="${LINE2}$(make_bar "$WEEK" "7d")"
+    if [ -s "$CACHE" ]; then
+        G5=$(jq -r '[.data.limits[]|select(.type=="TOKENS_LIMIT" and .unit==3)][0].percentage // empty' "$CACHE" 2>/dev/null)
+        GW=$(jq -r '[.data.limits[]|select(.type=="TOKENS_LIMIT" and .unit==6)][0].percentage // empty' "$CACHE" 2>/dev/null)
+        GLVL=$(jq -r '.data.level // empty' "$CACHE" 2>/dev/null)
+        if [ -n "$G5" ] || [ -n "$GW" ]; then
+            LINE2=""
+            [ -n "$G5" ] && LINE2="$(make_bar "$G5" "5h")"
+            if [ -n "$GW" ]; then
+                [ -n "$LINE2" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} "
+                LINE2="${LINE2}$(make_bar "$GW" "7d")"
+            fi
+            [ -n "$GLVL" ] && LINE2="${LINE2} ${DIM}\xC2\xB7 GLM ${GLVL}${RESET}"
+            printf '%b\n' "$LINE2"
+        fi
     fi
-    printf '%b\n' "$LINE2"
+else
+    FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+    WEEK=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+    if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
+        LINE2=""
+        if [ -n "$FIVE_H" ]; then
+            LINE2="$(make_bar "$FIVE_H" "5h")"
+        fi
+        if [ -n "$WEEK" ]; then
+            [ -n "$LINE2" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} "
+            LINE2="${LINE2}$(make_bar "$WEEK" "7d")"
+        fi
+        printf '%b\n' "$LINE2"
+    fi
 fi
