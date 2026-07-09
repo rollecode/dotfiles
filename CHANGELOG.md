@@ -1,3 +1,8 @@
+### 2.14.0: 2026-07-09
+
+* Prettify non-Anthropic model ids in the status line: `glm-5.2[1m]` renders as `GLM 5.2 (1M context)` to match Claude's own label style, with the same treatment for DeepSeek, Kimi, Grok and Qwen ids; real Claude names pass through untouched
+* Show z.ai GLM coding-plan quota in the status line on the GLM backend: 5-hour token cycle and weekly quota bars plus the plan level, read from `api.z.ai/api/monitor/usage/quota/limit` and cached with a non-blocking background refresh so rendering never waits on the network; key read from `~/.config/zai/coding-key`
+
 ### 2.13.4: 2026-07-08
 
 * Update `driftwm/patches/background-animate-fps.patch` (PR #184) after a second review round: rebased onto main past the maintainer's own per-output blur follow-up, the shared-blur refresh now also requires the background to have ticked since its last refresh (animate_blur_fps stopped re-blurring frames the background hadn't changed), and the idle due-check plus the tick-timer's wait calculation are now scoped to outputs that actually render the background (active, not fullscreen) via one shared helper — a DPMS-off or fullscreen output can no longer read as permanently due and starve the others, and a stale stamp from an output that went fullscreen can no longer collapse the wait to a 1ms busy-reschedule
