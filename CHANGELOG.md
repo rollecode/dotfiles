@@ -1,3 +1,7 @@
+### 2.16.0: 2026-07-09
+
+* Replace x.ai Grok status line support with DeepSeek: Claude Code's x.ai backend turned out to reject every request (`400 Invalid message role`, a known Claude Code system-message injection that x.ai validates strictly against), so it is dismantled; the status line now detects a bare `deepseek-*` model id (direct DeepSeek native Anthropic endpoint) and shows the account balance in dollars from `GET api.deepseek.com/user/balance` instead of percentage bars, cached with the same background refresh pattern as the GLM quota
+
 ### 2.15.0: 2026-07-09
 
 * Add x.ai Grok support to the status line: detect a bare `grok-*` model id (direct x.ai native Anthropic endpoint) and prettify the label (`grok-4.3` to `Grok 4.3`, `grok-4.20-0309-non-reasoning` to `Grok 4.20 0309 Non-Reasoning`), and show the x.ai prepaid credit balance in dollars from the Management API (`management-api.x.ai/v1/billing/teams/{team_id}/prepaid/balance`) instead of percentage bars; the balance parse is type-safe across object and scalar `total` shapes, and no-ops until `~/.config/xai/management-key` and `~/.config/xai/team-id` are filled
