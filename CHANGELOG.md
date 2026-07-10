@@ -1,3 +1,7 @@
+### 2.17.0: 2026-07-11
+
+* Enable NVDEC hardware video decode in `browser-flags/chromium-flags.conf`: add the Chromium 149 `Accelerated*` VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) for GPU video decode on the RTX 3070, paired with `libva-nvidia-driver` and the `LIBVA_DRIVER_NAME=nvidia`/`NVD_BACKEND=direct` env vars, verified as hardware accelerated in `chrome://gpu`; the zero-copy paths (`--enable-zero-copy`, `AcceleratedVideoDecodeLinuxZeroCopyGL`) and `--ignore-gpu-blocklist` are deliberately left out and `--disable-gpu-memory-buffer-video-frames` kept, since they trigger DMA-BUF flicker on Wayland/NVIDIA
+
 ### 2.16.0: 2026-07-09
 
 * Replace x.ai Grok status line support with DeepSeek: Claude Code's x.ai backend turned out to reject every request (`400 Invalid message role`, a known Claude Code system-message injection that x.ai validates strictly against), so it is dismantled; the status line now detects a bare `deepseek-*` model id (direct DeepSeek native Anthropic endpoint) and shows the account balance in dollars from `GET api.deepseek.com/user/balance` instead of percentage bars, cached with the same background refresh pattern as the GLM quota
