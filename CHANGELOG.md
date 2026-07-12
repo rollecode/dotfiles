@@ -1,3 +1,7 @@
+### 2.17.1: 2026-07-12
+
+* Revert the NVDEC hardware video decode flags from `browser-flags/chromium-flags.conf`: the VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) cause GPU compositing corruption on NVIDIA under Wayland, first flickering and then whole gradients and elements disappearing, because `VaapiIgnoreDriverChecks` forces Chromium past the driver sanity checks that exist to prevent exactly that; do not retry this, hardware-decoded video belongs in mpv via ff2mpv, outside Chromium's GPU process
+
 ### 2.17.0: 2026-07-11
 
 * Enable NVDEC hardware video decode in `browser-flags/chromium-flags.conf`: add the Chromium 149 `Accelerated*` VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) for GPU video decode on the RTX 3070, paired with `libva-nvidia-driver` and the `LIBVA_DRIVER_NAME=nvidia`/`NVD_BACKEND=direct` env vars, verified as hardware accelerated in `chrome://gpu`; the zero-copy paths (`--enable-zero-copy`, `AcceleratedVideoDecodeLinuxZeroCopyGL`) and `--ignore-gpu-blocklist` are deliberately left out and `--disable-gpu-memory-buffer-video-frames` kept, since they trigger DMA-BUF flicker on Wayland/NVIDIA
