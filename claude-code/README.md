@@ -1,6 +1,6 @@
 # claude-code
 
-Claude Code configuration: a Code::Stats integration, and a live diff stream that shows every change as it happens.
+Claude Code configuration: a Code::Stats integration, a Tokyo Night theme, and the global instructions Claude reads at session start.
 
 ## Code::Stats
 
@@ -51,54 +51,13 @@ Open `codestats-hook.py`, add one entry to `EXTENSION_LANGUAGE`:
 
 That's the only maintenance.
 
-## Live diff stream
-
-Watch every change Claude makes, in a second pane, as it happens. Needs only `bash`, `git` and `jq`, so it works the same over SSH on a server as it does locally, in any terminal and any multiplexer.
-
-Run the viewer in a second pane:
-
-```sh
-~/.claude/live-diff/watch.sh           # follow the stream
-~/.claude/live-diff/watch.sh --split   # split the current tmux pane instead
-```
-
-Each `Edit`, `Write` or `NotebookEdit` appends a coloured per-edit diff, followed by a one-line rationale from Claude:
-
-```
-┌─ Edit src/auth.py 22:35:17
-@@ -1,2 +1,4 @@
--def greet(name):
-+def greet(name: str) -> str:
-+    if not name:
-+        raise ValueError("name required")
-│ why raise instead of returning empty so callers cannot silently pass a blank name
-```
-
-How it works:
-
-* `snapshot.sh`, a `PreToolUse` hook, copies the file before Claude touches it, so the diff is a true per-edit diff and works outside a git repo
-* `emit.sh`, a `PostToolUse` hook, diffs the snapshot against the file on disk and appends it to the stream. Renders through `delta` if installed, plain `git diff` colour if not
-* `why.sh` is called by Claude after each edit, per the instruction in `user-memory.md`, and puts the reasoning next to the change it explains
-* `reset.sh`, a `SessionStart` hook, truncates the stream so the pane starts clean each session
-* `lib.sh` holds the shared path and hashing helpers
-
-## Diff theme
-
-The stream is themed Tokyo Night, with purple hunk headers and purple keywords. `themes/tokyonight_night.tmTheme` is vendored from `folke/tokyonight.nvim`, so a server with no network still gets the theme.
-
-`bat` is a hard dependency of the theme, not a nicety: delta loads a custom syntax theme only from bat's compiled cache, so `install.sh` installs `bat`, copies the theme into `$(bat --config-dir)/themes` and runs `bat cache --build`. Without `bat` the stream still works, it just falls back to delta's built-in themes. Without `delta` at all it falls back to plain `git diff` colour.
-
-The palette lives at the top of `lib.sh` as `CC_TN_*` variables, so the colours have one source of truth. Flags are passed to delta explicitly rather than through a `[delta]` section in `~/.gitconfig`, so the stream looks the same on a machine whose gitconfig this repo does not control.
-
-The stream lives at `~/.claude/live-diff-stream.log`, override with `CC_LIVE_LOG`. It is deliberately kept out of `~/.claude/live-diff/`, since that path is a symlink into this repo and the stream carries diffs of whatever you are editing at the time.
-
 ## user-memory.md
 
-Symlinked to `~/.claude/CLAUDE.md`, so it loads in every session on every machine. It asks Claude to explain implementation choices as it works, to log the "why" of each edit into the live diff stream, and to always keep a task list. It is deliberately not named `CLAUDE.md` in this repo, because a file with that name inside `claude-code/` would be picked up as directory-scoped instructions whenever you worked in this folder.
+Symlinked to `~/.claude/CLAUDE.md`, so it loads in every session on every machine. It asks Claude to explain implementation choices as it works, to give the reasoning behind each edit rather than narrating the diff back at you, and to always keep a task list. It is deliberately not named `CLAUDE.md` in this repo, because a file with that name inside `claude-code/` would be picked up as directory-scoped instructions whenever you worked in this folder.
 
 ## Tokyo Night theme for the TUI
 
-`themes/tokyonight.json` is symlinked to `~/.claude/themes/tokyonight.json`. Select it with `/theme`, it live-reloads without a restart. It repaints the accent, the diff colours, the subagent colours and the usage meter in the same palette as the live diff stream, so the two panes look like one thing.
+`themes/tokyonight.json` is symlinked to `~/.claude/themes/tokyonight.json`. Select it with `/theme`, it live-reloads without a restart. It repaints the accent, the inline diff colours, the subagent colours and the usage meter, so nothing in the interface is left on the stock accent.
 
 Claude Code has no colour token for thinking text. The documented tokens cover the accent, text shades, status colours and diffs, but reasoning output is simply de-emphasised secondary text, which is `inactive` and `subtle`. Both are set to purple here, so thinking comes out purple whichever one drives it. The cost is that hints, timestamps and faint borders go purple too, which on this palette reads as intentional.
 
