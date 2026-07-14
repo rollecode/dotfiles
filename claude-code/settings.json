@@ -19,16 +19,6 @@
             "command": "~/.claude/hooks/append-changelog.sh"
           }
         ]
-      },
-      {
-        "matcher": "Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/live-diff/emit.sh",
-            "async": true
-          }
-        ]
       }
     ],
     "Stop": [
@@ -37,27 +27,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/update-cross-channel-context.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/live-diff/snapshot.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/live-diff/reset.sh"
           }
         ]
       }

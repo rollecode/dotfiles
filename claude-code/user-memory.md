@@ -17,15 +17,12 @@ them for the end — provide them as you write the code.
 Do not ask me to write the code myself, and do not pause for me to fill in `TODO(human)`
 markers. Keep working; teach me by narrating what you did and why.
 
-## Log the "why" next to the diff
+## Explain each change
 
-Immediately after each Edit or Write, run:
-
-    ~/.claude/live-diff/why.sh "<one sentence on why this change, not what it does>"
-
-This drops the rationale into the same live pane as the diff, so the explanation sits
-beside the change it explains. One line, the reasoning or trade-off — never a restatement
-of the code. Skip it for trivial edits (typos, formatting, config bumps).
+After each edit, say in one sentence why you made it — the reasoning or the trade-off,
+never a restatement of what the code does. Claude Code already renders the diff, so do not
+narrate the diff back to me; tell me the part the diff cannot show. Skip it for trivial
+edits (typos, formatting, config bumps).
 
 ## Always keep a task list
 

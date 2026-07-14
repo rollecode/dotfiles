@@ -594,11 +594,6 @@ setup_claude_code() {
         print_success "Cross-channel context hook symlinked"
     fi
 
-    # Live diff stream: per-edit diffs and rationale in a second pane
-    ln -sfn "$dotfiles_dir/claude-code/live-diff" "$HOME/.claude/live-diff"
-    print_success "Live diff scripts symlinked"
-    install_delta
-
     # Global instructions Claude Code reads at session start
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
     print_success "Global CLAUDE.md symlinked"
@@ -684,61 +679,6 @@ install_syncthing() {
             print_info "Please install Syncthing manually"
             ;;
     esac
-}
-
-# delta gives the live diff stream syntax highlighting; it falls back to plain git colour without it.
-# bat is not optional here: delta loads custom syntax themes only from bat's compiled cache,
-# so without bat there is no Tokyo Night, only delta's built-in themes.
-install_delta() {
-    local dotfiles_dir="$HOME/Projects/dotfiles"
-
-    if ! command_exists delta; then
-        case $DISTRO in
-            ubuntu|debian)
-                # Not in every apt release; point at the .deb rather than failing silently
-                if sudo apt install -y git-delta 2>/dev/null; then
-                    print_success "delta installed"
-                else
-                    print_warning "git-delta is not in apt on this release"
-                    print_info "Grab the .deb from https://github.com/dandavison/delta/releases"
-                fi
-                ;;
-            arch|manjaro)
-                sudo pacman -S --noconfirm git-delta
-                print_success "delta installed"
-                ;;
-            macos)
-                brew install git-delta
-                print_success "delta installed"
-                ;;
-            *)
-                print_warning "Automatic delta installation not supported for $DISTRO"
-                print_info "The live diff stream works without it, just without syntax highlighting"
-                return 0
-                ;;
-        esac
-    else
-        print_info "delta already installed"
-    fi
-
-    if ! command_exists bat; then
-        case $DISTRO in
-            ubuntu|debian) sudo apt install -y bat 2>/dev/null || print_warning "bat not available in apt" ;;
-            arch|manjaro)  sudo pacman -S --noconfirm bat ;;
-            macos)         brew install bat ;;
-            *)             print_warning "Cannot install bat automatically on $DISTRO" ;;
-        esac
-    fi
-
-    # Compile the vendored Tokyo Night theme into bat's cache, which is where delta reads it from
-    if command_exists bat; then
-        local bat_themes
-        bat_themes="$(bat --config-dir)/themes"
-        mkdir -p "$bat_themes"
-        cp "$dotfiles_dir/claude-code/live-diff/themes/tokyonight_night.tmTheme" "$bat_themes/"
-        bat cache --build >/dev/null 2>&1
-        print_success "Tokyo Night diff theme built"
-    fi
 }
 
 # Create local.lua with feature flags
