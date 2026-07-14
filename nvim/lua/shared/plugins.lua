@@ -7,10 +7,15 @@ pcall(function()
   local_config = require('local')
 end)
 
--- Helper to check if feature is enabled (default true for backward compatibility)
-local function is_enabled(feature)
+-- Helper to check if feature is enabled. Defaults to true when the flag is absent,
+-- unless a different default is passed, so a machine with no local.lua (or an old
+-- one) still lands on the same behaviour as this one.
+local function is_enabled(feature, default)
   if local_config[feature] == nil then
-    return true  -- Default enabled if not specified
+    if default == nil then
+      return true
+    end
+    return default
   end
   return local_config[feature]
 end
@@ -837,7 +842,7 @@ local plugins = {
   },
 
   -- Blink.cmp - completion plugin (optional)
-  is_enabled('enable_completion') and {
+  is_enabled('enable_completion', false) and {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets' },
     version = '1.*',
@@ -1003,7 +1008,7 @@ local plugins = {
 
 
   -- Mason for managing LSP servers (optional - requires Node.js/npm)
-  is_enabled('enable_lsp') and {
+  is_enabled('enable_lsp', false) and {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
@@ -1011,7 +1016,7 @@ local plugins = {
   } or nil,
 
   -- Mason-lspconfig bridge (optional - requires Node.js/npm)
-  is_enabled('enable_lsp') and {
+  is_enabled('enable_lsp', false) and {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
     config = function()
@@ -1030,13 +1035,13 @@ local plugins = {
   } or nil,
 
   -- LSP Configuration (using modern Neovim 0.11+ API)
-  is_enabled('enable_lsp') and {
+  is_enabled('enable_lsp', false) and {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       -- Only when completion is on, so enable_lsp and enable_completion stay independent
-      is_enabled('enable_completion') and "saghen/blink.cmp" or nil,
+      is_enabled('enable_completion', false) and "saghen/blink.cmp" or nil,
     },
     config = function()
       -- blink.cmp advertises the completion capabilities, so fall back to Neovim's
