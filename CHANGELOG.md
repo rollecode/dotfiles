@@ -1,3 +1,9 @@
+### 2.24.0: 2026-07-15
+
+* nvim: `Esc` is now the way into vim. In nano, `Esc` only ever cancels, so it was dead weight: it used to do nothing at all here, because the "back to typing" autocmd immediately undid it. Pressing it from typing now hands you normal mode and holds it there, and any nano key (or vim's own `i`) resumes typing. `F12` and `:Vim` still turn nano mode off completely, which is the heavier hammer
+* nvim: `Esc` with an active selection just cancels the selection and leaves you typing, rather than dropping to normal mode, which is what nano's mark does
+* nvim: the "never strand them in normal mode" guard now distinguishes a deliberate `Esc` from accidentally landing in normal mode. It stays out of the way after `Esc`, and re-arms the moment you type again, so typing still can never silently run commands
+
 ### 2.23.1: 2026-07-15
 
 * nvim: the dashboard gate in `plugins.lua` now checks `vim.g.nano_default` as well as the `enable_nano` flag, matching the rule `shared/nano.lua` already used. `nvim --cmd 'lua vim.g.nano_default = false'` therefore starts a genuinely plain nvim, dashboard included, instead of a modal nvim that was still missing its start screen
