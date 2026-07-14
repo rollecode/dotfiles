@@ -27,6 +27,11 @@ local cut = { buf = nil, line = nil, tick = nil }
 -- so the "always go back to typing" autocmd does not yank us out from under it.
 local holding_normal = false
 
+-- Set when you press Esc, i.e. you asked for vim on purpose. Without this the
+-- "back to typing" autocmd would fight you and Esc would appear to do nothing.
+-- Cleared the moment you start typing again.
+local user_normal = false
+
 -- Shortcut rows drawn at the bottom, nano style.
 -- Six columns per row, like nano, so nothing truncates at 80 columns.
 -- Undo/redo (M-U / M-E) are bound too, they just live in ^G Help.
@@ -295,6 +300,8 @@ function M.help()
     '  Every key works in every mode. Shift+arrows select. Mouse works.',
     '  You are always typing: nvim will not strand you in normal mode.',
     '',
+    '  Esc   vim normal mode for a burst. Any nano key, or i, resumes typing.',
+    '        With a selection, Esc just cancels it.',
     '  ^T    reaches : commands (:Lazy, :Vim, ...) without leaving insert',
     '  F12   turn nano mode off completely (:Vim), press again for :Nano',
     '',
@@ -417,6 +424,16 @@ local function keymaps()
   local MOVE = { 'i', 'n' }
 
   return {
+    -- Esc: in nano it only ever cancels, so it is free to be the way into vim.
+    -- From typing it hands you normal mode for a burst (any nano key, or i, brings
+    -- typing back). From a selection it just cancels, like nano's ^C on a mark.
+    -- The `true` flag means "do not resume insert afterwards", or Esc would undo itself.
+    { 'i', '<Esc>', function()
+      user_normal = true
+      vim.cmd('stopinsert')
+    end, 'Vim normal mode', true },
+    { { 'v', 's' }, '<Esc>', function() feed('<Esc>') end, 'Cancel selection' },
+
     -- File
     { A, '<C-o>', M.write_out, 'Write out' },
     { A, '<C-s>', M.save, 'Save' },
@@ -486,7 +503,8 @@ local function apply_buffer_keymaps(buf)
     local modes = type(map[1]) == 'table' and map[1] or { map[1] }
     for _, mode in ipairs(modes) do
       if mode == 'i' then
-        vim.keymap.set('i', map[2], wrapped(map[3]),
+        local rhs = map[5] and map[3] or wrapped(map[3])
+        vim.keymap.set('i', map[2], rhs,
           { silent = true, buffer = buf, desc = 'nano: ' .. map[4] })
       end
     end
@@ -530,13 +548,16 @@ local function apply_keymaps()
   saved.maps = {}
   for _, map in ipairs(all_maps()) do
     local modes, lhs, rhs, desc = map[1], map[2], map[3], map[4]
+    if not map[5] then
+      rhs = wrapped(rhs)
+    end
     modes = type(modes) == 'table' and modes or { modes }
     for _, mode in ipairs(modes) do
       local existing = vim.fn.maparg(lhs, mode, false, true)
       if existing and not vim.tbl_isempty(existing) then
         table.insert(saved.maps, existing)
       end
-      vim.keymap.set(mode, lhs, wrapped(rhs), { silent = true, desc = 'nano: ' .. desc })
+      vim.keymap.set(mode, lhs, rhs, { silent = true, desc = 'nano: ' .. desc })
     end
   end
 end
@@ -585,7 +606,7 @@ function M.enable()
   api.nvim_create_autocmd({ 'BufWinEnter', 'WinEnter', 'BufEnter' }, {
     group = augroup,
     callback = function(ev)
-      if not M.enabled or not is_editable(ev.buf) then return end
+      if not M.enabled or user_normal or not is_editable(ev.buf) then return end
       if api.nvim_get_current_win() == helper.win then return end
       if api.nvim_get_mode().mode:sub(1, 1) ~= 'i' then
         vim.cmd('startinsert')
@@ -601,9 +622,9 @@ function M.enable()
     group = augroup,
     pattern = '*:n',
     callback = function()
-      if not M.enabled or holding_normal or not is_editable() then return end
+      if not M.enabled or holding_normal or user_normal or not is_editable() then return end
       vim.schedule(function()
-        if not M.enabled or holding_normal or not is_editable() then return end
+        if not M.enabled or holding_normal or user_normal or not is_editable() then return end
         if api.nvim_get_mode().mode ~= 'n' then return end
         vim.cmd('startinsert')
       end)
@@ -613,7 +634,10 @@ function M.enable()
   -- Registered after blink.cmp's own InsertEnter handler, so ours lands last.
   api.nvim_create_autocmd('InsertEnter', {
     group = augroup,
-    callback = function(ev) apply_buffer_keymaps(ev.buf) end,
+    callback = function(ev)
+      user_normal = false -- typing again, so re-arm the "never strand them" guard
+      apply_buffer_keymaps(ev.buf)
+    end,
   })
 
   -- Never let the cursor land in the shortcut bar.
