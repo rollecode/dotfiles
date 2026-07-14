@@ -51,6 +51,7 @@ require('shared.keymaps')
 require('shared.functions')
 require('shared.codestats') -- Code::Stats setup and tracking
 require('shared.autocmds')
+require('shared.nano').setup() -- Nano-like modeless editing (:Vim or F12 to turn off)
 
 -- Detect and load OS-specific configuration
 ---@diagnostic disable-next-line: undefined-field

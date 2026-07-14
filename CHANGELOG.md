@@ -1,3 +1,7 @@
+### 2.22.1: 2026-07-14
+
+* nvim: resolve nvm's node path in `os/linux.lua` without spawning a shell. `~/.nvm/current` does not exist on this machine, so every single launch hit the fallback and ran `bash -c "source nvm.sh && nvm which current"` synchronously, which alone cost about 70ms of a 225ms startup to compute a path that never changes. It now reads `~/.nvm/alias/default` and globs `~/.nvm/versions/node`, picking the highest version numerically so `v9` does not sort above `v22`. Startup drops to about 150ms, and `node` still resolves to the same `v22.20.0` for the linters
+
 ### 2.22.0: 2026-07-14
 
 * Remove the live diff stream added in 2.19.0 and themed in 2.20.0, along with `claude-code/live-diff/`, its `PreToolUse`, `PostToolUse` and `SessionStart` hooks, and the `delta` and `bat` install step. It was a bad idea for two reasons. Claude Code already renders a diff of every edit in the transcript, so the pane duplicated something that was already on screen, and stacking delta's line number gutter and word level emphasis on top of a hand rolled header made it harder to read than the thing it replaced, not easier

@@ -16,8 +16,11 @@ local function is_enabled(feature)
 end
 
 local plugins = {
-  -- Dashboard (optional)
-  is_enabled('enable_dashboard') and {
+  -- Dashboard (optional). Never loads while nano mode is on: the dashboard buffer
+  -- is unmodifiable and renders asynchronously, so it lands on top of the empty
+  -- buffer nano puts you in and leaves you on a screen you cannot type into.
+  -- Set enable_nano = false in local.lua to get the dashboard back.
+  is_enabled('enable_dashboard') and not is_enabled('enable_nano') and {
     'nvimdev/dashboard-nvim',
     event = 'VimEnter',
     config = function()
@@ -833,8 +836,8 @@ local plugins = {
     end,
   },
 
-  -- Blink.cmp - completion plugin
-  {
+  -- Blink.cmp - completion plugin (optional)
+  is_enabled('enable_completion') and {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets' },
     version = '1.*',
@@ -866,7 +869,7 @@ local plugins = {
       }
     end,
     opts_extend = { "sources.default" }
-  },
+  } or nil,
 
   -- Minuet AI - AI completion with OpenRouter
   is_enabled('enable_ai_completion') and {
@@ -1032,11 +1035,15 @@ local plugins = {
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "saghen/blink.cmp",
+      -- Only when completion is on, so enable_lsp and enable_completion stay independent
+      is_enabled('enable_completion') and "saghen/blink.cmp" or nil,
     },
     config = function()
-      -- Get blink.cmp capabilities for LSP
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      -- blink.cmp advertises the completion capabilities, so fall back to Neovim's
+      -- own when completion is disabled
+      local ok, blink = pcall(require, 'blink.cmp')
+      local capabilities = ok and blink.get_lsp_capabilities()
+        or vim.lsp.protocol.make_client_capabilities()
 
       -- Configure language servers with blink.cmp capabilities
       vim.lsp.config('*', { capabilities = capabilities })
