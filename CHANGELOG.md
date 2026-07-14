@@ -1,3 +1,10 @@
+### 2.24.1: 2026-07-15
+
+* fastfetch: the banner is now the full view everywhere by default, on the local terminal and over SSH alike, and the compact phone view is opt-in. Picking compact for any SSH session was wrong: the desktop is reached over SSH too, and Termius identifies itself with nothing but a bare `xterm-256color`, indistinguishable from a desktop SSH client, so desktop SSH sessions were being shrunk. The phone now asks for the compact view by exporting `FASTFETCH_VIEW=compact` (set once in Termius; sshd here accepts it via an `AcceptEnv FASTFETCH_VIEW` drop-in). Nothing on the desktop sets it, so a desktop session, local or SSH, is never shrunk
+* fastfetch: the compact view always keeps the real Arch logo. Width only decides how hard each value is truncated so it sits beside the logo without wrapping (at a 63-column phone the values shorten to about eleven characters, and grow as the screen widens)
+* fastfetch: drop the Packages line from both views. It grew an `(appimage)` entry and ran to 91 columns, well past the 78 the terminal fits, and there is no combined placeholder to truncate it with
+* fastfetch: print CPU frequency with one decimal (`display.freq.ndigits`), so the CPU line is 78 columns instead of 79 and stops wrapping in a 78-column foot window, which is what the extra logo padding had pushed it over
+
 ### 2.24.0: 2026-07-15
 
 * nvim: `Esc` is now the way into vim. In nano, `Esc` only ever cancels, so it was dead weight: it used to do nothing at all here, because the "back to typing" autocmd immediately undid it. Pressing it from typing now hands you normal mode and holds it there, and any nano key (or vim's own `i`) resumes typing. `F12` and `:Vim` still turn nano mode off completely, which is the heavier hammer

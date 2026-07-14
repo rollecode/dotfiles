@@ -15,6 +15,9 @@
     "color": {
       "keys": "1;38;2;23;147;209",
       "title": "1;38;2;23;147;209"
+    },
+    "freq": {
+      "ndigits": 1
     }
   },
   "modules": [
@@ -34,10 +37,6 @@
     {
       "type": "bios",
       "key": "BIOS"
-    },
-    {
-      "type": "packages",
-      "key": "Packages"
     },
     {
       "type": "de",
