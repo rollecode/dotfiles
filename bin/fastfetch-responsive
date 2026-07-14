@@ -24,7 +24,7 @@ COMPACT_TPL="$CFG_DIR/compact.template.jsonc"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/fastfetch"
 GEN="$CACHE_DIR/compact.jsonc"
 
-LOGO_COLS=41
+LOGO_COLS=43   # arch ascii logo (38) + logo.padding.right (5)
 KEY_COLS=16
 MIN_W=10
 MAX_W=40
