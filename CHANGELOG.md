@@ -1,3 +1,11 @@
+### 2.19.0: 2026-07-14
+
+* Add `claude-code/live-diff/`: a live stream of every change Claude Code makes, meant for a second pane. A `PreToolUse` hook snapshots each file before the edit and a `PostToolUse` hook diffs the snapshot against the file on disk, so the diff is per-edit rather than cumulative and works outside a git repo, which `git diff` alone cannot do. `why.sh` lets Claude append a one-line rationale, so the reasoning sits next to the change it explains instead of scrolling past in the chat pane. `bash`, `git` and `jq` only, no `nvim`, `tmux` or `lazygit` dependency, so it behaves the same over SSH on the servers as it does locally. Renders through `delta` when installed and falls back to plain `git diff` colour when not. View it with `~/.claude/live-diff/watch.sh`, or `--split` to split a tmux pane
+* The stream is written to `~/.claude/live-diff-stream.log`, deliberately not inside `~/.claude/live-diff/`, because that path is a symlink into this repo and the stream carries diffs of whatever is being edited at the time. Writing it there would have committed a log of every edit in every project into a public repo
+* Add `claude-code/user-memory.md`, symlinked to `~/.claude/CLAUDE.md`: asks Claude to explain implementation choices as it works, to log the why of each edit into the stream, and to always keep a task list. Named `user-memory.md` and not `CLAUDE.md` because a file with that name inside `claude-code/` would be loaded as directory-scoped instructions whenever you worked in that folder. This replaces the built-in Explanatory output style, which was deprecated and moved out into a plugin
+* `claude-code/settings.json`: set `verbose` and `alwaysThinkingEnabled`. Verbose is a persisted setting and not only the `Ctrl+O` toggle, so the detailed transcript, the thinking blocks and the task list show without pressing anything each session. On subscription plans the API returns summarised thinking rather than raw reasoning, so there is a ceiling here no setting can lift
+* `install.sh`: `setup_claude_code` symlinks `live-diff/` and `user-memory.md` into `~/.claude/`
+
 ### 2.18.1: 2026-07-14
 
 * fastfetch: two spaces of gap after the logo, in both the full and the compact view. The padding first landed in the full config only, so a narrow terminal (which gets the compact view) showed no change at all
