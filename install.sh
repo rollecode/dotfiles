@@ -603,6 +603,11 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
     print_success "Global CLAUDE.md symlinked"
 
+    # Tokyo Night theme for the TUI itself; select it with /theme
+    mkdir -p "$HOME/.claude/themes"
+    ln -sfn "$dotfiles_dir/claude-code/themes/tokyonight.json" "$HOME/.claude/themes/tokyonight.json"
+    print_success "Tokyo Night theme symlinked (select it with /theme)"
+
     # Setup secrets
     if [ ! -f "$dotfiles_dir/claude-code/secrets.sh" ]; then
         print_info "Creating Claude Code secrets.sh from example..."
