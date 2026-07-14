@@ -1,3 +1,7 @@
+### 2.18.1: 2026-07-14
+
+* fastfetch: two spaces of gap after the logo, in both the full and the compact view. The padding first landed in the full config only, so a narrow terminal (which gets the compact view) showed no change at all
+
 ### 2.18.0: 2026-07-14
 
 * Add `fastfetch/` and `bin/fastfetch-responsive`: fastfetch now picks its view from the session instead of a fixed config. Local desktop gets the full detail (CPU cores and frequency, GPU vendor, memory used of total), SSH and Termius get a compact view whose truncation width is computed from the live column count and which drops the logo below 62 columns. Width alone cannot tell the two apart: the desktop terminals here run about 78 columns, the same as a phone, so the SSH session is the signal. `FASTFETCH_VIEW=full|compact` forces one
