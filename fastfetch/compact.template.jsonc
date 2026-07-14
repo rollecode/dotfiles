@@ -39,11 +39,6 @@
       "format": "{version:__W__}"
     },
     {
-      "type": "packages",
-      "key": "Packages",
-      "format": "{all:__W__}"
-    },
-    {
       "type": "de",
       "key": "DE",
       "format": "{pretty-name:__W__}"
