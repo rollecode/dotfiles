@@ -1,0 +1,110 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "auto",
+    "color": {
+      "1": "1;38;2;23;147;209",
+      "2": "38;2;23;147;209"
+    },
+    "padding": {
+      "right": 3
+    }
+  },
+  "display": {
+    "separator": " ",
+    "color": {
+      "keys": "1;38;2;23;147;209",
+      "title": "1;38;2;23;147;209"
+    }
+  },
+  "modules": [
+    {
+      "type": "title",
+      "format": "{#title}{user-name}@{host-name}"
+    },
+    "break",
+    {
+      "type": "os",
+      "key": "OS",
+      "format": "{name:__W__}"
+    },
+    {
+      "type": "kernel",
+      "key": "Kernel",
+      "format": "{release:__W__}"
+    },
+    {
+      "type": "bios",
+      "key": "BIOS",
+      "format": "{version:__W__}"
+    },
+    {
+      "type": "packages",
+      "key": "Packages",
+      "format": "{all:__W__}"
+    },
+    {
+      "type": "de",
+      "key": "DE",
+      "format": "{pretty-name:__W__}"
+    },
+    {
+      "type": "wm",
+      "key": "WM",
+      "format": "{pretty-name:__W__}"
+    },
+    {
+      "type": "command",
+      "key": "Display Server",
+      "text": "echo $XDG_SESSION_TYPE",
+      "format": "{result:__W__}"
+    },
+    {
+      "type": "shell",
+      "key": "Shell",
+      "format": "{pretty-name:__W__}"
+    },
+    {
+      "type": "cpu",
+      "key": "CPU",
+      "format": "{name:__W__}"
+    },
+    {
+      "type": "gpu",
+      "key": "GPU",
+      "format": "{name:__W__}"
+    },
+    {
+      "type": "memory",
+      "key": "Memory",
+      "format": "{used:__W__}"
+    },
+    {
+      "type": "physicalmemory",
+      "key": "Physical Memory",
+      "format": "{size:__W__}"
+    },
+    {
+      "type": "sound",
+      "key": "Sound",
+      "format": "{name:__W__} ({volume-percentage})"
+    },
+    {
+      "type": "processes",
+      "key": "Processes",
+      "format": "{result:__W__}"
+    },
+    {
+      "type": "uptime",
+      "key": "Uptime",
+      "format": "{formatted:__W__}"
+    },
+    "break",
+    {
+      "type": "colors",
+      "block": {
+        "width": 2
+      }
+    }
+  ]
+}

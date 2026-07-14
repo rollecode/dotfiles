@@ -1,3 +1,8 @@
+### 2.18.0: 2026-07-14
+
+* Add `fastfetch/` and `bin/fastfetch-responsive`: fastfetch now picks its view from the session instead of a fixed config. Local desktop gets the full detail (CPU cores and frequency, GPU vendor, memory used of total), SSH and Termius get a compact view whose truncation width is computed from the live column count and which drops the logo below 62 columns. Width alone cannot tell the two apart: the desktop terminals here run about 78 columns, the same as a phone, so the SSH session is the signal. `FASTFETCH_VIEW=full|compact` forces one
+* fastfetch colors: logo, keys and title use the real Arch blue `#1793D1` as true colour. The logo has two colour slots and only the first was obvious, so the second stayed cyan; the title needed the `{#title}` placeholder because fastfetch only auto-colours the default title format, not a custom one
+
 ### 2.17.1: 2026-07-12
 
 * Revert the NVDEC hardware video decode flags from `browser-flags/chromium-flags.conf`: the VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) cause GPU compositing corruption on NVIDIA under Wayland, first flickering and then whole gradients and elements disappearing, because `VaapiIgnoreDriverChecks` forces Chromium past the driver sanity checks that exist to prevent exactly that; do not retry this, hardware-decoded video belongs in mpv via ff2mpv, outside Chromium's GPU process
