@@ -20,12 +20,21 @@ local function is_enabled(feature, default)
   return local_config[feature]
 end
 
+-- Is nano mode on? Same rule as shared/nano.lua: vim.g wins, then the local.lua flag,
+-- and it is on by default. Checking vim.g here too means `nvim --cmd 'lua
+-- vim.g.nano_default = false'` gives a genuinely plain nvim, dashboard and all.
+local function nano_on()
+  if vim.g.nano_default ~= nil then
+    return vim.g.nano_default
+  end
+  return is_enabled('enable_nano')
+end
+
 local plugins = {
   -- Dashboard (optional). Never loads while nano mode is on: the dashboard buffer
   -- is unmodifiable and renders asynchronously, so it lands on top of the empty
   -- buffer nano puts you in and leaves you on a screen you cannot type into.
-  -- Set enable_nano = false in local.lua to get the dashboard back.
-  is_enabled('enable_dashboard') and not is_enabled('enable_nano') and {
+  is_enabled('enable_dashboard') and not nano_on() and {
     'nvimdev/dashboard-nvim',
     event = 'VimEnter',
     config = function()

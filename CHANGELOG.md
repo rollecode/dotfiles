@@ -1,3 +1,7 @@
+### 2.23.1: 2026-07-15
+
+* nvim: the dashboard gate in `plugins.lua` now checks `vim.g.nano_default` as well as the `enable_nano` flag, matching the rule `shared/nano.lua` already used. `nvim --cmd 'lua vim.g.nano_default = false'` therefore starts a genuinely plain nvim, dashboard included, instead of a modal nvim that was still missing its start screen
+
 ### 2.23.0: 2026-07-14
 
 * Add `nvim/lua/shared/nano.lua`: nano-like modeless editing, on by default. Typing works immediately and nano's control keys do nano things: `^O` write out, `^X` exit, `^W` where is, `^\` replace, `^K` cut line (consecutive cuts append to the cutbuffer, like nano), `^U` paste, `^A` and `^E` for start and end of line, `^_` go to line, `^C` where am I, `^G` help, `M-U` and `M-E` for undo and redo. A two-row shortcut bar sits at the bottom and a nano-style title bar in the winbar. Shift+arrows select. Neovim removed the `insertmode` option (`E519`), so this follows the `BufWinEnter` plus `startinsert` emulation from `:help vim_diff`, with `<Cmd>` mappings so no action has to leave insert mode
