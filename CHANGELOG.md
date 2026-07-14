@@ -1,3 +1,8 @@
+### 2.21.1: 2026-07-14
+
+* Point every repo URL at `rollecode/dotfiles` after the GitHub username change from `ronilaukkarinen`. The install one-liner, the clone commands and the tarball URLs in `README.md`, and `repo_url` in `install.sh`. GitHub redirects the old paths, so nothing was broken, but a fresh clone should not depend on a redirect that can be reclaimed if the old username is ever registered again
+* The Code::Stats identity `rolle` is left alone, it is a different account and not affected by the rename
+
 ### 2.21.0: 2026-07-14
 
 * Add `claude-code/themes/tokyonight.json`, symlinked to `~/.claude/themes/`: a Tokyo Night theme for the Claude Code TUI itself, so the interface and the live diff stream share one palette. Select it with `/theme`, it live-reloads without a restart
