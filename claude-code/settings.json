@@ -19,6 +19,16 @@
             "command": "~/.claude/hooks/append-changelog.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/live-diff/emit.sh",
+            "async": true
+          }
+        ]
       }
     ],
     "Stop": [
@@ -30,10 +40,35 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/live-diff/snapshot.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/live-diff/reset.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
-  }
+  },
+  "verbose": true,
+  "alwaysThinkingEnabled": true,
+  "autoScrollEnabled": true,
+  "tui": "fullscreen"
 }
