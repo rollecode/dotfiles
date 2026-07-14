@@ -23,13 +23,17 @@ local saved = { maps = {}, opts = {} }
 local last_search = ''
 local cut = { buf = nil, line = nil, tick = nil }
 
+-- Set while an action genuinely needs normal mode (the :s confirm prompt, quitting),
+-- so the "always go back to typing" autocmd does not yank us out from under it.
+local holding_normal = false
+
 -- Shortcut rows drawn at the bottom, nano style.
 -- Six columns per row, like nano, so nothing truncates at 80 columns.
 -- Undo/redo (M-U / M-E) are bound too, they just live in ^G Help.
 local ROWS = {
   {
     { '^G', 'Help' }, { '^O', 'Write Out' }, { '^W', 'Where Is' },
-    { '^K', 'Cut' }, { '^J', 'Justify' }, { '^C', 'Location' },
+    { '^K', 'Cut' }, { '^T', 'Execute' }, { '^C', 'Location' },
   },
   {
     { '^X', 'Exit' }, { '^R', 'Read File' }, { '^\\', 'Replace' },
@@ -167,6 +171,8 @@ function M.replace()
       if rep == nil then
         return resume_insert()
       end
+      -- The gc confirm prompt drives itself from normal mode
+      holding_normal = true
       vim.cmd('stopinsert')
       local from = '\\V' .. vim.fn.escape(pat, '\\/')
       local to = vim.fn.escape(rep, '\\/&~')
@@ -174,6 +180,7 @@ function M.replace()
       if not ok then
         vim.notify(tostring(err), vim.log.levels.WARN)
       end
+      holding_normal = false
       resume_insert()
     end)
   end)
@@ -212,9 +219,25 @@ end
 
 --- ^X: exit, prompting about unsaved changes.
 function M.exit()
+  holding_normal = true
   vim.cmd('stopinsert')
   pcall(vim.cmd, 'confirm qall')
+  holding_normal = false
   resume_insert()
+end
+
+--- ^T: run an ex command. Without this, `:` is unreachable when you never leave
+--- insert mode, which would put :Vim, :Lazy and friends out of reach.
+function M.execute()
+  vim.ui.input({ prompt = ':', completion = 'command' }, function(cmd)
+    if cmd and cmd ~= '' then
+      local ok, err = pcall(vim.cmd, cmd)
+      if not ok then
+        vim.notify(tostring(err), vim.log.levels.ERROR)
+      end
+    end
+    resume_insert()
+  end)
 end
 
 --- ^R: read another file into this buffer.
@@ -266,12 +289,13 @@ function M.help()
     '  ^K  Cut line (repeats add)  ^D  Delete char',
     '  ^U  Paste cutbuffer         ^_  Go to line',
     '  ^J  Justify paragraph       ^C  Where am I',
-    '  M-U Undo                    ^L  Redraw',
-    '  M-E Redo',
+    '  ^T  Run a : command         ^L  Redraw',
+    '  M-U Undo                    M-E Redo',
     '',
-    '  Shift+arrows select. Mouse works.',
+    '  Every key works in every mode. Shift+arrows select. Mouse works.',
+    '  You are always typing: nvim will not strand you in normal mode.',
     '',
-    '  Esc   drop into vim normal mode for one command, then keep typing',
+    '  ^T    reaches : commands (:Lazy, :Vim, ...) without leaving insert',
     '  F12   turn nano mode off completely (:Vim), press again for :Nano',
     '',
     '  Press q to close.',
@@ -386,45 +410,52 @@ local function keymaps()
   local page_up = function() feed('<PageUp>') end
   local page_down = function() feed('<PageDown>') end
 
+  -- Every mode, because you should never have to know which one you are in.
+  -- Normal mode is still where plugins and `normal!` commands do their work, so the
+  -- keys have to answer there too, not just while typing.
+  local A = { 'i', 'n', 'v', 's' }
+  local MOVE = { 'i', 'n' }
+
   return {
     -- File
-    { 'i', '<C-o>', M.write_out, 'Write out' },
-    { 'i', '<C-s>', M.save, 'Save' },
-    { 'i', '<C-x>', M.exit, 'Exit' },
-    { 'i', '<C-r>', M.read_file, 'Read file' },
-    { 'i', '<C-g>', M.help, 'Help' },
+    { A, '<C-o>', M.write_out, 'Write out' },
+    { A, '<C-s>', M.save, 'Save' },
+    { A, '<C-x>', M.exit, 'Exit' },
+    { A, '<C-r>', M.read_file, 'Read file' },
+    { A, '<C-g>', M.help, 'Help' },
+    { A, '<C-t>', M.execute, 'Execute command' },
 
     -- Search and replace
-    { 'i', '<C-w>', function() M.search(false) end, 'Where is' },
-    { 'i', '<C-q>', function() M.search(true) end, 'Where was' },
-    { 'i', '<M-w>', M.search_next, 'Repeat search' },
-    { 'i', '<C-_>', M.goto_line, 'Go to line' },
-    { 'i', '<M-g>', M.goto_line, 'Go to line' },
-    { 'i', '<C-\\>', M.replace, 'Replace' },
+    { A, '<C-w>', function() M.search(false) end, 'Where is' },
+    { A, '<C-q>', function() M.search(true) end, 'Where was' },
+    { A, '<M-w>', M.search_next, 'Repeat search' },
+    { A, '<C-_>', M.goto_line, 'Go to line' },
+    { A, '<M-g>', M.goto_line, 'Go to line' },
+    { A, '<C-\\>', M.replace, 'Replace' },
 
     -- Cut and paste
-    { 'i', '<C-k>', M.cut_line, 'Cut line' },
-    { 'i', '<C-u>', M.uncut, 'Paste cutbuffer' },
+    { MOVE, '<C-k>', M.cut_line, 'Cut line' },
+    { MOVE, '<C-u>', M.uncut, 'Paste cutbuffer' },
     { { 'v', 's' }, '<C-k>', '"nd', 'Cut selection' },
     { { 'v', 's' }, '<M-6>', '"ny', 'Copy selection' },
 
     -- Movement (nano's reading of the control keys)
-    { 'i', '<C-a>', function() feed('<Home>') end, 'Beginning of line' },
-    { 'i', '<C-e>', blink_or('cancel', function() feed('<End>') end), 'End of line' },
-    { 'i', '<C-p>', blink_or('select_prev', function() feed('<Up>') end), 'Previous line' },
-    { 'i', '<C-n>', blink_or('select_next', function() feed('<Down>') end), 'Next line' },
-    { 'i', '<C-b>', blink_or('scroll_documentation_up', function() feed('<Left>') end), 'Back one char' },
-    { 'i', '<C-f>', blink_or('scroll_documentation_down', function() feed('<Right>') end), 'Forward one char' },
-    { 'i', '<C-y>', blink_or('select_and_accept', page_up), 'Page up' },
-    { 'i', '<C-v>', page_down, 'Page down' },
-    { 'i', '<C-d>', function() feed('<Del>') end, 'Delete char' },
+    { MOVE, '<C-a>', function() feed('<Home>') end, 'Beginning of line' },
+    { MOVE, '<C-e>', blink_or('cancel', function() feed('<End>') end), 'End of line' },
+    { MOVE, '<C-p>', blink_or('select_prev', function() feed('<Up>') end), 'Previous line' },
+    { MOVE, '<C-n>', blink_or('select_next', function() feed('<Down>') end), 'Next line' },
+    { MOVE, '<C-b>', blink_or('scroll_documentation_up', function() feed('<Left>') end), 'Back one char' },
+    { MOVE, '<C-f>', blink_or('scroll_documentation_down', function() feed('<Right>') end), 'Forward one char' },
+    { MOVE, '<C-y>', blink_or('select_and_accept', page_up), 'Page up' },
+    { MOVE, '<C-v>', page_down, 'Page down' },
+    { MOVE, '<C-d>', function() feed('<Del>') end, 'Delete char' },
 
     -- Misc
-    { 'i', '<C-j>', function() vim.cmd('normal! gqap') resume_insert() end, 'Justify' },
-    { 'i', '<C-c>', M.position, 'Where am I' },
-    { 'i', '<C-l>', '<Cmd>mode<CR>', 'Redraw' },
-    { 'i', '<M-u>', function() vim.cmd('undo') resume_insert() end, 'Undo' },
-    { 'i', '<M-e>', function() vim.cmd('redo') resume_insert() end, 'Redo' },
+    { MOVE, '<C-j>', function() vim.cmd('normal! gqap') end, 'Justify' },
+    { A, '<C-c>', M.position, 'Where am I' },
+    { A, '<C-l>', function() vim.cmd('mode') end, 'Redraw' },
+    { A, '<M-u>', function() vim.cmd('undo') end, 'Undo' },
+    { A, '<M-e>', function() vim.cmd('redo') end, 'Redo' },
   }
 end
 
@@ -432,6 +463,16 @@ local cached = nil
 local function all_maps()
   if not cached then cached = keymaps() end
   return cached
+end
+
+--- Whatever a nano key does, you end up typing again afterwards. Without this,
+--- a key pressed from normal mode would leave you sitting in normal mode.
+local function wrapped(rhs)
+  if type(rhs) ~= 'function' then return rhs end
+  return function()
+    rhs()
+    resume_insert()
+  end
 end
 
 -- blink.cmp re-applies buffer-local keymaps on every InsertEnter, which would
@@ -445,7 +486,7 @@ local function apply_buffer_keymaps(buf)
     local modes = type(map[1]) == 'table' and map[1] or { map[1] }
     for _, mode in ipairs(modes) do
       if mode == 'i' then
-        vim.keymap.set('i', map[2], map[3],
+        vim.keymap.set('i', map[2], wrapped(map[3]),
           { silent = true, buffer = buf, desc = 'nano: ' .. map[4] })
       end
     end
@@ -495,7 +536,7 @@ local function apply_keymaps()
       if existing and not vim.tbl_isempty(existing) then
         table.insert(saved.maps, existing)
       end
-      vim.keymap.set(mode, lhs, rhs, { silent = true, desc = 'nano: ' .. desc })
+      vim.keymap.set(mode, lhs, wrapped(rhs), { silent = true, desc = 'nano: ' .. desc })
     end
   end
 end
@@ -549,6 +590,23 @@ function M.enable()
       if api.nvim_get_mode().mode:sub(1, 1) ~= 'i' then
         vim.cmd('startinsert')
       end
+    end,
+  })
+
+  -- You should never be stranded in a mode where typing runs commands instead of
+  -- inserting text. If we land in normal mode inside a real file buffer, go back to
+  -- typing. Only file buffers, so Telescope, mini.files, help and Trouble keep their
+  -- normal-mode navigation, and never while an action is deliberately holding it.
+  api.nvim_create_autocmd('ModeChanged', {
+    group = augroup,
+    pattern = '*:n',
+    callback = function()
+      if not M.enabled or holding_normal or not is_editable() then return end
+      vim.schedule(function()
+        if not M.enabled or holding_normal or not is_editable() then return end
+        if api.nvim_get_mode().mode ~= 'n' then return end
+        vim.cmd('startinsert')
+      end)
     end,
   })
 
