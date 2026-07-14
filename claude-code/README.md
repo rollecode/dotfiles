@@ -82,6 +82,14 @@ How it works:
 * `reset.sh`, a `SessionStart` hook, truncates the stream so the pane starts clean each session
 * `lib.sh` holds the shared path and hashing helpers
 
+## Diff theme
+
+The stream is themed Tokyo Night, with purple hunk headers and purple keywords. `themes/tokyonight_night.tmTheme` is vendored from `folke/tokyonight.nvim`, so a server with no network still gets the theme.
+
+`bat` is a hard dependency of the theme, not a nicety: delta loads a custom syntax theme only from bat's compiled cache, so `install.sh` installs `bat`, copies the theme into `$(bat --config-dir)/themes` and runs `bat cache --build`. Without `bat` the stream still works, it just falls back to delta's built-in themes. Without `delta` at all it falls back to plain `git diff` colour.
+
+The palette lives at the top of `lib.sh` as `CC_TN_*` variables, so the colours have one source of truth. Flags are passed to delta explicitly rather than through a `[delta]` section in `~/.gitconfig`, so the stream looks the same on a machine whose gitconfig this repo does not control.
+
 The stream lives at `~/.claude/live-diff-stream.log`, override with `CC_LIVE_LOG`. It is deliberately kept out of `~/.claude/live-diff/`, since that path is a symlink into this repo and the stream carries diffs of whatever you are editing at the time.
 
 ## user-memory.md

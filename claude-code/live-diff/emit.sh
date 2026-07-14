@@ -22,11 +22,15 @@ rel="$file"
 case "$file" in "$PWD"/*) rel="${file#"$PWD"/}" ;; esac
 
 {
-  printf '\n\033[1;36m┌─ %s \033[0;36m%s\033[0m \033[2m%s\033[0m\n' \
+  # Tokyo Night purple, 24-bit, to match the delta hunk headers below.
+  printf '\n\033[1m\033[38;2;187;154;247m┌─ %s\033[0m \033[38;2;122;162;247m%s\033[0m \033[38;2;86;95;137m%s\033[0m\n' \
     "$tool" "$rel" "$(date '+%H:%M:%S')"
 
   if command -v delta >/dev/null 2>&1; then
-    git diff --no-index --no-ext-diff "$before" "$file" 2>/dev/null | delta --paging=never
+    # Read the flags into an array so the styles, which contain spaces, survive word splitting.
+    IFS=$'\n' read -r -d '' -a delta_args < <(cc_delta_args && printf '\0')
+    git diff --no-index --no-ext-diff "$before" "$file" 2>/dev/null \
+      | delta "${delta_args[@]}" 2>/dev/null
   else
     # --no-index works on arbitrary paths, inside a repo or not.
     git diff --no-index --no-ext-diff --color=always "$before" "$file" 2>/dev/null \
