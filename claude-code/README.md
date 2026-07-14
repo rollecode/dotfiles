@@ -96,6 +96,12 @@ The stream lives at `~/.claude/live-diff-stream.log`, override with `CC_LIVE_LOG
 
 Symlinked to `~/.claude/CLAUDE.md`, so it loads in every session on every machine. It asks Claude to explain implementation choices as it works, to log the "why" of each edit into the live diff stream, and to always keep a task list. It is deliberately not named `CLAUDE.md` in this repo, because a file with that name inside `claude-code/` would be picked up as directory-scoped instructions whenever you worked in this folder.
 
+## Tokyo Night theme for the TUI
+
+`themes/tokyonight.json` is symlinked to `~/.claude/themes/tokyonight.json`. Select it with `/theme`, it live-reloads without a restart. It repaints the accent, the diff colours, the subagent colours and the usage meter in the same palette as the live diff stream, so the two panes look like one thing.
+
+Claude Code has no colour token for thinking text. The documented tokens cover the accent, text shades, status colours and diffs, but reasoning output is simply de-emphasised secondary text, which is `inactive` and `subtle`. Both are set to purple here, so thinking comes out purple whichever one drives it. The cost is that hints, timestamps and faint borders go purple too, which on this palette reads as intentional.
+
 ## Display settings
 
 `settings.json` also sets `verbose` and `alwaysThinkingEnabled`. Verbose is a persisted setting, not just the `Ctrl+O` toggle, so the detailed transcript, the thinking blocks and the task list are shown without pressing anything. Note that on subscription plans the API returns summarised thinking, not raw reasoning, so there is a ceiling to this no setting can lift.

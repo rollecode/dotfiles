@@ -1,3 +1,9 @@
+### 2.21.0: 2026-07-14
+
+* Add `claude-code/themes/tokyonight.json`, symlinked to `~/.claude/themes/`: a Tokyo Night theme for the Claude Code TUI itself, so the interface and the live diff stream share one palette. Select it with `/theme`, it live-reloads without a restart
+* Thinking text is purple, with a caveat worth writing down: Claude Code has no colour token for thinking. Reasoning output is just de-emphasised secondary text, so `inactive` and `subtle` are both set to purple, and thinking comes out purple whichever of the two drives it. Hints, timestamps and faint borders turn purple as well, which on this palette reads as intentional rather than broken
+* The theme also repaints the inline diff colours, the eight subagent colours and the usage meter, so nothing in the interface is left on the stock accent
+
 ### 2.20.0: 2026-07-14
 
 * Theme the live diff stream Tokyo Night, with purple hunk headers, purple keywords and word level emphasis on the parts of a line that actually changed. `install.sh` installs `delta` (`git-delta` on brew and pacman, a `.deb` from upstream on Debian and Ubuntu, where it is not in every apt release)
