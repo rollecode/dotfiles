@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.21.0-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.21.1-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -9,7 +9,7 @@ Cross-platform configuration files for Neovim and WezTerm with OS-specific setti
 ## Installation 
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/rollecode/dotfiles/master/install.sh)
 ```
 
 ## Features
@@ -40,7 +40,7 @@ For selective updates or if you prefer manual setup:
 ### Clone the repository
 
 ```bash
-git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
+git clone git@github.com:rollecode/dotfiles.git ~/Projects/dotfiles
 ```
 
 ### Symlink configs (Linux/macOS)
@@ -60,7 +60,7 @@ ln -sf ~/Projects/dotfiles/hammerspoon ~/.hammerspoon
 
 ```powershell
 # Clone repository
-git clone git@github.com:ronilaukkarinen/dotfiles.git $env:USERPROFILE\Projects\dotfiles
+git clone git@github.com:rollecode/dotfiles.git $env:USERPROFILE\Projects\dotfiles
 
 # WezTerm
 New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Projects\dotfiles\wezterm" -Force
@@ -187,7 +187,7 @@ This ensures you never lose important conversations and can search through your 
 On any other machine where you use Claude Code, just run the install script:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/rollecode/dotfiles/master/install.sh)
 ```
 
 Then configure your secrets and `~/.claude/settings.json` as instructed.
@@ -197,14 +197,14 @@ Then configure your secrets and `~/.claude/settings.json` as instructed.
 For remote servers where you use Claude Code via SSH, run the install script:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/ronilaukkarinen/dotfiles/master/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/rollecode/dotfiles/master/install.sh)
 ```
 
 Or for manual Claude Code hook setup only:
 
 ```bash
 # Clone dotfiles
-git clone git@github.com:ronilaukkarinen/dotfiles.git ~/Projects/dotfiles
+git clone git@github.com:rollecode/dotfiles.git ~/Projects/dotfiles
 
 # Create secrets file with your API key
 echo '#!/bin/bash
@@ -306,13 +306,13 @@ This ensures project-specific rules and configurations are respected.
 ### Install Neovim (first time), oneliner
 
 ```bash
-curl -L https://github.com/ronilaukkarinen/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim ~/.config/ && rm -rf dotfiles-master && echo "code_stats_api_key = 'SFxxxx'\ncodestats_username = 'rolle'" > ~/.config/nvim/lua/secrets.lua
+curl -L https://github.com/rollecode/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim ~/.config/ && rm -rf dotfiles-master && echo "code_stats_api_key = 'SFxxxx'\ncodestats_username = 'rolle'" > ~/.config/nvim/lua/secrets.lua
 ```
 
 ### Update Neovim, oneliner
 
 ```bash
-curl -L https://github.com/ronilaukkarinen/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim/* ~/.config/nvim/ && rm -rf dotfiles-master
+curl -L https://github.com/rollecode/dotfiles/archive/refs/heads/master.tar.gz | tar xz && cp -r dotfiles-master/nvim/* ~/.config/nvim/ && rm -rf dotfiles-master
 ```
 
 ## Platform-specific notes

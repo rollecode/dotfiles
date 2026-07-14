@@ -316,7 +316,7 @@ install_dependencies() {
 
 # Clone or update repository
 setup_repo() {
-    local repo_url="https://github.com/ronilaukkarinen/dotfiles.git"
+    local repo_url="https://github.com/rollecode/dotfiles.git"
     local dotfiles_dir="$HOME/Projects/dotfiles"
 
     # Create Projects directory if it doesn't exist
