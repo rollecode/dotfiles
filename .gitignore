@@ -18,4 +18,3 @@ hypr/scripts/connect-irc.sh
 hypr/scripts/launch-ssh-tmux.sh
 hypr/scripts/restore-layout.sh
 hypr/layout-workspace*.json
-claude-code/live-diff/*.log

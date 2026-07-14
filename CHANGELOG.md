@@ -1,3 +1,10 @@
+### 2.22.0: 2026-07-14
+
+* Remove the live diff stream added in 2.19.0 and themed in 2.20.0, along with `claude-code/live-diff/`, its `PreToolUse`, `PostToolUse` and `SessionStart` hooks, and the `delta` and `bat` install step. It was a bad idea for two reasons. Claude Code already renders a diff of every edit in the transcript, so the pane duplicated something that was already on screen, and stacking delta's line number gutter and word level emphasis on top of a hand rolled header made it harder to read than the thing it replaced, not easier
+* It also could not be made automatic without a cost that was not worth paying. No process can split its own terminal; it needs a multiplexer or a terminal with a remote control CLI, so a pane that opens by itself would have meant either requiring tmux everywhere or special casing each terminal, and a pane you have to remember to open by hand is not a workflow
+* What is kept is the part that earned its place: `verbose` and `alwaysThinkingEnabled` in `settings.json`, the Tokyo Night theme, and the instruction in `user-memory.md` to explain the reasoning behind each edit rather than narrate the diff back
+* `delta` and `bat` are left installed where 2.20.0 put them, they are useful for `git diff` in their own right, but nothing in this repo depends on them any more
+
 ### 2.21.1: 2026-07-14
 
 * Point every repo URL at `rollecode/dotfiles` after the GitHub username change from `ronilaukkarinen`. The install one-liner, the clone commands and the tarball URLs in `README.md`, and `repo_url` in `install.sh`. GitHub redirects the old paths, so nothing was broken, but a fresh clone should not depend on a redirect that can be reclaimed if the old username is ever registered again
