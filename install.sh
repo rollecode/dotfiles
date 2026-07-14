@@ -594,6 +594,14 @@ setup_claude_code() {
         print_success "Cross-channel context hook symlinked"
     fi
 
+    # Live diff stream: per-edit diffs and rationale in a second pane
+    ln -sfn "$dotfiles_dir/claude-code/live-diff" "$HOME/.claude/live-diff"
+    print_success "Live diff scripts symlinked"
+
+    # Global instructions Claude Code reads at session start
+    ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
+    print_success "Global CLAUDE.md symlinked"
+
     # Setup secrets
     if [ ! -f "$dotfiles_dir/claude-code/secrets.sh" ]; then
         print_info "Creating Claude Code secrets.sh from example..."
