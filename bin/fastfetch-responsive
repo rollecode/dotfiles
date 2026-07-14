@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Responsive fastfetch.
+#
+# Two views, picked automatically:
+#   full     - local desktop session: every field at full detail.
+#   compact  - Termius / any SSH session, or a genuinely tiny terminal:
+#              short fields, truncation width scaled to the real column count.
+#
+# Why not pick on width alone: the desktop foot terminals here run ~78 cols
+# (small windows by preference) and a phone is in the same range, so width
+# cannot tell them apart. The SSH session is the reliable signal.
+#
+# Compact layout budget (measured):
+#   logo + right padding ......... 41 cols
+#   longest key ("Physical Memory") 15 cols + 1 separator
+# so a value starts at column 57 with the logo, 16 without it.
+
+set -uo pipefail
+
+FF=/usr/bin/fastfetch
+CFG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch"
+FULL="$CFG_DIR/full.jsonc"
+COMPACT_TPL="$CFG_DIR/compact.template.jsonc"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/fastfetch"
+GEN="$CACHE_DIR/compact.jsonc"
+
+LOGO_COLS=41
+KEY_COLS=16
+MIN_W=10
+MAX_W=40
+LOGO_MIN=62   # narrower than this the logo eats the whole line: drop it
+TINY_COLS=70  # a local terminal this narrow also gets the compact view
+
+# Never break a login shell: any missing piece falls back to plain fastfetch.
+[ -x "$FF" ] || exit 0
+
+cols=${COLUMNS:-0}
+if ! [ "$cols" -gt 0 ] 2>/dev/null; then
+    cols=$(tput cols 2>/dev/null || echo 80)
+fi
+[ "$cols" -gt 0 ] 2>/dev/null || cols=80
+
+is_ssh=0
+[ -n "${SSH_CONNECTION:-}" ] || [ -n "${SSH_TTY:-}" ] || [ -n "${SSH_CLIENT:-}" ] && is_ssh=1
+
+# FASTFETCH_VIEW=full|compact forces a view (handy over SSH from a big screen).
+view=${FASTFETCH_VIEW:-}
+if [ -z "$view" ]; then
+    if [ "$is_ssh" -eq 1 ] || [ "$cols" -lt "$TINY_COLS" ]; then
+        view=compact
+    else
+        view=full
+    fi
+fi
+
+if [ "$view" = full ] && [ -r "$FULL" ]; then
+    exec "$FF" --config "$FULL" "$@"
+fi
+
+[ -r "$COMPACT_TPL" ] || exec "$FF" "$@"
+
+logo_args=()
+if [ "$cols" -lt "$LOGO_MIN" ]; then
+    logo_args=(--logo none)
+    avail=$(( cols - KEY_COLS - 1 ))
+else
+    avail=$(( cols - LOGO_COLS - KEY_COLS - 1 ))
+fi
+
+w=$avail
+[ "$w" -lt "$MIN_W" ] && w=$MIN_W
+[ "$w" -gt "$MAX_W" ] && w=$MAX_W
+
+mkdir -p "$CACHE_DIR"
+sed "s/__W__/$w/g" "$COMPACT_TPL" > "$GEN" || exec "$FF" "$@"
+
+exec "$FF" --config "$GEN" "${logo_args[@]}" "$@"
