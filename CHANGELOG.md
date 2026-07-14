@@ -1,3 +1,11 @@
+### 2.20.0: 2026-07-14
+
+* Theme the live diff stream Tokyo Night, with purple hunk headers, purple keywords and word level emphasis on the parts of a line that actually changed. `install.sh` installs `delta` (`git-delta` on brew and pacman, a `.deb` from upstream on Debian and Ubuntu, where it is not in every apt release)
+* `bat` is installed alongside it, as a hard dependency of the theme rather than a nicety: delta loads a custom syntax theme only from bat's compiled cache, so without `bat` there is no Tokyo Night, only delta's built-ins. `install.sh` copies the theme into `$(bat --config-dir)/themes` and runs `bat cache --build`. Verified rather than assumed: delta ignores a `.tmTheme` dropped in that directory until the cache is rebuilt
+* Vendor `claude-code/live-diff/themes/tokyonight_night.tmTheme` from `folke/tokyonight.nvim`, so a server with no network still gets the theme
+* The palette lives at the top of `lib.sh` as `CC_TN_*` variables, one source of truth instead of hexes scattered across the hooks. Flags are passed to delta explicitly rather than through a `[delta]` section in `~/.gitconfig`, so the stream renders the same on a machine whose gitconfig this repo does not control
+* Degrades in two steps rather than breaking: no `bat` falls back to delta's built-in themes, no `delta` falls back to plain `git diff` colour
+
 ### 2.19.0: 2026-07-14
 
 * Add `claude-code/live-diff/`: a live stream of every change Claude Code makes, meant for a second pane. A `PreToolUse` hook snapshots each file before the edit and a `PostToolUse` hook diffs the snapshot against the file on disk, so the diff is per-edit rather than cumulative and works outside a git repo, which `git diff` alone cannot do. `why.sh` lets Claude append a one-line rationale, so the reasoning sits next to the change it explains instead of scrolling past in the chat pane. `bash`, `git` and `jq` only, no `nvim`, `tmux` or `lazygit` dependency, so it behaves the same over SSH on the servers as it does locally. Renders through `delta` when installed and falls back to plain `git diff` colour when not. View it with `~/.claude/live-diff/watch.sh`, or `--split` to split a tmux pane

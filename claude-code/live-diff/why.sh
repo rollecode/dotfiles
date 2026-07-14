@@ -10,5 +10,5 @@ msg="$*"
 
 log=$(cc_log)
 mkdir -p "$(dirname "$log")"
-printf '\033[1;33m│ why \033[0m\033[33m%s\033[0m\n' "$msg" >> "$log"
+printf '\033[1m\033[38;2;187;154;247m│ why \033[0m\033[38;2;192;202;245m%s\033[0m\n' "$msg" >> "$log"
 exit 0
