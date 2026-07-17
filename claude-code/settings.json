@@ -38,6 +38,8 @@
   },
   "verbose": true,
   "alwaysThinkingEnabled": true,
+  "showThinkingSummaries": true,
   "autoScrollEnabled": true,
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "effortLevel": "high"
 }
