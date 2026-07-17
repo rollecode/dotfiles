@@ -63,4 +63,6 @@ Claude Code has no colour token for thinking text. The documented tokens cover t
 
 ## Display settings
 
-`settings.json` also sets `verbose` and `alwaysThinkingEnabled`. Verbose is a persisted setting, not just the `Ctrl+O` toggle, so the detailed transcript, the thinking blocks and the task list are shown without pressing anything. Note that on subscription plans the API returns summarised thinking, not raw reasoning, so there is a ceiling to this no setting can lift.
+`settings.json` also sets `verbose`, `alwaysThinkingEnabled` and `showThinkingSummaries`. Verbose is a persisted setting, not just the `Ctrl+O` toggle, so full tool output is shown instead of truncated summaries. `alwaysThinkingEnabled` only governs whether the model thinks, not whether you see it: with it on but `showThinkingSummaries` absent, thinking happens invisibly, which is what made this machine look like it had no thinking at all. `showThinkingSummaries` defaults to off and is the one that puts the thinking in the conversation and the `Ctrl+O` transcript. Note that on subscription plans the API returns summarised thinking, not raw reasoning, so there is a ceiling to this no setting can lift.
+
+`effortLevel` is `high`, which is how much the model is allowed to think in the first place.
