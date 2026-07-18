@@ -41,5 +41,6 @@
   "showThinkingSummaries": true,
   "autoScrollEnabled": true,
   "tui": "fullscreen",
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "remoteControlAtStartup": true
 }
