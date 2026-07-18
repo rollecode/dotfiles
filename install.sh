@@ -570,6 +570,74 @@ setup_nvim_directories() {
 }
 
 # Setup Claude Code integration
+setup_remote_control() {
+    local settings_file="$1"
+
+    if [ ! -f "$settings_file" ]; then
+        print_info "Add '\"remoteControlAtStartup\": true' once settings.json exists"
+        return
+    fi
+
+    if grep -q '"remoteControlAtStartup"' "$settings_file"; then
+        print_success "✓ Remote Control already armed at startup"
+        return
+    fi
+
+    if ! command_exists python3; then
+        print_warning "python3 not found - add '\"remoteControlAtStartup\": true' to settings.json by hand"
+        return
+    fi
+
+    cp "$settings_file" "$settings_file.bak"
+    if python3 -c '
+import json, sys
+path = sys.argv[1]
+with open(path) as fh:
+    settings = json.load(fh)
+settings["remoteControlAtStartup"] = True
+with open(path, "w") as fh:
+    json.dump(settings, fh, indent=2)
+    fh.write("\n")
+' "$settings_file"; then
+        print_success "Remote Control armed at startup (backup: settings.json.bak)"
+    else
+        mv "$settings_file.bak" "$settings_file"
+        print_error "Could not update settings.json - restored from backup"
+    fi
+}
+
+setup_tmux() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+
+    if ! command_exists tmux; then
+        print_warning "tmux not installed - skipping tmux setup"
+        return
+    fi
+
+    mkdir -p "$HOME/.config/tmux"
+    ln -sfn "$dotfiles_dir/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
+    print_success "tmux config symlinked"
+
+    # The SSH block is bash/zsh syntax, so only append it to a shell that can read it
+    local rc
+    case "$(basename "${SHELL:-bash}")" in
+        bash) rc="$HOME/.bashrc" ;;
+        zsh) rc="$HOME/.zshrc" ;;
+        *)
+            print_warning "Login shell is not bash or zsh - port bash/ssh-auto-tmux.sh by hand"
+            return
+            ;;
+    esac
+
+    if grep -q "new-session -A -s main" "$rc" 2>/dev/null; then
+        print_success "✓ SSH auto-tmux already in $(basename "$rc")"
+    else
+        printf '\n' >> "$rc"
+        cat "$dotfiles_dir/bash/ssh-auto-tmux.sh" >> "$rc"
+        print_success "SSH auto-tmux appended to $(basename "$rc")"
+    fi
+}
+
 setup_claude_code() {
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local claude_hooks_dir="$HOME/.claude/hooks"
@@ -626,6 +694,8 @@ setup_claude_code() {
         print_info "You'll need to create it and add the hooks configuration"
         print_info "See README.md section 'Configure Claude code hooks' for details"
     fi
+
+    setup_remote_control "$settings_file"
 
     # Install conversation-saver plugin if Claude Code is available
     if command_exists claude; then
@@ -922,6 +992,8 @@ main() {
     if [[ "$setup_claude" =~ ^[Yy]$ ]]; then
         setup_claude_code
     fi
+
+    setup_tmux
 
     # Only ask about Syncthing on Linux/macOS
     if [ "$OS" = "linux" ] || [ "$OS" = "macos" ]; then
