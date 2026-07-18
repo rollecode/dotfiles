@@ -629,12 +629,16 @@ setup_tmux() {
             ;;
     esac
 
-    if grep -q "new-session -A -s main" "$rc" 2>/dev/null; then
-        print_success "✓ SSH auto-tmux already in $(basename "$rc")"
+    # Source rather than copy, so a later pull updates the behaviour too
+    if grep -q "ssh-auto-tmux.sh" "$rc" 2>/dev/null; then
+        print_success "✓ Auto-tmux already in $(basename "$rc")"
     else
-        printf '\n' >> "$rc"
-        cat "$dotfiles_dir/bash/ssh-auto-tmux.sh" >> "$rc"
-        print_success "SSH auto-tmux appended to $(basename "$rc")"
+        {
+            printf '\n# Every interactive shell runs inside tmux, so anything started here\n'
+            printf '# stays reachable from another machine.\n'
+            printf '[ -f "$HOME/Projects/dotfiles/bash/ssh-auto-tmux.sh" ] && . "$HOME/Projects/dotfiles/bash/ssh-auto-tmux.sh"\n'
+        } >> "$rc"
+        print_success "Auto-tmux sourced from $(basename "$rc")"
     fi
 }
 

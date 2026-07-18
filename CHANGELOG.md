@@ -1,3 +1,9 @@
+### 2.28.0: 2026-07-19
+
+* bash: `ssh-auto-tmux.sh` now covers local terminals, not only SSH logins. Remembering to start tmux by hand was the failure mode the whole thing was meant to remove: a Claude session left in a bare local terminal cannot be reached from anywhere, and Remote Control cannot rescue it when `ANTHROPIC_BASE_URL` is not Anthropic. SSH logins still share one session called `main`, so reconnecting lands where you left off, while each local terminal gets its own session named after the directory, deduplicated with a numeric suffix, so two windows in the same place never mirror each other. Recursion is guarded by `$TMUX`, verified against a real nested shell rather than assumed
+* tmux: the prefix is `C-a` instead of the `C-b` default, matching existing muscle memory, with `C-a a` passing a literal `C-a` through to readline's start-of-line. `prefix |` and `prefix -` split vertically and horizontally, keeping the pane's current path, since the default `%` and `"` say nothing about which way the split goes
+* install.sh: the shell block is now sourced from `bash/ssh-auto-tmux.sh` rather than copied into the rc file, so a later pull updates the behaviour instead of leaving a stale copy behind
+
 ### 2.27.0: 2026-07-19
 
 * install.sh: `setup_tmux` symlinks `tmux/tmux.conf` and appends `bash/ssh-auto-tmux.sh` to `~/.bashrc` or `~/.zshrc`, picked from `$SHELL`. A pull on a second machine previously left both files inert, since nothing wired them up. Skips when tmux is missing, skips when the block is already there, and warns instead of writing when the login shell is neither bash nor zsh, because the block is bash and zsh syntax and does not carry over to fish
