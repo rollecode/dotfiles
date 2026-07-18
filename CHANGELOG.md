@@ -1,3 +1,8 @@
+### 2.27.0: 2026-07-19
+
+* install.sh: `setup_tmux` symlinks `tmux/tmux.conf` and appends `bash/ssh-auto-tmux.sh` to `~/.bashrc` or `~/.zshrc`, picked from `$SHELL`. A pull on a second machine previously left both files inert, since nothing wired them up. Skips when tmux is missing, skips when the block is already there, and warns instead of writing when the login shell is neither bash nor zsh, because the block is bash and zsh syntax and does not carry over to fish
+* install.sh: `setup_remote_control` merges `remoteControlAtStartup` into `~/.claude/settings.json` with `python3`, keeping the existing keys and their order, and writes `settings.json.bak` first. The file cannot be symlinked because it varies per machine, so it has to be merged rather than replaced. Restores from the backup if the merge fails, and falls back to a warning when `python3` is missing
+
 ### 2.26.0: 2026-07-19
 
 * claude-code: `settings.json` sets `remoteControlAtStartup`, so every session starts with the Remote Control bridge up and can be picked up from the phone or from claude.ai/code without going back to the desktop first. Without it the bridge has to be armed per session with `/remote-control` or `--remote-control`, which is the step that always gets forgotten. Execution stays local and the connection is outbound only, so nothing listens on the machine. It does not apply to the `claudeglm`, `claudeor` and `claudeds` wrappers: Remote Control refuses to start when `ANTHROPIC_BASE_URL` points anywhere other than `api.anthropic.com`, and the transcript is held on Anthropic servers while a session is connected
