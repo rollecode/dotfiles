@@ -1,19 +1,18 @@
 ### 2.28.0: 2026-07-19
 
-* bash: `ssh-auto-tmux.sh` now covers local terminals, not only SSH logins. Remembering to start tmux by hand was the failure mode the whole thing was meant to remove: a Claude session left in a bare local terminal cannot be reached from anywhere, and Remote Control cannot rescue it when `ANTHROPIC_BASE_URL` is not Anthropic. SSH logins still share one session called `main`, so reconnecting lands where you left off, while each local terminal gets its own session named after the directory, deduplicated with a numeric suffix, so two windows in the same place never mirror each other. Recursion is guarded by `$TMUX`, verified against a real nested shell rather than assumed
-* tmux: the prefix is `C-a` instead of the `C-b` default, matching existing muscle memory, with `C-a a` passing a literal `C-a` through to readline's start-of-line. `prefix |` and `prefix -` split vertically and horizontally, keeping the pane's current path, since the default `%` and `"` say nothing about which way the split goes
-* install.sh: the shell block is now sourced from `bash/ssh-auto-tmux.sh` rather than copied into the rc file, so a later pull updates the behaviour instead of leaving a stale copy behind
+* bash: every interactive shell runs inside tmux, not only SSH logins. Local terminals get a session named after the directory, SSH shares `main`
+* tmux: prefix is `C-a`, `|` and `-` split
+* install.sh: source the shell block instead of copying it
 
 ### 2.27.0: 2026-07-19
 
-* install.sh: `setup_tmux` symlinks `tmux/tmux.conf` and appends `bash/ssh-auto-tmux.sh` to `~/.bashrc` or `~/.zshrc`, picked from `$SHELL`. A pull on a second machine previously left both files inert, since nothing wired them up. Skips when tmux is missing, skips when the block is already there, and warns instead of writing when the login shell is neither bash nor zsh, because the block is bash and zsh syntax and does not carry over to fish
-* install.sh: `setup_remote_control` merges `remoteControlAtStartup` into `~/.claude/settings.json` with `python3`, keeping the existing keys and their order, and writes `settings.json.bak` first. The file cannot be symlinked because it varies per machine, so it has to be merged rather than replaced. Restores from the backup if the merge fails, and falls back to a warning when `python3` is missing
+* install.sh: symlink `tmux/tmux.conf`, append the shell block, merge `remoteControlAtStartup` into `~/.claude/settings.json`
 
 ### 2.26.0: 2026-07-19
 
-* claude-code: `settings.json` sets `remoteControlAtStartup`, so every session starts with the Remote Control bridge up and can be picked up from the phone or from claude.ai/code without going back to the desktop first. Without it the bridge has to be armed per session with `/remote-control` or `--remote-control`, which is the step that always gets forgotten. Execution stays local and the connection is outbound only, so nothing listens on the machine. It does not apply to the `claudeglm`, `claudeor` and `claudeds` wrappers: Remote Control refuses to start when `ANTHROPIC_BASE_URL` points anywhere other than `api.anthropic.com`, and the transcript is held on Anthropic servers while a session is connected
-* tmux: add `tmux/tmux.conf`, a Tokyo Night status line with the purple accent, session name in a filled pill on the left and host plus clock on the right. Deliberately no powerline separators: the bar is read on a phone as often as on the desktop, and the mobile client has no nerd font to draw them with. Also turns on mouse mode, 1-based window numbering with `renumber-windows`, a 50k line history and `focus-events`, and binds `prefix R` to reload
-* bash: add `bash/ssh-auto-tmux.sh`, which attaches or creates a `main` tmux session on SSH logins. This is the half that covers the non-Anthropic wrappers, and it is what makes a phone session survive being backgrounded: Termius on iOS stops background activity within 20 to 30 seconds, so without a multiplexer the shell dies with the app. Guarded on an interactive SSH shell that is not already inside tmux, and deliberately not `exec`, so a broken tmux leaves a usable shell instead of locking the account out over SSH
+* claude-code: `settings.json` sets `remoteControlAtStartup`
+* tmux: add `tmux/tmux.conf`, Tokyo Night status line
+* bash: add `bash/ssh-auto-tmux.sh`, tmux session on SSH login
 
 ### 2.25.0: 2026-07-17
 
