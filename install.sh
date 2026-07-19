@@ -666,6 +666,13 @@ setup_claude_code() {
         print_success "Cross-channel context hook symlinked"
     fi
 
+    if [ -L "$claude_hooks_dir/task-list-reminder.sh" ]; then
+        print_success "✓ Found existing task list reminder hook symlink - preserving"
+    else
+        ln -sf "$dotfiles_dir/claude-code/task-list-reminder.sh" "$claude_hooks_dir/task-list-reminder.sh"
+        print_success "Task list reminder hook symlinked"
+    fi
+
     # Global instructions Claude Code reads at session start
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
     print_success "Global CLAUDE.md symlinked"
