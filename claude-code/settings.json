@@ -30,6 +30,16 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/task-list-reminder.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -42,5 +52,6 @@
   "autoScrollEnabled": true,
   "tui": "fullscreen",
   "effortLevel": "high",
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "todoFeatureEnabled": true
 }

@@ -1,3 +1,9 @@
+### 2.30.0: 2026-07-19
+
+* claude-code: add `task-list-reminder.sh`, a `UserPromptSubmit` hook that re-injects the task list rule every turn so it cannot decay mid-session
+* claude-code: `settings.json` sets `todoFeatureEnabled`
+* install.sh: symlink the new hook
+
 ### 2.29.0: 2026-07-19
 
 * tmux: `Alt+1` to `Alt+9` jump to a tab without the prefix
