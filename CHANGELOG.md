@@ -1,3 +1,7 @@
+### 2.29.0: 2026-07-19
+
+* tmux: `Alt+1` to `Alt+9` jump to a tab without the prefix
+
 ### 2.28.0: 2026-07-19
 
 * bash: every interactive shell runs inside tmux, not only SSH logins. Local terminals get a session named after the directory, SSH shares `main`
