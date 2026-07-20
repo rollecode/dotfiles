@@ -1,3 +1,7 @@
+### 2.31.2: 2026-07-20
+
+* README: point the manual Claude Code setup at `codestats-hook.py`, it still told you to symlink and configure the `.sh` name that was renamed in 2.9.6, so following the manual instructions produced the same dead hook `install.sh` used to
+
 ### 2.31.1: 2026-07-20
 
 * tmux: copy pipes straight to `pbcopy` (or `wl-copy`) where it exists, instead of trusting OSC 52. 2.31.0 verified only that tmux emits the escape sequence, never that the terminal accepts it, and when it does not it fails silently with nothing on the clipboard. OSC 52 stays as the fallback for remote hosts, where it is the only thing that can cross SSH
