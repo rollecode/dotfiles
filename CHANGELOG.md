@@ -1,3 +1,7 @@
+### 2.30.1: 2026-07-20
+
+* claude-code: `task-list-reminder.sh` is executable, without the bit the hook could not run at all
+
 ### 2.30.0: 2026-07-19
 
 * claude-code: add `task-list-reminder.sh`, a `UserPromptSubmit` hook that re-injects the task list rule every turn so it cannot decay mid-session
