@@ -18,7 +18,10 @@
 
 set -uo pipefail
 
-FF=/usr/bin/fastfetch
+# Resolve from PATH: Homebrew installs to /opt/homebrew/bin on Apple silicon and
+# /usr/local/bin on Intel, so a hardcoded /usr/bin path makes the whole script a
+# silent no-op on macOS (it exits 0 when the binary is not executable).
+FF=$(command -v fastfetch 2>/dev/null || printf '%s' /usr/bin/fastfetch)
 CFG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch"
 FULL="$CFG_DIR/full.jsonc"
 COMPACT_TPL="$CFG_DIR/compact.template.jsonc"
