@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.31.1-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.31.2-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -95,7 +95,7 @@ The install script sets up symlinks automatically. For manual setup:
 
 ```bash
 mkdir -p ~/.claude/hooks
-ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.py ~/.claude/hooks/codestats-hook.py
 ln -sf ~/Projects/dotfiles/claude-code/statusline.sh ~/.claude/statusline.sh
 ```
 
@@ -112,7 +112,7 @@ Add the following to your `~/.claude/settings.json` (this file cannot be symlink
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/codestats-hook.sh",
+            "command": "~/.claude/hooks/codestats-hook.py",
             "async": true
           }
         ]
@@ -213,7 +213,7 @@ chmod +x ~/Projects/dotfiles/claude-code/secrets.sh
 
 # Symlink the hook and status line
 mkdir -p ~/.claude/hooks
-ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.sh ~/.claude/hooks/codestats-hook.sh
+ln -sf ~/Projects/dotfiles/claude-code/codestats-hook.py ~/.claude/hooks/codestats-hook.py
 ln -sf ~/Projects/dotfiles/claude-code/statusline.sh ~/.claude/statusline.sh
 
 # Add hooks and statusLine to ~/.claude/settings.json (see above)
