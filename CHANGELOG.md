@@ -1,3 +1,10 @@
+### 2.31.0: 2026-07-20
+
+* tmux: `set-clipboard on`, so copying in tmux reaches the real system clipboard. The default `external` only forwards OSC 52 that an application inside tmux sent itself, so a mouse selection went to tmux's own paste buffer and never to the Mac, and with `mouse on` tmux owns the drag, so Cmd+C was left with nothing to copy
+* tmux: declare `*:clipboard` in `terminal-features` so OSC 52 is used whatever the outer `TERM` is, covering foot and Termius as well as WezTerm
+* tmux: `allow-passthrough on`, so a tmux inside SSH inside tmux can push its OSC 52 out through the outer tmux instead of losing it at the first hop
+* tmux: releasing a drag now copies with `copy-selection-no-clear` rather than the default `copy-pipe-and-cancel`, which exited copy-mode and snapped back to the bottom of the scrollback on every selection
+
 ### 2.30.2: 2026-07-20
 
 * bin: `fastfetch-responsive` resolves the binary from `PATH`, the hardcoded `/usr/bin/fastfetch` made the whole script exit silently on macOS where Homebrew installs elsewhere
