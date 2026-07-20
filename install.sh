@@ -356,9 +356,11 @@ setup_configs() {
     if [ "$OS" = "windows" ] || [ "$OS" = "wsl" ]; then
         NVIM_CONFIG_DIR="$HOME/AppData/Local/nvim"
         WEZTERM_CONFIG_DIR="$HOME/.config/wezterm"
+        FASTFETCH_CONFIG_DIR="$HOME/.config/fastfetch"
     else
         NVIM_CONFIG_DIR="$HOME/.config/nvim"
         WEZTERM_CONFIG_DIR="$HOME/.config/wezterm"
+        FASTFETCH_CONFIG_DIR="$HOME/.config/fastfetch"
     fi
 
     # Create .config directory if it doesn't exist
@@ -432,6 +434,26 @@ setup_configs() {
             ln -sf "$dotfiles_dir/hammerspoon" "$HOME/.hammerspoon"
             print_success "Hammerspoon config symlinked"
         fi
+    fi
+
+    # Setup fastfetch symlink
+    if [ -L "$FASTFETCH_CONFIG_DIR" ]; then
+        print_success "✓ Found existing fastfetch config symlink - preserving"
+    elif [ -d "$FASTFETCH_CONFIG_DIR" ]; then
+        print_warning "fastfetch config directory exists at $FASTFETCH_CONFIG_DIR"
+        print_info "Backup and replace with symlink? (y/N)"
+        read -r replace_fastfetch
+        if [[ "$replace_fastfetch" =~ ^[Yy]$ ]]; then
+            mv "$FASTFETCH_CONFIG_DIR" "${FASTFETCH_CONFIG_DIR}.backup.$(date +%s)"
+            ln -sfn "$dotfiles_dir/fastfetch" "$FASTFETCH_CONFIG_DIR"
+            print_success "fastfetch config symlinked (old config backed up)"
+        else
+            print_info "Skipping fastfetch config"
+        fi
+    else
+        mkdir -p "$(dirname "$FASTFETCH_CONFIG_DIR")"
+        ln -sfn "$dotfiles_dir/fastfetch" "$FASTFETCH_CONFIG_DIR"
+        print_success "fastfetch config symlinked"
     fi
 
     # Setup Neovim directories for plugins (fixes treesitter installation issues)
@@ -618,10 +640,18 @@ setup_tmux() {
     ln -sfn "$dotfiles_dir/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
     print_success "tmux config symlinked"
 
-    # The SSH block is bash/zsh syntax, so only append it to a shell that can read it
+    # The SSH block is bash/zsh syntax, so only append it to a shell that can read it.
+    # macOS terminals start login shells, which read .bash_profile and never .bashrc,
+    # so on macOS the block has to go there or it simply never runs.
     local rc
     case "$(basename "${SHELL:-bash}")" in
-        bash) rc="$HOME/.bashrc" ;;
+        bash)
+            if [ "$OS" = "macos" ]; then
+                rc="$HOME/.bash_profile"
+            else
+                rc="$HOME/.bashrc"
+            fi
+            ;;
         zsh) rc="$HOME/.zshrc" ;;
         *)
             print_warning "Login shell is not bash or zsh - port bash/ssh-auto-tmux.sh by hand"
@@ -651,13 +681,12 @@ setup_claude_code() {
     # Create hooks directory
     mkdir -p "$claude_hooks_dir"
 
-    # Setup hook symlinks
-    if [ -L "$claude_hooks_dir/codestats-hook.sh" ]; then
-        print_success "✓ Found existing Claude Code hook symlink - preserving"
-    else
-        ln -sf "$dotfiles_dir/claude-code/codestats-hook.sh" "$claude_hooks_dir/codestats-hook.sh"
-        print_success "Claude Code hook symlinked"
-    fi
+    # Setup hook symlinks. The hook became codestats-hook.py in 2.9.6, so clear
+    # the old .sh link: a "preserve if it is a symlink" check treats a dangling
+    # one as fine, which is how installs kept a dead hook and silently lost XP.
+    rm -f "$claude_hooks_dir/codestats-hook.sh"
+    ln -sfn "$dotfiles_dir/claude-code/codestats-hook.py" "$claude_hooks_dir/codestats-hook.py"
+    print_success "Claude Code hook symlinked"
 
     if [ -L "$claude_hooks_dir/update-cross-channel-context.sh" ]; then
         print_success "✓ Found existing cross-channel context hook symlink - preserving"
@@ -694,7 +723,7 @@ setup_claude_code() {
     # Check if settings.json needs updating
     local settings_file="$HOME/.claude/settings.json"
     if [ -f "$settings_file" ]; then
-        if grep -q "codestats-hook.sh" "$settings_file"; then
+        if grep -q "codestats-hook.py" "$settings_file"; then
             print_success "✓ Found existing Claude Code settings.json - already configured"
         else
             print_warning "Please add the hooks configuration to ~/.claude/settings.json"
