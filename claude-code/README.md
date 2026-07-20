@@ -1,6 +1,6 @@
 # claude-code
 
-Claude Code configuration: a Code::Stats integration, a Tokyo Night theme, and the global instructions Claude reads at session start.
+Claude Code configuration: a Code::Stats integration, a destructive command guard, a Tokyo Night theme, and the global instructions Claude reads at session start.
 
 ## Code::Stats
 
@@ -24,6 +24,7 @@ If the file's extension isn't in the table, the hook drops the event silently wi
 ## Files
 
 * `codestats-hook.py`, the hook script, pure stdlib Python 3.9+
+* `require-permission-destructive.sh`, the destructive command guard, with `-test.sh` and `.cases.txt` alongside it
 * `secrets.sh.example`, copy to `secrets.sh` and fill in `CODESTATS_API_KEY`, or set the env var directly
 * `settings.json`, Claude Code settings template registering the hook
 
@@ -40,6 +41,25 @@ ln -s "$(pwd)/codestats-hook.py" ~/.claude/hooks/codestats-hook.py
 
 4. Merge the snippet from `settings.json` into your `~/.claude/settings.json`
 5. Edit a `.py` or `.ts` file with Claude, `tail -f ~/.claude/codestats-hook.log` should show a pulse entry
+
+## Destructive command guard
+
+`require-permission-destructive.sh` is a `PreToolUse` hook that inspects every Bash command before it runs. Auto mode already screens destructive actions, but it does so with an LLM classifier, so the same command can be allowed once and blocked the next time. This hook is the deterministic floor under that: it never varies, and unlike `permissions.deny` rules it still applies in `bypassPermissions`.
+
+Denied outright, because there is nothing to undo:
+
+* recursive `rm` aimed at `/`, `~`, `$HOME`, `/home/<user>`, `/usr`, `/etc` and friends, and any `--no-preserve-root`
+* `mkfs`, `wipefs`, `fdisk`, `parted`, `dd of=/dev/*`, redirects into a block device
+* `DROP DATABASE|SCHEMA|TABLE`, `TRUNCATE TABLE`, `DELETE FROM` with no `WHERE`, `dropdb`, `FLUSHALL`, `wp db reset`, `drush sql-drop`, `artisan migrate:fresh`
+* `tmux kill-*`, `screen -X quit`, `systemctl stop|restart` on `user@`/`session-`/a display manager, `loginctl terminate-*`, `reboot`
+
+Prompted, because the work is recoverable or the intent is often real: force and delete pushes, `reset --hard`, `clean -fd`, `branch -D`, `stash drop`, recursive `chown`/`chmod` on a system root.
+
+Everything else passes untouched, so `rm -rf node_modules`, `DELETE ... WHERE id = 3` and `git push` keep running at full auto mode speed. The SQL rules only fire when a database client is present in the command, so grepping a migration for `DROP TABLE` is not mistaken for running it.
+
+It matches on the command string, so a command assembled at runtime (`$(echo rm) -rf /`) gets through. It guards against accidents and classifier misses, not against someone trying to defeat it.
+
+`./require-permission-destructive-test.sh` runs the cases in `require-permission-destructive.cases.txt` and asserts each one's decision.
 
 ## Adding a new language
 

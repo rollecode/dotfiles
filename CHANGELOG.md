@@ -1,3 +1,12 @@
+### 2.32.0: 2026-07-20
+
+* claude-code: add `require-permission-destructive.sh`, a `PreToolUse` hook that hard-blocks commands with nothing to undo. Auto mode already screens for these, but it screens with an LLM classifier, so the same command can be allowed once and blocked the next time. The hook does not vary, and unlike `permissions.deny` rules it still applies in `bypassPermissions`
+* claude-code: the guard denies recursive `rm` at `/`, `~`, `$HOME`, `/home/<user>` and the system directories, `--no-preserve-root`, `mkfs`, `wipefs`, `dd of=/dev/*`, `DROP DATABASE|SCHEMA|TABLE`, `TRUNCATE TABLE`, `DELETE FROM` with no `WHERE`, `wp db reset`, `drush sql-drop`, `artisan migrate:fresh`, `tmux kill-*`, `systemctl stop` on the session units and `reboot`
+* claude-code: force and delete pushes, `reset --hard`, `clean -fd`, `branch -D` and `stash drop` prompt rather than block, since the work is recoverable and the intent is often real
+* claude-code: `rm -rf node_modules`, `DELETE ... WHERE`, `git push` and the rest pass untouched, so auto mode keeps its speed. The SQL rules only fire when a database client is in the command, so grepping a migration for `DROP TABLE` is not read as running it
+* claude-code: add `require-permission-destructive-test.sh` and a 48 case fixture asserting each deny, ask and pass decision
+* install.sh: symlink the guard hook into `~/.claude/hooks`
+
 ### 2.31.2: 2026-07-20
 
 * README: point the manual Claude Code setup at `codestats-hook.py`, it still told you to symlink and configure the `.sh` name that was renamed in 2.9.6, so following the manual instructions produced the same dead hook `install.sh` used to
