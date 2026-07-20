@@ -1,3 +1,10 @@
+### 2.31.1: 2026-07-20
+
+* tmux: copy pipes straight to `pbcopy` (or `wl-copy`) where it exists, instead of trusting OSC 52. 2.31.0 verified only that tmux emits the escape sequence, never that the terminal accepts it, and when it does not it fails silently with nothing on the clipboard. OSC 52 stays as the fallback for remote hosts, where it is the only thing that can cross SSH
+* tmux: drag now ends in `copy-pipe-and-cancel`, so copy-mode exits on release. 2.31.0 used `copy-selection-no-clear`, which held copy-mode open, parked a `[0/25]` position indicator in the corner and turned every following keypress into a copy-mode command
+* tmux: right click pastes the system clipboard, replacing the default right-click menu
+* tmux: `y` in copy-mode copies to the system clipboard too
+
 ### 2.31.0: 2026-07-20
 
 * tmux: `set-clipboard on`, so copying in tmux reaches the real system clipboard. The default `external` only forwards OSC 52 that an application inside tmux sent itself, so a mouse selection went to tmux's own paste buffer and never to the Mac, and with `mouse on` tmux owns the drag, so Cmd+C was left with nothing to copy
