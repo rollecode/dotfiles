@@ -1,0 +1,48 @@
+deny	rm -rf /
+deny	rm -rf /*
+deny	sudo rm -rf /usr
+deny	rm -rf ~
+deny	rm -rf $HOME
+deny	rm -rf /home/someuser
+deny	rm -rf --no-preserve-root /
+deny	mkfs.ext4 /dev/sda1
+deny	dd if=x of=/dev/sda
+deny	mysql -e 'DROP DATABASE wp'
+deny	psql -c 'TRUNCATE TABLE users'
+deny	mysql -e 'delete from posts'
+deny	sqlite3 app.db 'DROP TABLE users'
+deny	mongosh --eval 'db.dropDatabase()'
+deny	wp db reset --yes
+deny	redis-cli FLUSHALL
+deny	php artisan migrate:fresh
+deny	tmux kill-server
+deny	systemctl stop user@1000.service
+deny	reboot
+ask	git push --force origin master
+ask	git reset --hard HEAD~3
+ask	git clean -fd
+ask	git branch -D old
+ask	git stash drop
+pass	rm -rf node_modules
+pass	rm -rf build dist
+pass	rm foo.txt
+pass	rm -rf ./tmp
+pass	rm -rf /tmp/scratch/x
+pass	rm -rf $HOME/Projects/x/node_modules
+pass	npm run build
+pass	docker run --rm alpine
+pass	git status
+pass	git push origin master
+pass	psql -c 'select * from users'
+pass	mysql -e 'delete from posts where id=3'
+pass	grep -rn form .
+pass	systemctl status nginx
+pass	systemctl --user restart driftwm
+pass	find . -name '*.log' -delete
+pass	git commit -m 'reform parser'
+pass	cargo build --release
+pass	grep -oiE '(drop database|truncate table|delete from)' notes.txt
+pass	rg 'DROP TABLE' migrations/
+pass	cat db/migrations/003_drop_table_users.sql
+pass	echo "DROP DATABASE would be bad"
+pass	ls migrations/ | grep truncate

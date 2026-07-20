@@ -695,6 +695,9 @@ setup_claude_code() {
         print_success "Cross-channel context hook symlinked"
     fi
 
+    ln -sfn "$dotfiles_dir/claude-code/require-permission-destructive.sh" "$claude_hooks_dir/require-permission-destructive.sh"
+    print_success "Destructive command guard hook symlinked"
+
     if [ -L "$claude_hooks_dir/task-list-reminder.sh" ]; then
         print_success "✓ Found existing task list reminder hook symlink - preserving"
     else
