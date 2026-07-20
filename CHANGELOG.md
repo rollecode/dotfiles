@@ -1,3 +1,9 @@
+### 2.30.2: 2026-07-20
+
+* bin: `fastfetch-responsive` resolves the binary from `PATH`, the hardcoded `/usr/bin/fastfetch` made the whole script exit silently on macOS where Homebrew installs elsewhere
+* bin: `fastfetch-responsive` and `dms-fade-lock-patcher.sh` are executable, neither could be run as shipped
+* claude-code: record the executable bit for `update-cross-channel-context.sh`, a fresh clone got a `Stop` hook that could not run
+
 ### 2.30.1: 2026-07-20
 
 * claude-code: `task-list-reminder.sh` is executable, without the bit the hook could not run at all
