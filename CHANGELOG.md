@@ -1,6 +1,9 @@
 ### 2.30.1: 2026-07-20
 
 * claude-code: `task-list-reminder.sh` is executable, without the bit the hook could not run at all
+* install.sh: symlink `codestats-hook.py`, the hook was renamed in 2.9.6 and installs kept a dangling `codestats-hook.sh` that silently dropped Code::Stats XP
+* install.sh: symlink `fastfetch/` to `~/.config/fastfetch`, the configs shipped in 2.18.0 but nothing ever linked them
+* install.sh: append the auto-tmux block to `.bash_profile` on macOS, where terminals start login shells that never read `.bashrc`
 
 ### 2.30.0: 2026-07-19
 
