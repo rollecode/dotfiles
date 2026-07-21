@@ -64,6 +64,8 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - Always form tasks with the task tools (TaskCreate/TaskUpdate) for any multi-step or multi-request work, in FIFO order as given. Small enough to finish, specific enough to verify
 - Exactly one task in progress at a time; complete it before starting the next
 - Always print the current task list in the response whenever it changes (created, started, completed), so it's visible without pressing CTRL+T
+- The CTRL+T list is the source of truth and MUST be present and current at all times. Every request that arrives mid-session becomes a task the moment it arrives - never let work exist only in chat, and never let a finished item sit unmarked
+- If the task tools are unavailable (their MCP server disconnected mid-session, so TaskCreate/TaskUpdate vanish and ToolSearch finds nothing), do NOT just fall back to a list in chat and carry on. The list lives on disk at `~/.claude/tasks/<session-id>/<id>.json`, one JSON file per task with `id`, `subject`, `description`, `activeForm`, `status` (`pending` / `in_progress` / `completed`), `blocks`, `blockedBy`. Back the directory up, then write those files directly so CTRL+T is accurate again, and say that is what happened. A stale CTRL+T list is a bug to fix, not a limitation to report
 
 ## Explaining changes
 
