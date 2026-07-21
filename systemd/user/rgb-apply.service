@@ -1,0 +1,20 @@
+[Unit]
+Description=Apply NZXT case, Kraken and RAM lighting (Quantum Realm purple flow)
+After=graphical-session.target
+# Also re-run on wake: the controllers lose their lighting state on suspend.
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.local/bin/rgb-apply.sh
+# The script waits up to 30s for the USB controllers; if it still cannot find
+# them (cold boot, slow hub) let systemd try a few more times.
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=5
+
+[Install]
+WantedBy=default.target
+WantedBy=suspend.target

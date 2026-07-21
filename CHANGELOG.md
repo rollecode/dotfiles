@@ -1,3 +1,10 @@
+### 2.33.0: 2026-07-21
+
+* Add `bin/rgb-apply.sh`, `bin/rgb-shine.sh` and `rgb-apply.service`: NZXT case strip, AER RGB 2 fans, Kraken X3 pump head and Corsair RGB DIMMs all driven from Linux in the driftwm Quantum Realm purples, reapplied on boot and on wake. liquidctl handles the NZXT gear, OpenRGB the RAM
+* The colours are deliberately saturated with the green channel near zero. LEDs emit where a screen reflects, so a pale theme tint like the DMS accent `#BC9AFA` renders as dim dirty white on an LED
+* `rgb-shine.sh` puts a static bright spot on one side of each fan ring using `super-fixed`, the only mode with per-LED colour. `SHINE_PEAK` rotates it, `RGB_SHINE=0 rgb-apply.sh` restores the flowing fans
+* Requires the `nzxt_smart2` and `nzxt_kraken3` kernel modules to stay blacklisted and OpenRGB's NZXT detectors disabled; both fight liquidctl for the devices. Full write-up lives in the Obsidian vault, not here, since it is machine specific
+
 ### 2.32.1: 2026-07-21
 
 * fastfetch: wait for the real terminal size before building the compact view. At SSH login the PTY starts at the 80x24 default and Termius sends the actual window size a beat later, so the banner was sized for 80 columns and wrapped on a 63-column phone, which looked like the full view had leaked onto mobile. It now polls the tty size until it leaves that default, capped at about 600ms, and assumes a phone width if the resize never arrives, so the worst case is short values rather than a wrapped mess
