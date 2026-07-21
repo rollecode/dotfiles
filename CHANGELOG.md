@@ -1,3 +1,7 @@
+### 2.32.1: 2026-07-21
+
+* fastfetch: wait for the real terminal size before building the compact view. At SSH login the PTY starts at the 80x24 default and Termius sends the actual window size a beat later, so the banner was sized for 80 columns and wrapped on a 63-column phone, which looked like the full view had leaked onto mobile. It now polls the tty size until it leaves that default, capped at about 600ms, and assumes a phone width if the resize never arrives, so the worst case is short values rather than a wrapped mess
+
 ### 2.32.0: 2026-07-20
 
 * claude-code: add `require-permission-destructive.sh`, a `PreToolUse` hook that hard-blocks commands with nothing to undo. Auto mode already screens for these, but it screens with an LLM classifier, so the same command can be allowed once and blocked the next time. The hook does not vary, and unlike `permissions.deny` rules it still applies in `bypassPermissions`
