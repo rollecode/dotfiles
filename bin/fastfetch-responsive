@@ -33,6 +33,7 @@ GEN="$CACHE_DIR/compact.jsonc"
 LOGO_OVERHEAD=52
 MIN_W=8
 MAX_W=40
+COMPACT_FALLBACK_COLS=63   # assumed phone width when the login resize never lands
 
 # Never break a login shell: any missing piece falls back to plain fastfetch.
 [ -x "$FF" ] || exit 0
@@ -45,11 +46,26 @@ fi
 
 [ -r "$COMPACT_TPL" ] || exec "$FF" "$@"
 
-cols=${COLUMNS:-0}
-if ! [ "$cols" -gt 0 ] 2>/dev/null; then
-    cols=$(tput cols 2>/dev/null || echo 80)
-fi
+# At SSH login the PTY starts at the 80x24 default and the client (Termius)
+# sends the real window size a beat later. Sizing the compact view before that
+# arrives builds it for 80 cols, so it wraps on the narrower phone and looks
+# like the full view leaked in. Poll the real tty size until it leaves the
+# 80x24 default, capped at ~600ms so a genuine 80-col terminal is not stalled.
+read_size() { stty size </dev/tty 2>/dev/null; }
+sz=$(read_size); rows=${sz%% *}; cols=${sz##* }
+i=0
+while [ "${rows:-0}" = 24 ] && [ "${cols:-0}" = 80 ] && [ "$i" -lt 30 ]; do
+    command sleep 0.02 2>/dev/null || break
+    sz=$(read_size); rows=${sz%% *}; cols=${sz##* }
+    i=$((i + 1))
+done
+case "${cols:-}" in ''|*[!0-9]*) cols=80 ;; esac
 [ "$cols" -gt 0 ] 2>/dev/null || cols=80
+# If the size never left the 80x24 login default, the resize simply never came
+# in time. A real phone is never exactly 80x24, so treat it as "unknown, narrow"
+# and size for a typical phone rather than render 80-wide lines that would wrap.
+# Worst case is over-short values on a slow first connect, never a wrapped mess.
+[ "${rows:-0}" = 24 ] && [ "$cols" = 80 ] && cols=$COMPACT_FALLBACK_COLS
 
 # The real Arch logo is always shown. Width only decides how hard the values
 # are truncated so they sit beside the logo without wrapping.
