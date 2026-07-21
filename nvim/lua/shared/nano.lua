@@ -467,6 +467,14 @@ local function keymaps()
     { MOVE, '<C-v>', page_down, 'Page down' },
     { MOVE, '<C-d>', function() feed('<Del>') end, 'Delete char' },
 
+    -- Delete word left. Ctrl+Backspace arrives as <C-BS> under the kitty keyboard
+    -- protocol and as 0x08 (<C-H>) without it, so both are claimed; plain Backspace
+    -- is 0x7f here (foot and tmux both report kbs=^?), so <C-H> cannot shadow it.
+    -- feed() is noremap, so <C-w> is vim's builtin, not nano's 'Where is'.
+    { 'i', '<C-BS>', function() feed('<C-w>') end, 'Delete word left' },
+    { 'i', '<C-h>', function() feed('<C-w>') end, 'Delete word left' },
+    { 'i', '<M-BS>', function() feed('<C-w>') end, 'Delete word left' },
+
     -- Misc
     { MOVE, '<C-j>', function() vim.cmd('normal! gqap') end, 'Justify' },
     { A, '<C-c>', M.position, 'Where am I' },
