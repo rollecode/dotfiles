@@ -1,3 +1,9 @@
+### 2.34.0: 2026-07-22
+
+* nvim: Ctrl+Backspace deletes the word left of the cursor in nano mode. Terminals disagree on how they encode it, so both spellings are claimed: `<C-BS>` when the kitty keyboard protocol is in play, `<C-H>` (0x08) when it is not. `<M-BS>` is mapped too, since that is nano's own binding for the same thing
+* nvim: claiming `<C-H>` is safe here because plain Backspace arrives as 0x7f, which foot and tmux both report as `kbs=^?`. On a terminal that sends 0x08 for Backspace instead, this would eat a word where a character was meant
+* nvim: the deletion feeds `<C-w>` through `feed()`, which is noremap, so it reaches vim's builtin rather than nano's own `<C-w>` binding for Where is
+
 ### 2.33.0: 2026-07-21
 
 * Add `bin/rgb-apply.sh`, `bin/rgb-shine.sh` and `rgb-apply.service`: NZXT case strip, AER RGB 2 fans, Kraken X3 pump head and Corsair RGB DIMMs all driven from Linux in the driftwm Quantum Realm purples, reapplied on boot and on wake. liquidctl handles the NZXT gear, OpenRGB the RAM
