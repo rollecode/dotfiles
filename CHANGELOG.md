@@ -81,6 +81,12 @@
 * tmux: add `tmux/tmux.conf`, Tokyo Night status line
 * bash: add `bash/ssh-auto-tmux.sh`, tmux session on SSH login
 
+### 2.26.0: 2026-07-22
+
+* driftwm: mirror the boot-safety tooling: `driftwm-preflight` (rolls back a bad binary or config at boot), `driftwm-rebuild` (refuses to install a build missing local patches or one the config cannot parse) and the systemd drop-ins (config guard, DMS display pin, hot corners migration shim)
+* driftwm: realm shader no-white grade: additive peaks compress through a soft knee into the violet family, so pulses read as light violet and nothing clips to screaming white; core and black hole palettes moved into purple, deep purple and bluish tones
+* driftwm: config mirror refreshed (hot corners staged, animate_blur_fps drives the frost alone)
+
 ### 2.25.0: 2026-07-17
 
 * claude-code: `settings.json` sets `showThinkingSummaries` and `effortLevel: high`. `verbose` and `alwaysThinkingEnabled` were already here but never made thinking visible on their own: `alwaysThinkingEnabled` only decides whether the model thinks, and `showThinkingSummaries` defaults to off, so the thinking was happening and never being shown. It is the setting that puts thinking in the conversation and in the `Ctrl+O` transcript

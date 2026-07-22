@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# Validate that the installed driftwm can parse the live config before the
+# compositor starts, and roll back to the last known-good pair if it cannot.
+#
+# Why this exists: driftwm discards the entire config on a single unknown
+# field and silently falls back to built-in defaults. That reads as "the
+# desktop reset itself" (default dot-grid background, default keybinds) and
+# takes every autostart entry with it, including DMS. It stays invisible
+# until a reboot, because a running compositor keeps the config it already
+# parsed.
+#
+# Both halves can break it, so both are snapshotted:
+#   bad config + good binary  -> a typo or a new key
+#   good config + wrong binary -> a rebuild from a branch missing a feature
+#                                 the config uses (this is what broke on
+#                                 16.7.2026: a build from feat/vrr had no
+#                                 animate_fps, so [background] was rejected)
+#
+# Never exits non-zero: a broken guard must not be the thing that stops the
+# session from starting.
+
+set -uo pipefail
+
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/driftwm/config.toml"
+GOOD_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/driftwm-known-good"
+GOOD_CONFIG="$GOOD_DIR/config.toml"
+GOOD_BIN="$GOOD_DIR/driftwm"
+BIN="$(command -v driftwm 2>/dev/null || echo /usr/local/bin/driftwm)"
+
+log() { echo "driftwm-preflight: $*" | systemd-cat -t driftwm-preflight -p "${2:-info}" 2>/dev/null || echo "driftwm-preflight: $*" >&2; }
+
+notify() {
+  # Best effort: the compositor is not up yet, so this usually lands once a
+  # notification daemon appears. Logging above is the reliable channel.
+  command -v notify-send >/dev/null 2>&1 && notify-send -u critical "driftwm config guard" "$1" 2>/dev/null || true
+}
+
+# driftwm prints "Config OK" and exits 0 even when it rejected the config and
+# fell back to defaults, so the ERROR line is the only reliable signal.
+config_is_valid() {
+  local out
+  out="$("$1" --check-config 2>&1)" || true
+  ! grep -q "ERROR" <<<"$out"
+}
+
+mkdir -p "$GOOD_DIR"
+
+if [ ! -x "$BIN" ]; then
+  log "no driftwm binary found at $BIN, nothing to validate" err
+  exit 0
+fi
+
+if config_is_valid "$BIN"; then
+  # Snapshot this working pair. Only copy the 90MB binary when it actually
+  # changed, otherwise every boot rewrites it for nothing.
+  cp -f "$CONFIG" "$GOOD_CONFIG" 2>/dev/null || true
+  if [ ! -f "$GOOD_BIN" ] || ! cmp -s "$BIN" "$GOOD_BIN"; then
+    cp -f "$BIN" "$GOOD_BIN" 2>/dev/null || true
+    log "config OK, snapshotted new known-good binary"
+  fi
+  exit 0
+fi
+
+log "config REJECTED by $BIN, driftwm would fall back to defaults" err
+
+# Step 1: assume the config regressed. Skip this entirely when the live config
+# already matches the known-good one: an unchanged config cannot be what
+# broke, and swapping it would save a perfectly good file as ".rejected".
+if [ -f "$GOOD_CONFIG" ] && ! cmp -s "$CONFIG" "$GOOD_CONFIG"; then
+  cp -f "$CONFIG" "$CONFIG.rejected-$(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
+  cp -f "$GOOD_CONFIG" "$CONFIG" 2>/dev/null || true
+  if config_is_valid "$BIN"; then
+    log "recovered: restored last known-good config (bad one saved as .rejected-*)" warning
+    notify "Your driftwm config was rejected and has been rolled back to the last working one. The rejected copy is saved next to it."
+    exit 0
+  fi
+  # The config was not the culprit after all. Put the user's own file back so
+  # step 2 fixes the binary without silently reverting their edits.
+  cp -f "$CONFIG.rejected-"* "$CONFIG" 2>/dev/null || true
+fi
+
+# Step 2: the config is not the problem, the binary is. Put the known-good
+# binary back. This is the case that actually bit on 16.7.2026.
+if [ -f "$GOOD_BIN" ]; then
+  if config_is_valid "$GOOD_BIN"; then
+    if sudo -n install -Dm755 "$GOOD_BIN" "$BIN" 2>/dev/null; then
+      log "recovered: rolled back driftwm binary to the last known-good build" warning
+      notify "The installed driftwm build could not read your config. Rolled back to the last working build."
+      exit 0
+    fi
+    log "known-good binary would work but could not install it (needs passwordless sudo)" err
+    notify "driftwm build is incompatible with your config. Run: sudo install -Dm755 $GOOD_BIN $BIN"
+  fi
+fi
+
+log "could not auto-recover: neither known-good config nor binary parses" err
+notify "driftwm config is broken and auto-recovery failed. Desktop will start with DEFAULT settings."
+exit 0
