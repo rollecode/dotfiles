@@ -157,17 +157,17 @@ void main() {
                 float halo = exp(-rd * rd * 5.0) * amp * (1.0 - smoothstep(0.52, 0.72, rd));
                 float ch = hash(rcp + 223.3);
                 vec3 coreCol =
-                    ch < 0.40 ? vec3(1.00, 0.85, 0.96) :
-                    ch < 0.72 ? vec3(0.75, 0.88, 1.00) :
-                    ch < 0.92 ? vec3(0.88, 0.80, 1.00) :
-                                vec3(0.62, 0.95, 0.92);
+                    ch < 0.40 ? vec3(0.82, 0.58, 0.92) :
+                    ch < 0.72 ? vec3(0.55, 0.64, 0.98) :
+                    ch < 0.92 ? vec3(0.70, 0.58, 0.96) :
+                                vec3(0.48, 0.72, 0.80);
                 vec3 haloCol =
                     ch < 0.40 ? vec3(0.85, 0.35, 0.70) :
                     ch < 0.72 ? vec3(0.25, 0.45, 0.95) :
                     ch < 0.92 ? vec3(0.55, 0.35, 0.90) :
                                 vec3(0.18, 0.55, 0.60);
                 float breathe = 0.9 + 0.1 * sin(t * 0.22 + hash(rcp + 229.7) * 6.2831);
-                col += coreCol * core * 1.15 * breathe * (0.55 + 0.45 * pow(max(f2, 0.0), 1.1));
+                col += coreCol * core * 0.95 * breathe * (0.55 + 0.45 * pow(max(f2, 0.0), 1.1));
                 col += haloCol * halo * 0.60 * breathe * (0.40 + 0.60 * pow(max(f2, 0.0), 1.3));
             }
         }
@@ -200,13 +200,13 @@ void main() {
                     float dopp = 0.45 + 0.55 * dot(gdir, rdir);
                     float clump = 0.80 + 0.28 * sin(ang * 3.0 - t * 0.40 + hash(gcp + 411.3) * 6.2831)
                                        * sin(ang * 5.0 + t * 0.23);
-                    vec3 ringCol = mix(vec3(1.00, 0.62, 0.25), vec3(1.00, 0.93, 0.80), ring * dopp);
+                    vec3 ringCol = mix(vec3(0.62, 0.40, 0.95), vec3(0.80, 0.68, 1.00), ring * dopp);
                     col += ringCol * ring * dopp * clump * 1.6;
                     // Photon ring: hairline of light hugging the horizon.
                     float phD = gd - gr * 1.04;
-                    col += vec3(1.0, 0.95, 0.88) * exp(-phD * phD / (gr * gr * 0.0016)) * 0.9;
+                    col += vec3(0.78, 0.68, 1.00) * exp(-phD * phD / (gr * gr * 0.0016)) * 0.8;
                     // Warm haze bleeding off the disc.
-                    col += vec3(0.95, 0.55, 0.30) * exp(-ringD * ringD / (gr * gr * 0.55)) * 0.16 * clump;
+                    col += vec3(0.55, 0.38, 0.85) * exp(-ringD * ringD / (gr * gr * 0.55)) * 0.16 * clump;
                     // Event horizon: pure black, swallows everything.
                     float hole = 1.0 - smoothstep(gr * 0.80, gr * 0.98, gd);
                     col = mix(col, vec3(0.0), hole);
@@ -380,6 +380,17 @@ void main() {
     float wisp = pow(max(f3, 0.0), 6.0);
     float veil = wisp > 0.35 ? 0.35 : wisp;
     col = col * (1.0 - veil * 0.30) + vec3(0.62, 0.55, 0.85) * veil * 0.22;
+
+    // No-white grade: additive stacking used to clip to white. Peaks now
+    // compress through a soft knee and slide into the violet family, so
+    // pulses read as light violet, never full white.
+    float peak = max(col.r, max(col.g, col.b));
+    if (peak > 0.72) {
+        float over = peak - 0.72;
+        float comp = 0.72 + over / (1.0 + over * 2.2);
+        float slide = clamp(over * 1.4, 0.0, 0.75);
+        col = mix(col * (comp / peak), vec3(0.74, 0.62, 1.00) * comp, slide);
+    }
 
     // Anti-banding dither.
     col += (hash(screenPx * 0.7231) - 0.5) * 0.008;

@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# Rebuild the patched driftwm and install it only if it can still read the
+# live config.
+#
+# Why this exists: /usr/local/bin/driftwm is a hand-built binary that shadows
+# the packaged /usr/bin/driftwm. Building it from a branch that lacks a config
+# feature (animate_fps, animate_blur, ...) produces a binary that rejects the
+# whole config and silently falls back to defaults. Nothing catches that at
+# build time, and a running compositor keeps working off the config it already
+# parsed, so the breakage only surfaces at the next reboot.
+#
+# Usage: driftwm-rebuild [branch]     (default: the pinned branch below)
+
+set -uo pipefail
+
+REPO="$HOME/Projects/driftwm-patched"
+# The branch carrying the local patch stack the config depends on. feat/vrr is
+# NOT it: it lacks animate_fps/animate_blur and broke the desktop on 16.7.2026.
+PINNED_BRANCH="local-stack"
+BRANCH="${1:-$PINNED_BRANCH}"
+TARGET="/usr/local/bin/driftwm"
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/driftwm/config.toml"
+
+die() { echo "driftwm-rebuild: $*" >&2; exit 1; }
+
+cd "$REPO" || die "no repo at $REPO"
+
+if [ -n "$(git status --porcelain)" ]; then
+  die "working tree is dirty, commit or stash first"
+fi
+
+# Restore the original checkout on any exit, success or refusal — a refused
+# build must not leave the repo parked on the tested branch.
+ORIG_BRANCH="$(git branch --show-current)"
+restore_branch() {
+  [ -n "$ORIG_BRANCH" ] && [ "$(git branch --show-current)" != "$ORIG_BRANCH" ] \
+    && git checkout -q "$ORIG_BRANCH" 2>/dev/null
+}
+trap restore_branch EXIT
+
+echo "==> building $BRANCH"
+git checkout "$BRANCH" >/dev/null 2>&1 || die "cannot checkout $BRANCH"
+cargo build --release || die "build failed, nothing installed"
+
+NEW="$REPO/target/release/driftwm"
+[ -x "$NEW" ] || die "no binary produced"
+
+# Local patches that must exist in the built source. A botched rebase that
+# drops one would still parse the config fine, so the config gate alone
+# cannot catch it; this can. Marker -> file, all greppable.
+echo "==> checking local patches are present"
+MISSING=""
+check_marker() {
+  grep -q "$1" "$REPO/$2" 2>/dev/null || MISSING="$MISSING $3"
+}
+check_marker "occluded_by_lower" "src/render/blur.rs" "blur-overlap-fix(#219)"
+check_marker "animate_paused" "src/config/toml.rs" "animate_paused"
+check_marker "let nested" "src/main.rs" "nested-env-gate"
+check_marker "check_hot_corners" "src/state/mod.rs" "hot-corners"
+if [ -n "$MISSING" ]; then
+  echo "REFUSING TO INSTALL: built source is missing local patches:$MISSING" >&2
+  echo "A rebase likely dropped them. The existing $TARGET is untouched." >&2
+  exit 1
+fi
+
+# The gate. driftwm prints "Config OK" and exits 0 even when it rejected the
+# config, so the ERROR line is the only reliable signal.
+echo "==> checking the new binary against $CONFIG"
+if "$NEW" --check-config 2>&1 | grep -q "ERROR"; then
+  echo
+  echo "REFUSING TO INSTALL: this build cannot parse your config." >&2
+  echo "The offending field(s):" >&2
+  "$NEW" --check-config 2>&1 | grep -A4 "ERROR" >&2
+  echo >&2
+  echo "Branch '$BRANCH' is probably missing a patch the config uses." >&2
+  echo "The existing $TARGET has been left untouched." >&2
+  exit 1
+fi
+
+echo "==> config parses, installing"
+sudo install -Dm755 "$NEW" "$TARGET" || die "install failed"
+
+# Refresh the known-good snapshot that driftwm-preflight rolls back to.
+GOOD_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/driftwm-known-good"
+mkdir -p "$GOOD_DIR"
+cp -f "$TARGET" "$GOOD_DIR/driftwm"
+cp -f "$CONFIG" "$GOOD_DIR/config.toml"
+
+echo "==> installed $(git log --oneline -1)"
+echo "==> known-good snapshot refreshed"
+echo
+echo "Restart the compositor to pick it up (this ends your session):"
+echo "  systemctl --user restart driftwm.service"

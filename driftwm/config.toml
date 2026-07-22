@@ -104,8 +104,8 @@ cache_budget_mb = 512
 # Realm frame cap (our animate_fps patch, timer-driven ticks): the realm
 # computes 30 steady frames/s, the compositor reuses composited frames
 # between ticks. Camera moves lift the cap for full-rate smooth panning.
-animate_fps = 30
-animate_paused = false
+animate_fps = 1
+animate_paused = true
 
 [keybindings]
 # Core binds (override driftwm defaults where they collide).
@@ -235,9 +235,3 @@ decoration = "minimal"
 [[window_rules]]
 app_id = "chrome-*app-Default"
 decoration = "minimal"
-
-[hot_corners]
-# Compositor-side: overlays cannot occlude the trigger (the DMS plugin could
-# not close the launcher because its own overlay ate the corner's events).
-top_right = "spawn dms ipc call spotlight toggle"
-bottom_right = "zoom-to-fit"
