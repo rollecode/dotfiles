@@ -86,6 +86,10 @@
 * claude-code: `settings.json` sets `showThinkingSummaries` and `effortLevel: high`. `verbose` and `alwaysThinkingEnabled` were already here but never made thinking visible on their own: `alwaysThinkingEnabled` only decides whether the model thinks, and `showThinkingSummaries` defaults to off, so the thinking was happening and never being shown. It is the setting that puts thinking in the conversation and in the `Ctrl+O` transcript
 * claude-code: document in `claude-code/README.md` which of the three settings does what, since the split between thinking and showing thinking is the whole reason this looked broken
 
+### 2.25.0: 2026-07-22
+
+* driftwm: add `[hot_corners]` to the config: top right toggles the launcher, bottom right fits all windows. Compositor-side detection, so shell overlays cannot occlude the triggers
+
 ### 2.24.1: 2026-07-15
 
 * fastfetch: the banner is now the full view everywhere by default, on the local terminal and over SSH alike, and the compact phone view is opt-in. Picking compact for any SSH session was wrong: the desktop is reached over SSH too, and Termius identifies itself with nothing but a bare `xterm-256color`, indistinguishable from a desktop SSH client, so desktop SSH sessions were being shrunk. The phone now asks for the compact view by exporting `FASTFETCH_VIEW=compact` (set once in Termius; sshd here accepts it via an `AcceptEnv FASTFETCH_VIEW` drop-in). Nothing on the desktop sets it, so a desktop session, local or SSH, is never shrunk
