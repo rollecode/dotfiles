@@ -12,9 +12,11 @@ MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
 # OpenRouter are billed by OpenRouter so their quota APIs do not apply, hence excluded.
 IS_GLM=0
 IS_DEEPSEEK=0
+IS_OR=0
 case "$MODEL" in
   glm-*)      IS_GLM=1 ;;
   deepseek-*) IS_DEEPSEEK=1 ;;
+  */*)        IS_OR=1 ;;     # provider/model prefix = OpenRouter
 esac
 
 # Prettify custom (non-Anthropic) model ids like "glm-5.2[1m]" or "z-ai/glm-5.2[1m]"
@@ -184,7 +186,28 @@ elif [ "$IS_DEEPSEEK" = 1 ] && [ -s "$HOME/.config/crush/deepseek-key" ]; then
     fi
     if [ -s "$CACHE" ]; then
         DOLLARS=$(jq -r '.balance_infos[0].total_balance // empty' "$CACHE" 2>/dev/null)
-        [ -n "$DOLLARS" ] && printf "${PURPLE}\$%s${RESET} ${DIM}balance${RESET}\n" "$DOLLARS"
+        [ -n "$DOLLARS" ] && LC_NUMERIC=C printf "${PURPLE}\$%s${RESET} ${DIM}balance${RESET}\n" "$DOLLARS"
+    fi
+elif [ "$IS_OR" = 1 ] && [ -s "$HOME/.config/crush/openrouter-key" ]; then
+    # OpenRouter monthly credit usage (GET /api/v1/auth/key). Cached + background-refreshed.
+    OR_KEY_FILE="$HOME/.config/crush/openrouter-key"
+    CACHE="/tmp/or-credits.json"
+    LOCK="/tmp/or-credits.lock"
+    TTL=60
+    now=$(date +%s)
+    lock_age=$TTL
+    [ -f "$LOCK" ] && lock_age=$(( now - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) ))
+    if [ "$lock_age" -ge "$TTL" ]; then
+        touch "$LOCK"
+        ( curl -s --max-time 8 "https://openrouter.ai/api/v1/auth/key" \
+            -H "Authorization: Bearer $(cat "$OR_KEY_FILE")" \
+            -o "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE" ) >/dev/null 2>&1 &
+        disown 2>/dev/null
+    fi
+    if [ -s "$CACHE" ]; then
+        USED=$(jq -r '.data.usage // empty' "$CACHE" 2>/dev/null)
+        LIMIT=$(jq -r '.data.limit // empty' "$CACHE" 2>/dev/null)
+        [ -n "$USED" ] && [ -n "$LIMIT" ] && awk -v u="$USED" -v l="$LIMIT" 'BEGIN{printf "'"${PURPLE}"'$%.2f'"${RESET}"' '"${DIM}"'/ $%.0f this month'"${RESET}"'\n", u, l}'
     fi
 else
     FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')

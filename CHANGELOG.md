@@ -1,3 +1,7 @@
+### 2.37.0: 2026-07-26
+
+* Add OpenRouter credit usage to status line: on OR-routed models (provider/model slug) shows monthly usage vs. limit ($X.XX / $Y this month) from /api/v1/auth/key
+
 ### 2.36.0: 2026-07-26
 
 * Add MiniMax model label prettification to status line: `minimax-*` ids render as `MiniMax M3` etc, routed through OpenRouter's Anthropic Skin like other non-native providers
