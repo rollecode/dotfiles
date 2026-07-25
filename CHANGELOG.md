@@ -1,3 +1,7 @@
+### 2.36.0: 2026-07-26
+
+* Add MiniMax model label prettification to status line: `minimax-*` ids render as `MiniMax M3` etc, routed through OpenRouter's Anthropic Skin like other non-native providers
+
 ### 2.35.0: 2026-07-26
 
 * Add Gemini model label prettification to the status line: bare `gemini-*` ids render as `Gemini 3.1 Pro Preview` and `Gemini 3.1 Flash Lite` with proper capitalization of suffix words (lite → Lite, preview → Preview)
