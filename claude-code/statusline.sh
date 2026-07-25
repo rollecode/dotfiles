@@ -32,12 +32,15 @@ if [[ "$MODEL" != *" "* ]]; then     # only reformat raw ids, never pretty Anthr
     kimi-*)     MODEL="Kimi ${MODEL#kimi-}" ;;
     grok-*)     MODEL="Grok ${MODEL#grok-}" ;;
     qwen*)      MODEL="Qwen ${MODEL#qwen}" ;;
+    gemini-*)   MODEL="Gemini ${MODEL#gemini-}" ;;
   esac
   MODEL="${MODEL//-/ }"              # remaining dashes to spaces
   MODEL="${MODEL/ air/ Air}"
   MODEL="${MODEL/ turbo/ Turbo}"
   MODEL="${MODEL/ pro/ Pro}"
   MODEL="${MODEL/ flash/ Flash}"
+  MODEL="${MODEL/ lite/ Lite}"
+  MODEL="${MODEL/ preview/ Preview}"
   MODEL="${MODEL/ non reasoning/ Non-Reasoning}"
   MODEL="${MODEL/ multi agent/ Multi-Agent}"
 fi
