@@ -1,3 +1,7 @@
+### 2.35.0: 2026-07-26
+
+* Add Gemini model label prettification to the status line: bare `gemini-*` ids render as `Gemini 3.1 Pro Preview` and `Gemini 3.1 Flash Lite` with proper capitalization of suffix words (lite → Lite, preview → Preview)
+
 ### 2.34.0: 2026-07-22
 
 * nvim: Ctrl+Backspace deletes the word left of the cursor in nano mode. Terminals disagree on how they encode it, so both spellings are claimed: `<C-BS>` when the kitty keyboard protocol is in play, `<C-H>` (0x08) when it is not. `<M-BS>` is mapped too, since that is nano's own binding for the same thing
