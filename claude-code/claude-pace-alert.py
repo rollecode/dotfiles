@@ -49,8 +49,14 @@ def fmt_dur(seconds):
 
 
 def pretty_model(mid):
-    return (str(mid).replace("[1m]", "").replace("claude-", "")
-            .replace("-", " ").strip())
+    """claude-opus-5[1m] -> Opus 5. The blunt version produced "opus 5"."""
+    m = str(mid).replace("[1m]", "").split("/")[-1]
+    parts = [p for p in m.split("-") if p and p != "claude"]
+    if parts and len(parts[-1]) == 8 and parts[-1].isdigit():
+        parts = parts[:-1]
+    if not parts:
+        return m
+    return (parts[0].capitalize() + " " + ".".join(parts[1:])).strip()
 
 
 def read_state():
@@ -114,12 +120,21 @@ def build_message(c):
         "on_pace": "*Claude Code weekly usage budget* - back on pace",
     }.get(verdict, "*Claude Code weekly usage budget*")
 
+    d = c["pace_delta_pp"]
     L = [head, ""]
-    L.append(f"Used *{w:.0f}%* of the weekly limit, *{el:.0f}%* of the week gone "
-             f"({c['pace_delta_pp']:+.0f}pp). Resets in {fmt_dur(c['reset_in_s'])}.")
+    # "4% used, 9% gone" side by side read as a contradiction, so each figure
+    # names what it measures and the comparison is words, not "pp".
+    L.append(f"Limit spent: *{w:.0f}%* of this week's allowance")
+    L.append(f"Time gone: *{el:.0f}%* of the week (resets in {fmt_dur(c['reset_in_s'])})")
+    if d < -1:
+        L.append(f"You are spending slower than the clock, by {abs(d):.0f} points.")
+    elif d > 1:
+        L.append(f"You are spending faster than the clock, by {d:.0f} points.")
+    else:
+        L.append("Your spending is tracking the clock almost exactly.")
     L.append("")
-    L.append(f"Budget for the rest of today: *{today:.0f}%* more, "
-             f"ending near {c['today_target_total_pct']:.0f}%.")
+    L.append(f"Today you can spend about *{today:.0f}%* more, "
+             f"ending the day near {c['today_target_total_pct']:.0f}%.")
 
     models = (c.get("burn") or {}).get("models") or {}
     if models and today > 0:
@@ -131,12 +146,16 @@ def build_message(c):
             L.append("That is roughly " + ", or ".join(bits) + ".")
 
     if c.get("critical") and c.get("exhaust_ts"):
-        gone_in = c["exhaust_ts"] - time.time()
-        early = c["reset_ts"] - c["exhaust_ts"]
+        early = c.get("exhaust_early_by_s") or 0
         L.append("")
-        L.append(f"At this rate the weekly limit is gone in *{fmt_dur(gone_in)}*, "
-                 f"about {fmt_dur(early)} before the reset. Move routine work to a "
+        L.append(f"At this rate it runs out *{fmt_dur(early)} before the reset*, "
+                 f"which is days without Claude Code. Move routine work to a "
                  f"cheaper model.")
+    elif c.get("on_target") and c.get("exhaust_ts"):
+        early = c.get("exhaust_early_by_s") or 0
+        L.append("")
+        L.append(f"At this rate it runs out about {fmt_dur(early)} before the reset. "
+                 f"That is the target, keep going.")
     elif c.get("projected_end_pct") is not None and c["projected_end_pct"] < 90:
         L.append("")
         L.append(f"On this trajectory the week ends at only "

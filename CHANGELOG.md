@@ -1,3 +1,10 @@
+### 2.39.0: 2026-07-26
+
+* Make the pace message readable. "Used 4% of the weekly limit, 9% of the week gone" put two percentages of two different things side by side with no labels, so it read as a contradiction rather than as spending against a clock. Every figure now names what it measures (allowance spent versus time passed) and the comparison is stated in words, with "pp" dropped everywhere as jargon
+* Fix the at-risk threshold, which fired on a week that was comfortably behind pace. Running out 19 hours before the reset is the target, not a risk, but anything more than 12 hours early was flagged critical and advised switching to a cheaper model - the exact opposite of the right call. Critical now means more than two days early, and a new on-target band says plainly when the projection lands close to the reset
+* Show the in-session notice to the user instead of only to the model. The hook emitted `hookSpecificOutput.additionalContext`, which never reaches the terminal, so whether the pace was ever seen depended on the model choosing to mention it. It now emits the documented `systemMessage` field alongside the context, so the line is displayed and the model still gets the detail
+* Fix model names rendering as "opus 5" in pushed alerts
+
 ### 2.38.0: 2026-07-26
 
 * Add Claude Code weekly-limit pace tracking, so the Max x20 allowance can be spent almost exactly by the Sunday 04:00 reset instead of running dry on Thursday or finishing the week far under. The plan's live 5-hour and 7-day utilisation is only handed to the status line (`.rate_limits` on its stdin payload), so `usage-pace-record.sh` captures it from there into a ledger at `~/.claude/usage-pace.jsonl`, appending only on a change or a 10-minute heartbeat
