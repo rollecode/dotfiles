@@ -30,11 +30,33 @@ INTERVAL_URGENT_S = 45 * 60
 URGENT = {"ahead", "at_risk"}
 
 
-def emit(text):
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "UserPromptSubmit",
-        "additionalContext": text,
-    }}))
+def fmt_dur(seconds):
+    seconds = max(0, int(seconds))
+    d, rem = divmod(seconds, 86400)
+    h, rem = divmod(rem, 3600)
+    m = rem // 60
+    if d:
+        return f"{d}d {h}h"
+    if h:
+        return f"{h}h {m}m"
+    return f"{m}m"
+
+
+def emit(visible, context):
+    """Show the user a line AND give the model the detail.
+
+    `additionalContext` alone was invisible: it only reaches the model's context,
+    so whether Rolle ever saw his own pace depended on the model choosing to
+    mention it, which it mostly did not. `systemMessage` is the documented field
+    that is actually displayed to the user, and the two can be combined.
+    """
+    print(json.dumps({
+        "systemMessage": visible,
+        "hookSpecificOutput": {
+            "hookEventName": "UserPromptSubmit",
+            "additionalContext": context,
+        },
+    }))
 
 
 def read_state():
@@ -95,15 +117,35 @@ def main():
 
     w = c["weekly_used_pct"]
     el = c["week_elapsed_pct"]
-    reset_in_h = c["reset_in_s"] / 3600.0
     today = c["today_budget_pct"]
+    d = c["pace_delta_pp"]
+
+    if d < -1:
+        rel = f"spending {abs(d):.0f} points slower than the clock"
+    elif d > 1:
+        rel = f"spending {d:.0f} points faster than the clock"
+    else:
+        rel = "tracking the clock almost exactly"
+
+    label = {"behind": "room to spend", "ahead": "ease off",
+             "at_risk": "runs dry early at this rate",
+             "on_pace": "on track"}.get(verdict, verdict)
+
+    # Each percentage says what it measures: "4% used, 9% gone" side by side
+    # read as a contradiction.
+    visible = (f"Claude Code weekly budget ({label}): spent {w:.0f}% of the limit, "
+               f"{el:.0f}% of the week has passed, {rel}. "
+               f"Today you can spend ~{today:.0f}% more "
+               f"(ending near {c['today_target_total_pct']:.0f}%). "
+               f"Resets in {fmt_dur(c['reset_in_s'])}.")
 
     bits = [
         f"CLAUDE CODE WEEKLY PACE ({verdict.replace('_', ' ')}): "
-        f"{w:.0f}% of the weekly limit used, {el:.0f}% of the week elapsed "
-        f"({c['pace_delta_pp']:+.0f}pp).",
-        f"Resets in {reset_in_h:.0f}h. Budget for the rest of today: about {today:.0f}% "
-        f"more (aim to end the day near {c['today_target_total_pct']:.0f}%).",
+        f"{w:.0f}% of the weekly ALLOWANCE spent, {el:.0f}% of the week's TIME gone, "
+        f"so {rel}.",
+        f"Resets in {fmt_dur(c['reset_in_s'])}. Budget for the rest of today: about "
+        f"{today:.0f}% more (aim to end the day near "
+        f"{c['today_target_total_pct']:.0f}%).",
     ]
 
     models = c.get("burn", {}).get("models") or {}
@@ -136,7 +178,7 @@ def main():
     bits.append("Mention this to Rolle only if it is useful or he asks; do not "
                 "derail the current task for it.")
 
-    emit(" ".join(bits))
+    emit(visible, " ".join(bits))
     write_state({"last_shown_ts": now, "last_verdict": verdict})
     return 0
 

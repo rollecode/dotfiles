@@ -44,6 +44,10 @@ ACTIVE_GAP_S = 1800
 # Minimum accumulated active time before a rate is trustworthy enough to quote.
 MIN_DT_OVERALL_S = 1800
 MIN_DT_MODEL_S = 3600
+# How early the allowance has to run out before it counts as a real problem.
+# Two days early costs real working days; a few hours early is the target.
+CRITICAL_EARLY_S = 48 * 3600
+ON_TARGET_EARLY_S = 24 * 3600
 # The usage day rolls at the same hour the week resets, which also keeps
 # after-midnight work attributed to the evening it belongs to.
 DAY_ROLL_HOUR = 4
@@ -286,8 +290,14 @@ def compute():
     else:
         verdict = "on_pace"
 
-    # Running out before the reset is the failure mode worth shouting about.
-    critical = bool(exhaust_ts and exhaust_ts < wr - 12 * 3600)
+    # Running dry EARLY is the failure, and "early" has to mean early enough to
+    # actually cost days. Landing within a day of the reset is the target, not a
+    # problem: a 12h margin once flagged a week that was comfortably behind pace
+    # as at risk and told him to switch to a cheaper model, which was the exact
+    # opposite of the right advice.
+    early_by_s = (wr - exhaust_ts) if exhaust_ts else None
+    critical = bool(early_by_s is not None and early_by_s > CRITICAL_EARLY_S)
+    on_target = bool(early_by_s is not None and 0 <= early_by_s <= ON_TARGET_EARLY_S)
 
     # Cumulative position and current rate can disagree: sitting comfortably
     # behind for the week while burning fast enough today to still run dry on
@@ -306,6 +316,8 @@ def compute():
         "pace_ratio": ratio,
         "current_model": latest.get("model"),
         "critical": critical,
+        "on_target": on_target,
+        "exhaust_early_by_s": early_by_s,
         "stale_reset": stale_reset,
         "reset_ts": wr,
         "reset_in_s": max(0, wr - now),
@@ -369,13 +381,21 @@ def render(c, oneline=False):
             "on_pace": "ON pace"}[verdict]
     L.append(f"Claude Code weekly limit: {head}")
     L.append("")
-    ratio_bit = ""
-    if c.get("pace_ratio"):
-        ratio_bit = f" That is {c['pace_ratio'] * 100:.0f}% of the expected pace."
-    L.append(f"Used {w:.0f}% of the weekly limit and {el:.0f}% of the week has passed "
-             f"({d:+.1f}pp against the clock).{ratio_bit}")
-    L.append(f"Resets {fmt_when(c['reset_ts'])}, {fmt_dur(c['reset_in_s'])} from now. "
-             f"{c['remaining_pct']:.0f}% left to spend.")
+    # Two percentages measuring two different things, sat next to each other
+    # unlabelled ("4% used, 9% gone"), read as a contradiction. Each one now
+    # says what it measures, and the comparison is spelled out in words instead
+    # of as "pp", which meant nothing to anyone reading it in a hurry.
+    L.append(f"Limit spent: {w:.0f}% of this week's allowance "
+             f"({c['remaining_pct']:.0f}% still unspent).")
+    L.append(f"Time gone:   {el:.0f}% of the week. It resets {fmt_when(c['reset_ts'])}, "
+             f"in {fmt_dur(c['reset_in_s'])}.")
+    if d < -1:
+        L.append(f"You are spending SLOWER than the clock, by {abs(d):.0f} points. "
+                 f"That is headroom, not a saving.")
+    elif d > 1:
+        L.append(f"You are spending FASTER than the clock, by {d:.0f} points.")
+    else:
+        L.append("Your spending is tracking the clock almost exactly.")
 
     if c["stale_reset"]:
         L.append("Note: the last recorded sample is older than the current reset, "
@@ -403,9 +423,14 @@ def render(c, oneline=False):
             L.append("Not enough per-model history yet to split that into "
                      "per-model hours; the figure above is across all models.")
         if c["critical"] and c["exhaust_ts"]:
-            L.append(f"WARNING: at this rate you hit 100% {fmt_when(c['exhaust_ts'])}, "
-                     f"which is {fmt_dur(c['reset_ts'] - c['exhaust_ts'])} before the reset. "
-                     f"Slow down or move routine work to a cheaper model.")
+            L.append(f"WARNING: at this rate the allowance runs out "
+                     f"{fmt_when(c['exhaust_ts'])}, "
+                     f"{fmt_dur(c['exhaust_early_by_s'])} before the reset. That is days "
+                     f"without Claude Code. Move routine work to a cheaper model.")
+        elif c.get("on_target") and c["exhaust_ts"]:
+            L.append(f"At this rate it runs out {fmt_when(c['exhaust_ts'])}, only "
+                     f"{fmt_dur(c['exhaust_early_by_s'])} before the reset. That is exactly "
+                     f"the target, keep going.")
         elif c.get("projected_end_pct") is not None:
             p_end = c["projected_end_pct"]
             if p_end >= 97:
