@@ -1,3 +1,14 @@
+### 2.38.0: 2026-07-26
+
+* Add Claude Code weekly-limit pace tracking, so the Max x20 allowance can be spent almost exactly by the Sunday 04:00 reset instead of running dry on Thursday or finishing the week far under. The plan's live 5-hour and 7-day utilisation is only handed to the status line (`.rate_limits` on its stdin payload), so `usage-pace-record.sh` captures it from there into a ledger at `~/.claude/usage-pace.jsonl`, appending only on a change or a 10-minute heartbeat
+* Add `claude-pace.py`, which turns that ledger into a verdict: behind, on pace, ahead, or at risk. It derives the week window from the plan's own `resets_at` rather than hardcoding a weekday, so it stays correct if the anchor moves. Burn rates are measured per model from the ledger instead of assuming price multipliers, and stay unquoted until there is enough active time to be honest about them
+* Weight today's budget by the hours actually worked, taken from `hourCounts` in `stats-cache.json`. A flat split across wall-clock hours reserves quota for hours spent asleep
+* Convert the burn rate into calendar time using observed active hours per day. Projecting a per-active-hour rate as if the next 24 hours were all working hours predicted running dry almost immediately and produced a report that said "use it freely" directly above its own exhaustion warning
+* Report underspend as a first-class failure: when the projection lands past the reset it now says how much of a paid-for allowance the week is on track to waste, rather than calling it "close to the reset"
+* Surface it in two places. A `UserPromptSubmit` hook (`claude-pace-notice.py`) injects the pace into the session, speaking on a slow interval but immediately when the verdict changes. `claude-pace-alert.py` pushes escalations straight into nanoclaw's IPC queue, which reaches Telegram in about a second with no container spawn and no model call, driven from the recorder so it fires the moment the percentage moves
+* Publish the verdict to `~/.claude/pace/` via a `claude-pace-export` systemd user timer, so pace stays current while no session is open. Being idle on a Tuesday is exactly when "you are behind" is worth hearing
+* Add `test-claude-pace.py`, covering a fresh week, Thursday burnout, per-model hours, the reset boundary, exact-on-pace and a missing ledger
+
 ### 2.37.0: 2026-07-26
 
 * Add OpenRouter credit usage to status line: on OR-routed models (provider/model slug) shows monthly usage vs. limit ($X.XX / $Y this month) from /api/v1/auth/key

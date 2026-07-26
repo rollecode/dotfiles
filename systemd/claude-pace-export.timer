@@ -1,0 +1,15 @@
+[Unit]
+Description=Refresh Claude Code pace report every 10 minutes
+Documentation=https://github.com/rollecode/dotfiles
+
+[Timer]
+# Pace drifts with the clock, not only with usage, so this has to keep running
+# while no session is open. That idle Tuesday is exactly when "you are behind"
+# is worth hearing.
+OnBootSec=2min
+OnUnitActiveSec=10min
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

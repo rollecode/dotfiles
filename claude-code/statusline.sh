@@ -3,6 +3,9 @@
 # Shows: Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
 
 input=$(cat)
+# Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
+# slow disk can never stall the status line, and silent so it can never corrupt it.
+( printf '%s' "$input" | "$HOME/.claude/usage-pace-record.sh" >/dev/null 2>&1 & ) 2>/dev/null
 
 # Extract session data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
