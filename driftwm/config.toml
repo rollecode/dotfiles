@@ -243,5 +243,6 @@ decoration = "minimal"
 [hot_corners]
 # Compositor-side: overlays cannot occlude the trigger (the DMS plugin could
 # not close the launcher because its own overlay ate the corner's events).
-top_right = "spawn dms ipc call spotlight toggle"
-bottom_right = "zoom-to-fit"
+top_right = "zoom-to-fit"
+bottom_left = "spawn dms ipc call spotlight toggle"
+bottom_right = "cycle-windows forward"

@@ -98,6 +98,11 @@
 
 * install.sh: symlink `tmux/tmux.conf`, append the shell block, merge `remoteControlAtStartup` into `~/.claude/settings.json`
 
+### 2.27.0: 2026-07-26
+
+* driftwm: hot corners take a list of actions and alternate between them on each entry, restarting at the first after ten seconds untouched
+* driftwm: corner mapping is now top right fit all then cycle windows, bottom left the launcher, bottom right cycle windows
+
 ### 2.26.2: 2026-07-26
 
 * driftwm: mirror the live `[hot_corners]` config now that the migration shim has folded it in
