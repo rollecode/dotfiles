@@ -30,16 +30,34 @@ INTERVAL_URGENT_S = 45 * 60
 URGENT = {"ahead", "at_risk"}
 
 
+def _plural(n, word):
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
 def fmt_dur(seconds):
+    """Durations in full words: "6 days 8 hours", not "6d 8h"."""
     seconds = max(0, int(seconds))
     d, rem = divmod(seconds, 86400)
     h, rem = divmod(rem, 3600)
     m = rem // 60
     if d:
-        return f"{d}d {h}h"
+        return _plural(d, "day") + (" " + _plural(h, "hour") if h else "")
     if h:
-        return f"{h}h {m}m"
-    return f"{m}m"
+        return _plural(h, "hour") + (" " + _plural(m, "minute") if m else "")
+    return _plural(m, "minute")
+
+
+def fmt_hours(hours):
+    """Working hours rounded to 5 minutes and written out, never "1.0h"."""
+    total_m = int(round((hours * 60) / 5.0) * 5)
+    if total_m <= 0:
+        return "under 5 minutes"
+    h, m = divmod(total_m, 60)
+    if h and m:
+        return _plural(h, "hour") + " " + _plural(m, "minute")
+    if h:
+        return _plural(h, "hour")
+    return _plural(m, "minute")
 
 
 def emit(visible, context):
@@ -155,7 +173,7 @@ def main():
             r = info["rate"]
             if r > 0:
                 name = mid.replace("claude-", "").replace("-", " ").replace("[1m]", "").strip()
-                pretty.append(f"~{today / r:.1f}h of {name}")
+                pretty.append(f"about {fmt_hours(today / r)} of {name}")
         if pretty:
             bits.append("That is roughly " + ", or ".join(pretty) + " at your measured burn rates.")
 

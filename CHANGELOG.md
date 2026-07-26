@@ -1,3 +1,8 @@
+### 2.40.0: 2026-07-26
+
+* Fix the burn rate reading about six times too high, which made an hour of Opus 5 look like the whole day's budget. Concurrent sessions report slightly different roundings of the same weekly percentage, so the raw series flickers 4,5,4,5,4,5 around a boundary; summing per-pair deltas kept every +1 and discarded every -1, counting one real 1% step three times. Usage never falls inside a window, so the series is now forced non-decreasing with a running maximum before anything is measured. On the live ledger that took Opus 5 from 5.84% to 1.27% per hour, against a ground truth of 0.97% per hour including idle time
+* Write durations in full words everywhere: "1 hour", "2 hours", "3 hours 45 minutes", "6 days 8 hours". No "1.0h", no "6d 8h", and singular and plural handled separately so "hour(s)" never appears. Working spans round to the nearest five minutes rather than pretending to be precise
+
 ### 2.39.0: 2026-07-26
 
 * Make the pace message readable. "Used 4% of the weekly limit, 9% of the week gone" put two percentages of two different things side by side with no labels, so it read as a contradiction rather than as spending against a clock. Every figure now names what it measures (allowance spent versus time passed) and the comparison is stated in words, with "pp" dropped everywhere as jargon

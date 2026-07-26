@@ -162,6 +162,25 @@ def burn_rates(rows, week_start, now):
     recent_dw = recent_dt = 0.0
     recent_cutoff = now - 6 * 3600
 
+    # Force the weekly percentage to be non-decreasing before measuring.
+    # Concurrent sessions report slightly different roundings of the same
+    # figure, so the raw series flickers 4,5,4,5,4,5 around a boundary. Summing
+    # per-pair deltas then counted one real 1% step three times (every +1 kept,
+    # every -1 discarded) and inflated the rate roughly six-fold. Real usage
+    # never falls inside a window, so a running maximum is the true signal.
+    rows = list(rows)
+    peak = None
+    normalised = []
+    for r in rows:
+        w = r.get("w")
+        if w is None:
+            normalised.append(r)
+            continue
+        if peak is None or w > peak or r.get("ts", 0) < week_start:
+            peak = w
+        normalised.append({**r, "w": peak})
+    rows = normalised
+
     prev = None
     for r in rows:
         ts = r.get("ts")
@@ -205,16 +224,37 @@ def burn_rates(rows, week_start, now):
     }
 
 
+def _plural(n, word):
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
 def fmt_dur(seconds):
+    """Durations in full words: "6 days 8 hours", not "6d 8h"."""
     seconds = max(0, int(seconds))
     d, rem = divmod(seconds, 86400)
     h, rem = divmod(rem, 3600)
     m = rem // 60
     if d:
-        return f"{d}d {h}h"
+        return _plural(d, "day") + (" " + _plural(h, "hour") if h else "")
     if h:
-        return f"{h}h {m}m"
-    return f"{m}m"
+        return _plural(h, "hour") + (" " + _plural(m, "minute") if m else "")
+    return _plural(m, "minute")
+
+
+def fmt_hours(hours):
+    """A span of working hours, rounded to 5 minutes and written out.
+
+    "1.0h" was both ugly and falsely precise; whole hours should read "1 hour".
+    """
+    total_m = int(round((hours * 60) / 5.0) * 5)
+    if total_m <= 0:
+        return "under 5 minutes"
+    h, m = divmod(total_m, 60)
+    if h and m:
+        return _plural(h, "hour") + " " + _plural(m, "minute")
+    if h:
+        return _plural(h, "hour")
+    return _plural(m, "minute")
 
 
 def fmt_when(ts):
@@ -409,7 +449,8 @@ def render(c, oneline=False):
     rate = c["burn_rate_used"]
     if rate:
         L.append(f"Recent burn: {rate:.2f}% per hour of active work "
-                 f"(you average {c['active_hours_per_day']:.1f} active hours a day).")
+                 f"(you average {fmt_hours(c['active_hours_per_day'])} of active work "
+                 f"a day).")
         mh = model_hours(c)
         if mh:
             bits = []
@@ -417,7 +458,8 @@ def render(c, oneline=False):
                 if hours is None:
                     bits.append(f"{name} (no measurable burn yet)")
                 else:
-                    bits.append(f"{hours:.1f}h of {name} ({r:.2f}%/h)")
+                    bits.append(f"{fmt_hours(hours)} of {name} "
+                                f"({r:.2f}% per hour)")
             L.append("Today's budget is worth roughly: " + ", or ".join(bits) + ".")
         else:
             L.append("Not enough per-model history yet to split that into "
@@ -443,8 +485,9 @@ def render(c, oneline=False):
                          f"model or take on more.")
     else:
         n = c["samples"]
-        L.append(f"Burn rate not measurable yet ({c['burn']['overall_active_hours']:.1f}h "
-                 f"of active work recorded, {n} sample{'' if n == 1 else 's'}). "
+        L.append(f"Burn rate not measurable yet "
+                 f"({fmt_hours(c['burn']['overall_active_hours'])} of active work "
+                 f"recorded, {n} sample{'' if n == 1 else 's'}). "
                  f"It sharpens as the ledger fills, then this line becomes "
                  f"per-model hours.")
 
