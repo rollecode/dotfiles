@@ -24,11 +24,27 @@ HOME = os.path.expanduser("~")
 PACE_PY = os.path.join(HOME, ".claude", "claude-pace.py")
 STATE = os.path.join(HOME, ".claude", "pace", "alert-state.json")
 
-IPC_DIR = os.environ.get(
-    "CLAUDE_PACE_IPC_DIR",
-    os.path.join(HOME, "Projects", "nanoclaw", "data", "ipc", "telegram_main", "messages"),
+# Where to push, and to whom. This repo is public, so no chat id or private
+# project path is baked in: it comes from the environment or from a local,
+# gitignored config file. With neither configured the alert simply does not
+# push, and the in-session notice still works.
+CONFIG = os.environ.get(
+    "CLAUDE_PACE_CONFIG",
+    os.path.join(HOME, ".config", "claude-pace", "config.json"),
 )
-CHAT_JID = os.environ.get("CLAUDE_PACE_CHAT_JID", "tg:25957634")
+
+
+def _config():
+    try:
+        with open(CONFIG, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+_cfg = _config()
+IPC_DIR = os.environ.get("CLAUDE_PACE_IPC_DIR") or _cfg.get("ipc_dir") or ""
+CHAT_JID = os.environ.get("CLAUDE_PACE_CHAT_JID") or _cfg.get("chat_jid") or ""
 
 # Never re-alert the same state inside this window, even on a fresh escalation,
 # so a percentage flapping on a boundary cannot machine-gun the chat.
@@ -98,7 +114,7 @@ def write_state(st):
 
 def push(text):
     """Hand the message to nanoclaw's IPC watcher via an atomic rename."""
-    if not os.path.isdir(IPC_DIR):
+    if not IPC_DIR or not CHAT_JID or not os.path.isdir(IPC_DIR):
         return False
     payload = {"type": "message", "chatJid": CHAT_JID, "text": text}
     name = f"pace-{int(time.time())}-{uuid.uuid4().hex[:6]}.json"

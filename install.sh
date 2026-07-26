@@ -711,6 +711,15 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/claude-pace.py" "$HOME/.claude/claude-pace.py"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace-export.sh" "$HOME/.claude/claude-pace-export.sh"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace-notice.py" "$claude_hooks_dir/claude-pace-notice.py"
+    # Pace alerting needs a chat id and a private IPC path. Those stay OUT of
+    # this public repo, so seed a local config from the example on first run.
+    if [ ! -f "$HOME/.config/claude-pace/config.json" ]; then
+        mkdir -p "$HOME/.config/claude-pace"
+        cp "$dotfiles_dir/claude-code/claude-pace-config.example.json" \
+           "$HOME/.config/claude-pace/config.json"
+        chmod 600 "$HOME/.config/claude-pace/config.json"
+        print_warning "Edit ~/.config/claude-pace/config.json to enable pace alerts in chat"
+    fi
     mkdir -p "$HOME/.config/systemd/user"
     ln -sfn "$dotfiles_dir/systemd/claude-pace-export.service" "$HOME/.config/systemd/user/claude-pace-export.service"
     ln -sfn "$dotfiles_dir/systemd/claude-pace-export.timer" "$HOME/.config/systemd/user/claude-pace-export.timer"
