@@ -98,6 +98,10 @@
 
 * install.sh: symlink `tmux/tmux.conf`, append the shell block, merge `remoteControlAtStartup` into `~/.claude/settings.json`
 
+### 2.26.2: 2026-07-26
+
+* driftwm: mirror the live `[hot_corners]` config now that the migration shim has folded it in
+
 ### 2.26.1: 2026-07-26
 
 * driftwm: shift the realm's core and peak tints further from blue toward violet
