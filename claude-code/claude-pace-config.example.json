@@ -1,0 +1,5 @@
+{
+  "_comment": "Copy to ~/.config/claude-pace/config.json. Kept out of this public repo because it names a private project path and a personal chat id. Without it the pace alert simply does not push; the in-session notice is unaffected.",
+  "ipc_dir": "/home/YOU/Projects/nanoclaw/data/ipc/YOUR_GROUP/messages",
+  "chat_jid": "tg:000000000"
+}

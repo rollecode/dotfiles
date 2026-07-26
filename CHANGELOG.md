@@ -1,3 +1,7 @@
+### 2.40.1: 2026-07-26
+
+* Keep the personal chat id and the private project path out of this public repo. The pace alerter had them as hardcoded defaults; they now come from `~/.config/claude-pace/config.json` (gitignored by living outside the repo, mode 600) or the environment, with a committed example file. With neither configured the alert simply does not push and the in-session notice is unaffected
+
 ### 2.40.0: 2026-07-26
 
 * Fix the burn rate reading about six times too high, which made an hour of Opus 5 look like the whole day's budget. Concurrent sessions report slightly different roundings of the same weekly percentage, so the raw series flickers 4,5,4,5,4,5 around a boundary; summing per-pair deltas kept every +1 and discarded every -1, counting one real 1% step three times. Usage never falls inside a window, so the series is now forced non-decreasing with a running maximum before anything is measured. On the live ledger that took Opus 5 from 5.84% to 1.27% per hour, against a ground truth of 0.97% per hour including idle time
