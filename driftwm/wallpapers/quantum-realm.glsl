@@ -158,7 +158,7 @@ void main() {
                 float ch = hash(rcp + 223.3);
                 vec3 coreCol =
                     ch < 0.40 ? vec3(0.82, 0.58, 0.92) :
-                    ch < 0.72 ? vec3(0.55, 0.64, 0.98) :
+                    ch < 0.72 ? vec3(0.62, 0.55, 0.98) :
                     ch < 0.92 ? vec3(0.70, 0.58, 0.96) :
                                 vec3(0.48, 0.72, 0.80);
                 vec3 haloCol =
@@ -389,7 +389,7 @@ void main() {
         float over = peak - 0.72;
         float comp = 0.72 + over / (1.0 + over * 2.2);
         float slide = clamp(over * 1.4, 0.0, 0.75);
-        col = mix(col * (comp / peak), vec3(0.74, 0.62, 1.00) * comp, slide);
+        col = mix(col * (comp / peak), vec3(0.78, 0.56, 1.00) * comp, slide);
     }
 
     // Anti-banding dither.
