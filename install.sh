@@ -705,6 +705,21 @@ setup_claude_code() {
         print_success "Task list reminder hook symlinked"
     fi
 
+    # Weekly-limit pace tracking: the statusline records the plan's live 5h/7d
+    # utilisation, a timer publishes the verdict, and a prompt hook surfaces it.
+    ln -sfn "$dotfiles_dir/claude-code/usage-pace-record.sh" "$HOME/.claude/usage-pace-record.sh"
+    ln -sfn "$dotfiles_dir/claude-code/claude-pace.py" "$HOME/.claude/claude-pace.py"
+    ln -sfn "$dotfiles_dir/claude-code/claude-pace-export.sh" "$HOME/.claude/claude-pace-export.sh"
+    ln -sfn "$dotfiles_dir/claude-code/claude-pace-notice.py" "$claude_hooks_dir/claude-pace-notice.py"
+    mkdir -p "$HOME/.config/systemd/user"
+    ln -sfn "$dotfiles_dir/systemd/claude-pace-export.service" "$HOME/.config/systemd/user/claude-pace-export.service"
+    ln -sfn "$dotfiles_dir/systemd/claude-pace-export.timer" "$HOME/.config/systemd/user/claude-pace-export.timer"
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl --user daemon-reload 2>/dev/null || true
+        systemctl --user enable --now claude-pace-export.timer 2>/dev/null || true
+    fi
+    print_success "Claude Code pace tracking symlinked"
+
     # Global instructions Claude Code reads at session start
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
     print_success "Global CLAUDE.md symlinked"

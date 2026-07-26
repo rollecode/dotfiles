@@ -1,0 +1,7 @@
+[Unit]
+Description=Export Claude Code weekly-limit pace report
+Documentation=https://github.com/rollecode/dotfiles
+
+[Service]
+Type=oneshot
+ExecStart=%h/.claude/claude-pace-export.sh
