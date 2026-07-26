@@ -36,16 +36,34 @@ MIN_GAP_S = 20 * 60
 QUIET_START, QUIET_END = 23, 8
 
 
+def _plural(n, word):
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
 def fmt_dur(seconds):
+    """Durations in full words: "6 days 8 hours", not "6d 8h"."""
     seconds = max(0, int(seconds))
     d, rem = divmod(seconds, 86400)
     h, rem = divmod(rem, 3600)
     m = rem // 60
     if d:
-        return f"{d}d {h}h"
+        return _plural(d, "day") + (" " + _plural(h, "hour") if h else "")
     if h:
-        return f"{h}h {m}m"
-    return f"{m}m"
+        return _plural(h, "hour") + (" " + _plural(m, "minute") if m else "")
+    return _plural(m, "minute")
+
+
+def fmt_hours(hours):
+    """Working hours rounded to 5 minutes and written out, never "1.0h"."""
+    total_m = int(round((hours * 60) / 5.0) * 5)
+    if total_m <= 0:
+        return "under 5 minutes"
+    h, m = divmod(total_m, 60)
+    if h and m:
+        return _plural(h, "hour") + " " + _plural(m, "minute")
+    if h:
+        return _plural(h, "hour")
+    return _plural(m, "minute")
 
 
 def pretty_model(mid):
@@ -138,7 +156,7 @@ def build_message(c):
 
     models = (c.get("burn") or {}).get("models") or {}
     if models and today > 0:
-        bits = [f"*{today / i['rate']:.1f}h* of {pretty_model(m)}"
+        bits = [f"*{fmt_hours(today / i['rate'])}* of {pretty_model(m)}"
                 for m, i in sorted(models.items(), key=lambda kv: kv[1]["rate"])
                 if i["rate"] > 0]
         if bits:
