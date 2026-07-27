@@ -49,6 +49,8 @@ CHAT_JID = os.environ.get("CLAUDE_PACE_CHAT_JID") or _cfg.get("chat_jid") or ""
 # Never re-alert the same state inside this window, even on a fresh escalation,
 # so a percentage flapping on a boundary cannot machine-gun the chat.
 MIN_GAP_S = 20 * 60
+# Say something at least once a day even if nothing changed.
+DAILY_FLOOR_S = 11 * 3600
 QUIET_START, QUIET_END = 23, 8
 
 
@@ -139,6 +141,21 @@ def alert_key(c):
     h5 = c.get("five_hour_used_pct") or 0
     # Only the 5-hour cliff matters, not every percent of it.
     parts.append("h5-90" if h5 >= 90 else ("h5-75" if h5 >= 75 else "h5-low"))
+    # Heading for a big underspend is the other way to waste the plan, and it was
+    # missing from the key entirely: a week tracking to finish at 78% sat on
+    # verdict "on_pace" forever and never said a word. Bucketed so it announces
+    # once per band rather than on every drifting percent.
+    p_end = c.get("projected_end_pct")
+    if p_end is None:
+        parts.append("end-unknown")
+    elif p_end < 60:
+        parts.append("end-way-under")
+    elif p_end < 80:
+        parts.append("end-under")
+    elif p_end < 95:
+        parts.append("end-slightly-under")
+    else:
+        parts.append("end-full")
     return "|".join(str(p) for p in parts)
 
 
@@ -147,12 +164,19 @@ def build_message(c):
     w = c["weekly_used_pct"]
     el = c["week_elapsed_pct"]
     today = c["today_budget_pct"]
+    p_end = c.get("projected_end_pct")
+    wasting = (100 - p_end) if p_end is not None else 0
     head = {
         "at_risk": "*Claude Code weekly usage budget* - at risk, today's rate runs it dry early",
         "ahead": "*Claude Code weekly usage budget* - ahead of pace, ease off",
         "behind": "*Claude Code weekly usage budget* - behind pace, room to spend",
-        "on_pace": "*Claude Code weekly usage budget* - back on pace",
+        "on_pace": "*Claude Code weekly usage budget* - on pace",
     }.get(verdict, "*Claude Code weekly usage budget*")
+    # Tracking to leave a fifth of the plan unused is the headline, whatever the
+    # cumulative verdict says.
+    if verdict != "at_risk" and wasting >= 20:
+        head = (f"*Claude Code weekly usage budget* - on track to waste "
+                f"{wasting:.0f}% of the plan")
 
     d = c["pace_delta_pp"]
     L = [head, ""]
@@ -224,7 +248,9 @@ def main():
 
     key = alert_key(c)
     st = read_state()
-    if st.get("key") == key:
+    # Same situation as last time: normally silent, but not for a whole day.
+    # Going quiet for 24h while the week drifts is how this ends up ignored.
+    if st.get("key") == key and (now - float(st.get("ts") or 0)) < DAILY_FLOOR_S:
         return 0
     if (now - float(st.get("ts") or 0)) < MIN_GAP_S:
         return 0
