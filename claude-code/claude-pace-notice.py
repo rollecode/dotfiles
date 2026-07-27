@@ -30,6 +30,17 @@ INTERVAL_URGENT_S = 45 * 60
 URGENT = {"ahead", "at_risk"}
 
 
+def pretty_model(mid):
+    """claude-opus-4-7 -> Opus 4.7. Naive munging produced "opus 4 7"."""
+    m = str(mid).replace("[1m]", "").split("/")[-1]
+    parts = [p for p in m.split("-") if p and p != "claude"]
+    if parts and len(parts[-1]) == 8 and parts[-1].isdigit():
+        parts = parts[:-1]
+    if not parts:
+        return m
+    return (parts[0].capitalize() + " " + ".".join(parts[1:])).strip()
+
+
 def _plural(n, word):
     return f"{n} {word}" if n == 1 else f"{n} {word}s"
 
@@ -172,8 +183,7 @@ def main():
         for mid, info in sorted(models.items(), key=lambda kv: kv[1]["rate"]):
             r = info["rate"]
             if r > 0:
-                name = mid.replace("claude-", "").replace("-", " ").replace("[1m]", "").strip()
-                pretty.append(f"about {fmt_hours(today / r)} of {name}")
+                pretty.append(f"about {fmt_hours(today / r)} of {pretty_model(mid)}")
         if pretty:
             bits.append("That is roughly " + ", or ".join(pretty) + " at your measured burn rates.")
 
@@ -193,8 +203,19 @@ def main():
         bits.append(f"Note the 5-hour window is at {c['five_hour_used_pct']:.0f}% - "
                     f"that will bite before the weekly limit does.")
 
-    bits.append("Mention this to Rolle only if it is useful or he asks; do not "
-                "derail the current task for it.")
+    p_end = c.get("projected_end_pct")
+    wasting = (100 - p_end) if p_end is not None else 0
+    notable = critical or verdict in URGENT or wasting >= 20
+    if notable:
+        # Relying on systemMessage alone was how this went unnoticed for a day:
+        # it reaches the terminal but is easy to miss, and the model had been
+        # told to stay quiet. When it actually matters, say it.
+        bits.append("TELL ROLLE THIS: open your reply with one short line stating "
+                    "the pace and the single action it implies, then carry on with "
+                    "the task. Do not pad it or repeat the whole breakdown.")
+    else:
+        bits.append("Nothing urgent here. Mention it only if Rolle asks or it is "
+                    "directly relevant; do not derail the current task.")
 
     emit(visible, " ".join(bits))
     write_state({"last_shown_ts": now, "last_verdict": verdict})

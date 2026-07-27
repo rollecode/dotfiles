@@ -1,3 +1,10 @@
+### 2.41.0: 2026-07-27
+
+* Make the pace alert fire on underspend, which it could not do at all. `alert_key` tracked only the verdict, the critical flag and the 5-hour bucket, so a week tracking to finish at 78% sat on verdict `on_pace` and never said a word - exactly the "you are not spending enough" case the whole thing exists for. The projected end of week is now part of the key, bucketed so it announces once per band, and a projection that wastes 20% or more becomes the headline instead of a footnote
+* Add a daily floor to the alert. Pushing only on change meant total silence for a day at a time while the week quietly drifted; the same situation now gets one message every 11 hours at most
+* Stop relying on `systemMessage` alone for the in-session notice. It reaches the terminal but is easy to miss, and the model had been told to mention the pace only if useful, so a whole day passed with nothing shown. When the week is at risk, ahead, or heading for a 20% underspend, the model is now told to state it in one line at the top of its reply
+* Fix model names rendering as "opus 4 7" in the in-session notice
+
 ### 2.40.1: 2026-07-26
 
 * Keep the personal chat id and the private project path out of this public repo. The pace alerter had them as hardcoded defaults; they now come from `~/.config/claude-pace/config.json` (gitignored by living outside the repo, mode 600) or the environment, with a committed example file. With neither configured the alert simply does not push and the in-session notice is unaffected
