@@ -1,3 +1,7 @@
+### 2.41.1: 2026-07-28
+
+* Switch Chromium to ANGLE on Vulkan in `browser-flags/chromium-flags.conf`, which finally stops opaque modals flashing the page content underneath them on NVIDIA Wayland. Chromium 150 permits only three backends, all through ANGLE: `opengl` and `opengles` both corrupt overlay compositing, and `--use-gl=egl` is not a valid implementation at all - the GPU process fails to boot and everything silently drops to software rendering, which is why it looked flicker-free but slow. Vulkan keeps Canvas, compositing, rasterization, video decode, WebGL and WebGPU hardware accelerated, and cuts the applied driver bug workarounds from nine to four
+
 ### 2.41.0: 2026-07-27
 
 * Make the pace alert fire on underspend, which it could not do at all. `alert_key` tracked only the verdict, the critical flag and the 5-hour bucket, so a week tracking to finish at 78% sat on verdict `on_pace` and never said a word - exactly the "you are not spending enough" case the whole thing exists for. The projected end of week is now part of the key, bucketed so it announces once per band, and a projection that wastes 20% or more becomes the headline instead of a footnote
