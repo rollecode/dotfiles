@@ -1,3 +1,9 @@
+### 2.42.0: 2026-07-29
+
+* Send the pace nudge to one place instead of everywhere at once. It now picks the chat with the most recent inbound message, so it follows Rolle to whichever channel he is actually using rather than broadcasting to Telegram and Slack together. The channel list and the message database live in the local config, keeping identifiers out of this public repo
+* Say nothing in chat while a Claude Code session is live. A ledger sample newer than ten minutes means a session is running and its own hook is already showing the pace, so a chat message on top of it was pure duplication - and the most annoying kind, since it arrived exactly while he was looking at the same number
+* Raise the unchanged-state floor from 11 to 20 hours. Combined with the deduplication above, the steady state is now at most one message a day
+
 ### 2.41.1: 2026-07-28
 
 * Switch Chromium to ANGLE on Vulkan in `browser-flags/chromium-flags.conf`, which finally stops opaque modals flashing the page content underneath them on NVIDIA Wayland. Chromium 150 permits only three backends, all through ANGLE: `opengl` and `opengles` both corrupt overlay compositing, and `--use-gl=egl` is not a valid implementation at all - the GPU process fails to boot and everything silently drops to software rendering, which is why it looked flicker-free but slow. Vulkan keeps Canvas, compositing, rasterization, video decode, WebGL and WebGPU hardware accelerated, and cuts the applied driver bug workarounds from nine to four
