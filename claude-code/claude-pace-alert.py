@@ -45,12 +45,59 @@ def _config():
 _cfg = _config()
 IPC_DIR = os.environ.get("CLAUDE_PACE_IPC_DIR") or _cfg.get("ipc_dir") or ""
 CHAT_JID = os.environ.get("CLAUDE_PACE_CHAT_JID") or _cfg.get("chat_jid") or ""
+# Optional: several chats to choose between, so the nudge lands where Rolle
+# actually is instead of being broadcast to every channel at once.
+CHANNELS = _cfg.get("channels") or []
+MESSAGES_DB = _cfg.get("messages_db") or ""
+LEDGER = os.path.join(HOME, ".claude", "usage-pace.jsonl")
+# A ledger sample this fresh means a Claude Code session is live right now, and
+# the in-session hook is already showing the pace there.
+IN_SESSION_S = 10 * 60
+
+
+def claude_code_active():
+    """True when a Claude Code status line has reported within IN_SESSION_S."""
+    try:
+        mtime = os.path.getmtime(LEDGER)
+    except Exception:
+        return False
+    return (time.time() - mtime) < IN_SESSION_S
+
+
+def active_channel():
+    """Pick the chat Rolle used most recently.
+
+    Sending the same nudge to Telegram and Slack at once is how a useful signal
+    turns into noise. The stored message history is the only live evidence of
+    where he actually is, so the most recent inbound message wins.
+    """
+    if not CHANNELS:
+        return IPC_DIR, CHAT_JID
+    best = None
+    if MESSAGES_DB and os.path.exists(MESSAGES_DB):
+        try:
+            import sqlite3
+            con = sqlite3.connect(f"file:{MESSAGES_DB}?mode=ro", uri=True, timeout=3)
+            for ch in CHANNELS:
+                row = con.execute(
+                    "SELECT MAX(timestamp) FROM messages "
+                    "WHERE chat_jid = ? AND is_from_me = 0",
+                    (ch.get("chat_jid", ""),)).fetchone()
+                ts = row[0] if row else None
+                if ts and (best is None or ts > best[0]):
+                    best = (ts, ch)
+            con.close()
+        except Exception:
+            best = None
+    ch = best[1] if best else CHANNELS[0]
+    return ch.get("ipc_dir", IPC_DIR), ch.get("chat_jid", CHAT_JID)
 
 # Never re-alert the same state inside this window, even on a fresh escalation,
 # so a percentage flapping on a boundary cannot machine-gun the chat.
+IPC_DIR_USED = []
 MIN_GAP_S = 20 * 60
 # Say something at least once a day even if nothing changed.
-DAILY_FLOOR_S = 11 * 3600
+DAILY_FLOOR_S = 20 * 3600
 QUIET_START, QUIET_END = 23, 8
 
 
@@ -116,12 +163,14 @@ def write_state(st):
 
 def push(text):
     """Hand the message to nanoclaw's IPC watcher via an atomic rename."""
-    if not IPC_DIR or not CHAT_JID or not os.path.isdir(IPC_DIR):
+    ipc_dir, chat_jid = active_channel()
+    if not ipc_dir or not chat_jid or not os.path.isdir(ipc_dir):
         return False
-    payload = {"type": "message", "chatJid": CHAT_JID, "text": text}
+    IPC_DIR_USED.append(ipc_dir)
+    payload = {"type": "message", "chatJid": chat_jid, "text": text}
     name = f"pace-{int(time.time())}-{uuid.uuid4().hex[:6]}.json"
-    tmp = os.path.join(IPC_DIR, "." + name)
-    final = os.path.join(IPC_DIR, name)
+    tmp = os.path.join(ipc_dir, "." + name)
+    final = os.path.join(ipc_dir, name)
     try:
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(payload, fh)
@@ -244,6 +293,11 @@ def main():
 
     now = time.time()
     if time.localtime(now).tm_hour >= QUIET_START or time.localtime(now).tm_hour < QUIET_END:
+        return 0
+
+    # Already visible where he is working: the in-session hook shows the same
+    # thing. Pushing to chat as well is what made this feel relentless.
+    if claude_code_active():
         return 0
 
     key = alert_key(c)
