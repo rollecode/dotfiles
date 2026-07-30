@@ -127,6 +127,10 @@
 * tmux: prefix is `C-a`, `|` and `-` split
 * install.sh: source the shell block instead of copying it
 
+### 2.27.1: 2026-07-30
+
+* driftwm: start Steam at boot instead of the nvtop terminal, in the same slot
+
 ### 2.27.0: 2026-07-19
 
 * install.sh: symlink `tmux/tmux.conf`, append the shell block, merge `remoteControlAtStartup` into `~/.claude/settings.json`
