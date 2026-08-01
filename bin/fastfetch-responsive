@@ -38,6 +38,13 @@ COMPACT_FALLBACK_COLS=63   # assumed phone width when the login resize never lan
 # Never break a login shell: any missing piece falls back to plain fastfetch.
 [ -x "$FF" ] || exit 0
 
+# Inside tmux the shell inherits the tmux SERVER's environment, not the SSH
+# connection's, so a phone's FASTFETCH_VIEW never reaches it directly. Pull it
+# from the tmux session env (populated by `update-environment` on attach).
+if [ -z "${FASTFETCH_VIEW:-}" ] && [ -n "${TMUX:-}" ] && command -v tmux >/dev/null 2>&1; then
+    FASTFETCH_VIEW=$(tmux show-environment FASTFETCH_VIEW 2>/dev/null | sed -n 's/^FASTFETCH_VIEW=//p')
+fi
+
 # Full is the default. Only an explicit FASTFETCH_VIEW=compact opts out of it.
 view=${FASTFETCH_VIEW:-full}
 if [ "$view" != compact ] && [ -r "$FULL" ]; then
