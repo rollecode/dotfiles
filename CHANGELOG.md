@@ -1,3 +1,7 @@
+### 2.42.0: 2026-08-01
+
+* fastfetch: show the compact view on the phone even when the shell runs inside tmux. Termius sets `FASTFETCH_VIEW=compact` and its startup runs `tmux new-session`, but tmux spawns shells from the server's environment, not the SSH connection's, so the banner never saw the var and rendered the full, wrapping view. tmux now carries it via `set -ag update-environment FASTFETCH_VIEW`, and the wrapper reads it back from the tmux session env as a backstop
+
 ### 2.42.0: 2026-07-29
 
 * Send the pace nudge to one place instead of everywhere at once. It now picks the chat with the most recent inbound message, so it follows Rolle to whichever channel he is actually using rather than broadcasting to Telegram and Slack together. The channel list and the message database live in the local config, keeping identifiers out of this public repo
