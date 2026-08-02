@@ -1,3 +1,7 @@
+### 2.42.1: 2026-08-02
+
+* chromium: switch the ANGLE backend from `vulkan` to `gl`. Vulkan on nvidia-open under Wayland hung the whole GPU (Xid 38 firmware error, RC watchdog could not recover, full freeze needing a reboot), which is a known Chromium+Vulkan+NVIDIA+Wayland lockup. `gl` is stable at the cost of minor opaque-overlay corruption; a GPU hang is far worse. Brave was already on `gl`
+
 ### 2.42.0: 2026-08-01
 
 * fastfetch: show the compact view on the phone even when the shell runs inside tmux. Termius sets `FASTFETCH_VIEW=compact` and its startup runs `tmux new-session`, but tmux spawns shells from the server's environment, not the SSH connection's, so the banner never saw the var and rendered the full, wrapping view. tmux now carries it via `set -ag update-environment FASTFETCH_VIEW`, and the wrapper reads it back from the tmux session env as a backstop
