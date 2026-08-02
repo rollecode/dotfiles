@@ -1,3 +1,7 @@
+### 2.42.2: 2026-08-02
+
+* chromium: stop forcing the ANGLE `gl` backend, it was noticeably slow. Left to Chromium's default GL path, accepting the occasional overlay flicker for speed. Vulkan stays banned (it hung the GPU); Chromium does not pick it on its own on Linux, so the default is safe
+
 ### 2.42.1: 2026-08-02
 
 * chromium: switch the ANGLE backend from `vulkan` to `gl`. Vulkan on nvidia-open under Wayland hung the whole GPU (Xid 38 firmware error, RC watchdog could not recover, full freeze needing a reboot), which is a known Chromium+Vulkan+NVIDIA+Wayland lockup. `gl` is stable at the cost of minor opaque-overlay corruption; a GPU hang is far worse. Brave was already on `gl`
