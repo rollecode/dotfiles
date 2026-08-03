@@ -92,6 +92,10 @@
 * claude-code: add `require-permission-destructive-test.sh` and a 48 case fixture asserting each deny, ask and pass decision
 * install.sh: symlink the guard hook into `~/.claude/hooks`
 
+### 2.32.0: 2026-07-20
+
+* nvim: the nano-style shortcut bar at the bottom is off by default. The keys are muscle memory, `^G` still lists every one, and the two rows are better spent on the file. `enable_nano_shortcut_bar = true` in `lua/local.lua` brings it back. The top `nvim nano` title bar stays
+
 ### 2.31.2: 2026-07-20
 
 * README: point the manual Claude Code setup at `codestats-hook.py`, it still told you to symlink and configure the `.sh` name that was renamed in 2.9.6, so following the manual instructions produced the same dead hook `install.sh` used to
