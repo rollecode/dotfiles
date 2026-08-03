@@ -6,9 +6,16 @@
 # SSH logins share one session called main, so reconnecting lands where you left.
 # Local terminals each get their own session named after the directory, so two
 # windows never mirror each other. No exec: if tmux fails you still get a shell.
+#
+# macOS is the exception: this Mac is never reached over SSH and its terminals
+# are not left running, so wrapping a local shell in tmux only adds a layer that
+# breaks copy/paste and scroll. Local macOS terminals stay bare. The SSH branch
+# still applies everywhere, in case the Mac is ever reached over SSH after all.
 if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && command -v tmux >/dev/null 2>&1; then
   if [[ -n "$SSH_CONNECTION" ]]; then
     tmux new-session -A -s main
+  elif [[ "$OSTYPE" == darwin* ]]; then
+    : # bare local shell on macOS, no tmux
   else
     _tmux_name=${PWD##*/}
     _tmux_name=${_tmux_name//[^a-zA-Z0-9_-]/_}
