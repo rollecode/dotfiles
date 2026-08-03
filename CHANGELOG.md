@@ -1,3 +1,8 @@
+### 2.43.1: 2026-08-03
+
+* bash: local macOS terminals no longer start inside tmux. The Mac is never reached over SSH and its windows are not left open, so wrapping every shell in tmux only added a layer that broke copy/paste and scroll for nothing. Linux desktops keep the local auto-tmux, and the SSH branch still applies on any host
+* bash: the fastfetch banner now draws in a bare local macOS shell, where it used to be suppressed on the assumption that tmux was about to take over the screen
+
 ### 2.43.0: 2026-08-03
 
 * claude-code: make pace tracking work on macOS. `usage-pace-record.sh` locked the ledger with `flock`, which does not ship with macOS, so the `|| exit 0` fired on every statusline render and the script returned before appending. The snapshot was written and the ledger never was, which reads as "no pace data yet" indefinitely rather than as a failure. Falls back to an atomic `mkdir` lock, reaping one older than a minute so a killed session cannot wedge the recorder
