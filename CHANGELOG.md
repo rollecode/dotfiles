@@ -1,3 +1,10 @@
+### 2.43.0: 2026-08-03
+
+* claude-code: make pace tracking work on macOS. `usage-pace-record.sh` locked the ledger with `flock`, which does not ship with macOS, so the `|| exit 0` fired on every statusline render and the script returned before appending. The snapshot was written and the ledger never was, which reads as "no pace data yet" indefinitely rather than as a failure. Falls back to an atomic `mkdir` lock, reaping one older than a minute so a killed session cannot wedge the recorder
+* claude-code: read file mtimes through a `_mtime` helper that tries the BSD flag before the GNU one. `stat -c %Y` is Linux-only, so the alert throttle read an empty timestamp on macOS and treated every sample as due
+* launchd: add `com.rolle.claude-pace-export.plist`, the macOS counterpart to the systemd timer, on the same ten-minute cadence. Pace drifts with the clock rather than with usage, so the export has to keep running while no session is open. `install.sh` now picks the scheduler by platform instead of only wiring systemd
+* claude-code: mark `claude-pace-export.sh` and `usage-pace-record.sh` executable. launchd ran the exporter directly and exited 126
+
 ### 2.42.2: 2026-08-02
 
 * chromium: stop forcing the ANGLE `gl` backend, it was noticeably slow. Left to Chromium's default GL path, accepting the occasional overlay flicker for speed. Vulkan stays banned (it hung the GPU); Chromium does not pick it on its own on Linux, so the default is safe
