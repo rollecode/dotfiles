@@ -720,12 +720,23 @@ setup_claude_code() {
         chmod 600 "$HOME/.config/claude-pace/config.json"
         print_warning "Edit ~/.config/claude-pace/config.json to enable pace alerts in chat"
     fi
-    mkdir -p "$HOME/.config/systemd/user"
-    ln -sfn "$dotfiles_dir/systemd/claude-pace-export.service" "$HOME/.config/systemd/user/claude-pace-export.service"
-    ln -sfn "$dotfiles_dir/systemd/claude-pace-export.timer" "$HOME/.config/systemd/user/claude-pace-export.timer"
-    if command -v systemctl >/dev/null 2>&1; then
-        systemctl --user daemon-reload 2>/dev/null || true
-        systemctl --user enable --now claude-pace-export.timer 2>/dev/null || true
+    # The exporter has to run on a timer even with no session open, so it needs
+    # whatever scheduler the host actually has. Without this the report is never
+    # written and every consumer silently reads nothing.
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        mkdir -p "$HOME/Library/LaunchAgents"
+        local pace_plist="$HOME/Library/LaunchAgents/com.rolle.claude-pace-export.plist"
+        ln -sfn "$dotfiles_dir/launchd/com.rolle.claude-pace-export.plist" "$pace_plist"
+        launchctl unload "$pace_plist" 2>/dev/null || true
+        launchctl load "$pace_plist" 2>/dev/null || true
+    else
+        mkdir -p "$HOME/.config/systemd/user"
+        ln -sfn "$dotfiles_dir/systemd/claude-pace-export.service" "$HOME/.config/systemd/user/claude-pace-export.service"
+        ln -sfn "$dotfiles_dir/systemd/claude-pace-export.timer" "$HOME/.config/systemd/user/claude-pace-export.timer"
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl --user daemon-reload 2>/dev/null || true
+            systemctl --user enable --now claude-pace-export.timer 2>/dev/null || true
+        fi
     fi
     print_success "Claude Code pace tracking symlinked"
 

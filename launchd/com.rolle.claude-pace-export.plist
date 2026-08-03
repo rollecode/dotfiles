@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS counterpart to systemd/claude-pace-export.timer.
+
+  Pace drifts with the clock, not only with usage, so this has to keep running
+  while no Claude Code session is open. That idle Tuesday is exactly when "you
+  are behind" is worth hearing. Same 10-minute cadence as the systemd timer.
+
+  RunAtLoad covers the OnBootSec=2min equivalent. launchd has no Persistent=true,
+  so a run missed while the Mac was asleep is simply skipped rather than fired
+  late - acceptable, since the next tick is ten minutes out and the report is
+  recomputed from the ledger rather than accumulated.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.rolle.claude-pace-export</string>
+
+    <!--
+      launchd does not expand $HOME in ProgramArguments, so the path has to go
+      through a shell. `-c` rather than `-lc`: a login shell sources the whole
+      interactive profile, which is both slow for a ten-minute timer and noisy
+      (tput complains about the absent TERM on every run).
+    -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>exec "$HOME/.claude/claude-pace-export.sh"</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>600</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>LowPriorityIO</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/claude-pace-export.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/claude-pace-export.err</string>
+</dict>
+</plist>
