@@ -32,6 +32,15 @@ local holding_normal = false
 -- Cleared the moment you start typing again.
 local user_normal = false
 
+-- The nano-style shortcut bar at the bottom is off by default: the keys are
+-- muscle memory by now, ^G still lists every one of them, and the two rows are
+-- better spent on the file. Set `enable_nano_shortcut_bar = true` in
+-- lua/local.lua to bring it back.
+local function want_shortcut_bar()
+  local ok, cfg = pcall(require, 'local')
+  return ok and cfg.enable_nano_shortcut_bar == true
+end
+
 -- Shortcut rows drawn at the bottom, nano style.
 -- Six columns per row, like nano, so nothing truncates at 80 columns.
 -- Undo/redo (M-U / M-E) are bound too, they just live in ^G Help.
@@ -373,6 +382,7 @@ function M.render_helper()
 end
 
 local function open_helper()
+  if not want_shortcut_bar() then return end
   if helper.win and api.nvim_win_is_valid(helper.win) then return end
   local cur = api.nvim_get_current_win()
 

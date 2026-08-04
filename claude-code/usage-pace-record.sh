@@ -19,8 +19,14 @@ set -uo pipefail
 LEDGER="$HOME/.claude/usage-pace.jsonl"
 LATEST="$HOME/.claude/usage-pace-latest.json"
 LOCK="$HOME/.claude/.usage-pace.lock"
+LOCKDIR="$HOME/.claude/.usage-pace.lock.d"
 HEARTBEAT_S=600
 MAX_LINES=5000
+
+# BSD and GNU stat disagree on the mtime flag, and this script runs on both.
+_mtime() {
+  stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0
+}
 
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -42,8 +48,22 @@ SAMPLE=$(printf '%s' "$INPUT" | jq -c '
 printf '%s\n' "$SAMPLE" > "$LATEST.tmp" 2>/dev/null && mv "$LATEST.tmp" "$LATEST" 2>/dev/null
 
 # Serialise the read-compare-append so concurrent sessions cannot interleave.
-exec 9>"$LOCK" 2>/dev/null || exit 0
-flock -n 9 2>/dev/null || exit 0
+# flock does not ship with macOS, and the old unconditional call meant the
+# `|| exit 0` fired on every render there - the snapshot was written but the
+# ledger never was, so pace had no history to derive a burn rate from. Fall back
+# to an atomic mkdir lock, reaping one older than a minute so a killed session
+# cannot wedge the recorder permanently.
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$LOCK" 2>/dev/null || exit 0
+  flock -n 9 2>/dev/null || exit 0
+else
+  if ! mkdir "$LOCKDIR" 2>/dev/null; then
+    [ $(( $(date +%s) - $(_mtime "$LOCKDIR") )) -ge 60 ] || exit 0
+    rmdir "$LOCKDIR" 2>/dev/null
+    mkdir "$LOCKDIR" 2>/dev/null || exit 0
+  fi
+  trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
+fi
 
 mkdir -p "$(dirname "$LEDGER")" 2>/dev/null
 LAST=$(tail -n 1 "$LEDGER" 2>/dev/null)
@@ -72,7 +92,7 @@ ALERT_STAMP="$HOME/.claude/.usage-pace-alert.stamp"
 if [ -x "$ALERT" ] || [ -f "$ALERT" ]; then
   now_s=$(date +%s)
   last_s=0
-  [ -f "$ALERT_STAMP" ] && last_s=$(stat -c %Y "$ALERT_STAMP" 2>/dev/null || echo 0)
+  [ -f "$ALERT_STAMP" ] && last_s=$(_mtime "$ALERT_STAMP")
   if [ $(( now_s - last_s )) -ge 60 ]; then
     touch "$ALERT_STAMP" 2>/dev/null
     ( python3 "$ALERT" >/dev/null 2>&1 & ) 2>/dev/null
