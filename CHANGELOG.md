@@ -1,3 +1,7 @@
+### 2.44.0: 2026-08-04
+
+* fastfetch: colour the logo with the original 1977 Apple rainbow (green, yellow, orange, red, purple, blue) instead of a single flat accent. The macOS logo has six colour slots and only two were set, so the top half fell back to the terminal palette. Note the config is shared, so a Linux host renders the Arch logo in these colours until the palette is made per-OS
+
 ### 2.43.2: 2026-08-04
 
 * tmux: carry `WAYLAND_DISPLAY` through the SSH-to-tmux hop, alongside `FASTFETCH_VIEW`. A shell inside tmux inherits the server's environment from when it first started, not the attaching client's, so wl-copy/wl-paste guessed the wrong socket (`wayland-0` instead of `wayland-1`) and failed inside every SSH tmux session
