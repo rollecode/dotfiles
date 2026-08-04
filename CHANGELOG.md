@@ -1,6 +1,18 @@
-### 2.42.3: 2026-08-04
+### 2.43.2: 2026-08-04
 
 * tmux: carry `WAYLAND_DISPLAY` through the SSH-to-tmux hop, alongside `FASTFETCH_VIEW`. A shell inside tmux inherits the server's environment from when it first started, not the attaching client's, so wl-copy/wl-paste guessed the wrong socket (`wayland-0` instead of `wayland-1`) and failed inside every SSH tmux session
+
+### 2.43.1: 2026-08-03
+
+* bash: local macOS terminals no longer start inside tmux. The Mac is never reached over SSH and its windows are not left open, so wrapping every shell in tmux only added a layer that broke copy/paste and scroll for nothing. Linux desktops keep the local auto-tmux, and the SSH branch still applies on any host
+* bash: the fastfetch banner now draws in a bare local macOS shell, where it used to be suppressed on the assumption that tmux was about to take over the screen
+
+### 2.43.0: 2026-08-03
+
+* claude-code: make pace tracking work on macOS. `usage-pace-record.sh` locked the ledger with `flock`, which does not ship with macOS, so the `|| exit 0` fired on every statusline render and the script returned before appending. The snapshot was written and the ledger never was, which reads as "no pace data yet" indefinitely rather than as a failure. Falls back to an atomic `mkdir` lock, reaping one older than a minute so a killed session cannot wedge the recorder
+* claude-code: read file mtimes through a `_mtime` helper that tries the BSD flag before the GNU one. `stat -c %Y` is Linux-only, so the alert throttle read an empty timestamp on macOS and treated every sample as due
+* launchd: add `com.rolle.claude-pace-export.plist`, the macOS counterpart to the systemd timer, on the same ten-minute cadence. Pace drifts with the clock rather than with usage, so the export has to keep running while no session is open. `install.sh` now picks the scheduler by platform instead of only wiring systemd
+* claude-code: mark `claude-pace-export.sh` and `usage-pace-record.sh` executable. launchd ran the exporter directly and exited 126
 
 ### 2.42.2: 2026-08-02
 
@@ -95,6 +107,10 @@
 * claude-code: `rm -rf node_modules`, `DELETE ... WHERE`, `git push` and the rest pass untouched, so auto mode keeps its speed. The SQL rules only fire when a database client is in the command, so grepping a migration for `DROP TABLE` is not read as running it
 * claude-code: add `require-permission-destructive-test.sh` and a 48 case fixture asserting each deny, ask and pass decision
 * install.sh: symlink the guard hook into `~/.claude/hooks`
+
+### 2.32.0: 2026-07-20
+
+* nvim: the nano-style shortcut bar at the bottom is off by default. The keys are muscle memory, `^G` still lists every one, and the two rows are better spent on the file. `enable_nano_shortcut_bar = true` in `lua/local.lua` brings it back. The top `nvim nano` title bar stays
 
 ### 2.31.2: 2026-07-20
 
