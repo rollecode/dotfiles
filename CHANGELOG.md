@@ -1,3 +1,7 @@
+### 2.42.3: 2026-08-04
+
+* tmux: carry `WAYLAND_DISPLAY` through the SSH-to-tmux hop, alongside `FASTFETCH_VIEW`. A shell inside tmux inherits the server's environment from when it first started, not the attaching client's, so wl-copy/wl-paste guessed the wrong socket (`wayland-0` instead of `wayland-1`) and failed inside every SSH tmux session
+
 ### 2.42.2: 2026-08-02
 
 * chromium: stop forcing the ANGLE `gl` backend, it was noticeably slow. Left to Chromium's default GL path, accepting the occasional overlay flicker for speed. Vulkan stays banned (it hung the GPU); Chromium does not pick it on its own on Linux, so the default is safe
