@@ -1,3 +1,13 @@
+### 2.45.0: 2026-08-07
+
+* claude-code: add `date-context-hook.sh`, a UserPromptSubmit hook that stamps the real weekday and date onto every prompt. A session spanning midnight otherwise keeps the date it inferred at session start - `/plan_today` ran at 17:46 believing the workday was still open, then the next morning still reasoned from the previous day until asked directly whether the date had been checked. The hook makes the correction unconditional rather than depending on the model deciding to re-run `date`
+* install.sh: symlink the new hook on every machine that runs the installer
+* README: document the hook in the manual settings.json block, and note it in the remote-server setup section
+
+### 2.44.1: 2026-08-05
+
+* driftwm: bind `ctrl+space` to the DMS launcher as a second bind alongside `mod+k`, so the spotlight opens from either
+
 ### 2.44.0: 2026-08-04
 
 * fastfetch: colour the logo with the original 1977 Apple rainbow (green, yellow, orange, red, purple, blue) instead of a single flat accent. The macOS logo has six colour slots and only two were set, so the top half fell back to the terminal palette. Note the config is shared, so a Linux host renders the Arch logo in these colours until the palette is made per-OS

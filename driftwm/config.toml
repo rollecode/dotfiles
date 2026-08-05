@@ -113,6 +113,7 @@ animate_paused = false
 "mod+c" = "close-window"                                   # default was center-window
 "mod+shift+c" = "center-window"                            # center-window relocated
 "mod+k" = "spawn dms ipc call spotlight toggle"            # DMS launcher
+"ctrl+space" = "spawn dms ipc call spotlight toggle"       # DMS launcher, second bind
 "mod+l" = "spawn /home/rolle/Projects/dotfiles/driftwm/wallpapers/lock-with-capture.sh"  # hyprlock over a grim capture of the current screen (its screenshot mode grabs black on driftwm)
 "mod+n" = "spawn dms ipc call notifications open"
 "mod+g" = "spawn /home/rolle/.local/bin/game-refocus"  # re-glue X focus to Proton game (satellite focus bug workaround)
