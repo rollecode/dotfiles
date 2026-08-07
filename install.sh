@@ -672,6 +672,40 @@ setup_tmux() {
     fi
 }
 
+setup_model_backends() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+
+    # Claude Code against non-Anthropic backends via their own native Anthropic
+    # endpoints (claudeglm, claudeor, claudeds, claudeqwen). No proxy, so this is
+    # just a source line, same shell-detection as setup_tmux above: macOS
+    # terminals start login shells and read .bash_profile, never .bashrc.
+    local rc
+    case "$(basename "${SHELL:-bash}")" in
+        bash)
+            if [ "$OS" = "macos" ]; then
+                rc="$HOME/.bash_profile"
+            else
+                rc="$HOME/.bashrc"
+            fi
+            ;;
+        zsh) rc="$HOME/.zshrc" ;;
+        *)
+            print_warning "Login shell is not bash or zsh - port claude-code/model-backends.sh by hand"
+            return
+            ;;
+    esac
+
+    if grep -q "model-backends.sh" "$rc" 2>/dev/null; then
+        print_success "✓ Model backends already sourced in $(basename "$rc")"
+    else
+        {
+            printf '\n# Claude Code against non-Anthropic backends (claudeglm, claudeor, claudeds, claudeqwen).\n'
+            printf '[ -f "$HOME/Projects/dotfiles/claude-code/model-backends.sh" ] && . "$HOME/Projects/dotfiles/claude-code/model-backends.sh"\n'
+        } >> "$rc"
+        print_success "Model backends sourced from $(basename "$rc")"
+    fi
+}
+
 setup_claude_code() {
     local dotfiles_dir="$HOME/Projects/dotfiles"
     local claude_hooks_dir="$HOME/.claude/hooks"
@@ -711,6 +745,10 @@ setup_claude_code() {
     # Weekly-limit pace tracking: the statusline records the plan's live 5h/7d
     # utilisation, a timer publishes the verdict, and a prompt hook surfaces it.
     ln -sfn "$dotfiles_dir/claude-code/usage-pace-record.sh" "$HOME/.claude/usage-pace-record.sh"
+    # Ongoing monthly $ spend estimate for backends with no usable balance/spend
+    # API of their own (Qwen has none reachable with a plain key; DeepSeek's
+    # /user/balance is remaining balance, not spend).
+    ln -sfn "$dotfiles_dir/claude-code/model-spend-record.sh" "$HOME/.claude/model-spend-record.sh"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace.py" "$HOME/.claude/claude-pace.py"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace-export.sh" "$HOME/.claude/claude-pace-export.sh"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace-notice.py" "$claude_hooks_dir/claude-pace-notice.py"
@@ -1075,6 +1113,7 @@ main() {
     fi
 
     setup_tmux
+    setup_model_backends
 
     # Only ask about Syncthing on Linux/macOS
     if [ "$OS" = "linux" ] || [ "$OS" = "macos" ]; then
