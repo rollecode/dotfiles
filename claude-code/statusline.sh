@@ -84,6 +84,7 @@ GREEN='\033[38;2;166;227;161m'
 YELLOW='\033[38;2;249;226;175m'
 RED='\033[38;2;243;139;168m'
 MAUVE='\033[38;2;203;166;247m'
+GOLD='\033[38;2;212;175;55m'
 DIM='\033[2m'
 RESET='\033[0m'
 
@@ -207,8 +208,8 @@ elif [ "$IS_DEEPSEEK" = 1 ] && [ -s "$HOME/.config/crush/deepseek-key" ]; then
         DOLLARS=$(jq -r '.balance_infos[0].total_balance // empty' "$CACHE" 2>/dev/null)
         MTD=$(month_spend "deepseek")
         if [ -n "$DOLLARS" ]; then
-            LINE2="${PURPLE}\$${DOLLARS}${RESET} ${DIM}balance${RESET}"
-            [ -n "$MTD" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} ${PURPLE}\$${MTD}${RESET} ${DIM}this month (est)${RESET}"
+            LINE2="${GOLD}\$${DOLLARS}${RESET} ${DIM}balance${RESET}"
+            [ -n "$MTD" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} ${GOLD}~\$${MTD}${RESET} ${DIM}this month${RESET}"
             printf '%b\n' "$LINE2"
         fi
     fi
@@ -217,7 +218,7 @@ elif [ "$IS_QWEN" = 1 ]; then
     # bearer key (PAYG billing lives behind Alibaba Cloud's signed BSS API), so
     # this is the locally estimated running total from model-spend-record.sh.
     MTD=$(month_spend "qwen")
-    [ -n "$MTD" ] && printf '%b\n' "${PURPLE}\$${MTD}${RESET} ${DIM}this month (est)${RESET}"
+    [ -n "$MTD" ] && printf '%b\n' "${GOLD}~\$${MTD}${RESET} ${DIM}this month${RESET}"
 elif [ "$IS_OR" = 1 ] && [ -s "$HOME/.config/crush/openrouter-key" ]; then
     # OpenRouter monthly credit usage (GET /api/v1/auth/key). Cached + background-refreshed.
     OR_KEY_FILE="$HOME/.config/crush/openrouter-key"
@@ -237,7 +238,7 @@ elif [ "$IS_OR" = 1 ] && [ -s "$HOME/.config/crush/openrouter-key" ]; then
     if [ -s "$CACHE" ]; then
         USED=$(jq -r '.data.usage // empty' "$CACHE" 2>/dev/null)
         LIMIT=$(jq -r '.data.limit // empty' "$CACHE" 2>/dev/null)
-        [ -n "$USED" ] && [ -n "$LIMIT" ] && awk -v u="$USED" -v l="$LIMIT" 'BEGIN{printf "'"${PURPLE}"'$%.2f'"${RESET}"' '"${DIM}"'/ $%.0f this month'"${RESET}"'\n", u, l}'
+        [ -n "$USED" ] && [ -n "$LIMIT" ] && awk -v u="$USED" -v l="$LIMIT" 'BEGIN{printf "'"${GOLD}"'$%.2f'"${RESET}"' '"${DIM}"'/ $%.0f this month'"${RESET}"'\n", u, l}'
     fi
 else
     FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
