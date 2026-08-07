@@ -1,3 +1,7 @@
+### 2.47.1: 2026-08-07
+
+* claude-code: mark `model-spend-record.sh` executable. The exec bit did not survive the initial commit, so the statusline's background call silently failed with "permission denied" on `infinity`
+
 ### 2.47.0: 2026-08-07
 
 * claude-code: add `model-spend-record.sh` and wire it into the statusline, showing an ongoing monthly $ estimate for `claudeds`/`claudeqwen` sessions. Qwen's DashScope pay-as-you-go tier has no balance/spend endpoint reachable with a plain API key (that lives behind Alibaba Cloud's signed BSS API), and DeepSeek's `/user/balance` gives remaining balance, not spend, so this tracks it locally instead: diffs the statusline's cumulative session token counts against a per-session snapshot and prices the delta at each model's known flat rate, accumulated per calendar month. Cache-hit input is priced at the full rate since the statusline does not expose cumulative cache tokens, so the number is a conservative upper bound, not a bill
