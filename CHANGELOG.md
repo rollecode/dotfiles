@@ -1,3 +1,7 @@
+### 2.50.2: 2026-08-07
+
+* claude-code: set `DISABLE_FEEDBACK_COMMAND` and `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` in `settings.json`, so `/feedback`, `/bug`, `/share` and the transcript-share survey cannot upload private repo contents
+
 ### 2.50.1: 2026-08-07
 
 * driftwm: stop restarting DMS on every unlock in `lock-with-capture.sh`. It was a workaround for the volume OSD dying across a lock cycle, which is now fixed in `DankOSD.qml` itself, and the restart masked the bug so the fix could never be verified
