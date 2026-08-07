@@ -1,6 +1,8 @@
 ### 2.50.2: 2026-08-07
 
 * claude-code: set `DISABLE_FEEDBACK_COMMAND` and `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` in `settings.json`, so `/feedback`, `/bug`, `/share` and the transcript-share survey cannot upload private repo contents
+* claude-code: set `attribution.commit` to empty, dropping the commit trailer for good
+* install.sh: `setup_claude_settings_merge` merges the template's `env` and `attribution` into `~/.claude/settings.json`, per-key and additive so local values win. The template is never copied wholesale, so new machines missed these entirely
 
 ### 2.50.1: 2026-08-07
 
