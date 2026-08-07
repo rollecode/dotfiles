@@ -735,6 +735,9 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/date-context-hook.sh" "$claude_hooks_dir/date-context-hook.sh"
     print_success "Date context hook symlinked"
 
+    ln -sfn "$dotfiles_dir/claude-code/append-changelog.sh" "$claude_hooks_dir/append-changelog.sh"
+    print_success "Append-changelog hook symlinked"
+
     if [ -L "$claude_hooks_dir/task-list-reminder.sh" ]; then
         print_success "✓ Found existing task list reminder hook symlink - preserving"
     else
@@ -784,6 +787,10 @@ setup_claude_code() {
     # Global instructions Claude Code reads at session start
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"
     print_success "Global CLAUDE.md symlinked"
+
+    # settings.json points statusLine at this fixed path
+    ln -sfn "$dotfiles_dir/claude-code/statusline.sh" "$HOME/.claude/statusline.sh"
+    print_success "Statusline symlinked"
 
     # Tokyo Night theme for the TUI itself; select it with /theme
     mkdir -p "$HOME/.claude/themes"
