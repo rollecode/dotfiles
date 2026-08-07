@@ -698,6 +698,9 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/require-permission-destructive.sh" "$claude_hooks_dir/require-permission-destructive.sh"
     print_success "Destructive command guard hook symlinked"
 
+    ln -sfn "$dotfiles_dir/claude-code/date-context-hook.sh" "$claude_hooks_dir/date-context-hook.sh"
+    print_success "Date context hook symlinked"
+
     if [ -L "$claude_hooks_dir/task-list-reminder.sh" ]; then
         print_success "✓ Found existing task list reminder hook symlink - preserving"
     else
