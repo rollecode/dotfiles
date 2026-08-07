@@ -117,6 +117,17 @@ Add the following to your `~/.claude/settings.json` (this file cannot be symlink
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/date-context-hook.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -125,6 +136,11 @@ Add the following to your `~/.claude/settings.json` (this file cannot be symlink
   }
 }
 ```
+
+`date-context-hook.sh` stamps the real date onto every prompt. A session that
+spans midnight otherwise keeps whatever date it inferred at session start -
+this is what fixed `/plan_today` running at 17:46 believing it was still
+Thursday evening a day later.
 
 ### How it works
 
