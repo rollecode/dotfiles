@@ -628,6 +628,69 @@ with open(path, "w") as fh:
     fi
 }
 
+# Merge env vars and attribution from the repo template into the live
+# settings.json. The template is never copied wholesale (it would clobber
+# per-machine permissions and hooks), so without this a fresh machine silently
+# misses keys the repo considers mandatory - the feedback-upload kill switches
+# among them. Per-key and additive: a value already set locally always wins.
+setup_claude_settings_merge() {
+    local settings_file="$1"
+    local template="$HOME/Projects/dotfiles/claude-code/settings.json"
+
+    if [ ! -f "$settings_file" ]; then
+        print_info "Copy the env and attribution blocks from claude-code/settings.json once settings.json exists"
+        return
+    fi
+
+    if [ ! -f "$template" ]; then
+        return
+    fi
+
+    if ! command_exists python3; then
+        print_warning "python3 not found - copy the env and attribution blocks from claude-code/settings.json by hand"
+        return
+    fi
+
+    cp "$settings_file" "$settings_file.bak"
+    local added
+    if added=$(python3 -c '
+import json, sys
+live_path, tpl_path = sys.argv[1], sys.argv[2]
+with open(live_path) as fh:
+    live = json.load(fh)
+with open(tpl_path) as fh:
+    tpl = json.load(fh)
+
+added = []
+for key, value in (tpl.get("env") or {}).items():
+    if key not in live.setdefault("env", {}):
+        live["env"][key] = value
+        added.append(key)
+if "attribution" in tpl and "attribution" not in live:
+    live["attribution"] = tpl["attribution"]
+    added.append("attribution")
+
+if not added:
+    print("NOCHANGE")
+    sys.exit(0)
+
+with open(live_path, "w") as fh:
+    json.dump(live, fh, indent=2)
+    fh.write("\n")
+print(", ".join(added))
+' "$settings_file" "$template"); then
+        if [ "$added" = "NOCHANGE" ]; then
+            rm -f "$settings_file.bak"
+            print_success "✓ Claude Code env and attribution already set"
+        else
+            print_success "Added to settings.json: $added (backup: settings.json.bak)"
+        fi
+    else
+        mv "$settings_file.bak" "$settings_file"
+        print_error "Could not merge settings.json - restored from backup"
+    fi
+}
+
 setup_tmux() {
     local dotfiles_dir="$HOME/Projects/dotfiles"
 
@@ -822,6 +885,7 @@ setup_claude_code() {
     fi
 
     setup_remote_control "$settings_file"
+    setup_claude_settings_merge "$settings_file"
 
     # Install conversation-saver plugin if Claude Code is available
     if command_exists claude; then
