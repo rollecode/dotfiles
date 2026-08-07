@@ -6,6 +6,9 @@ input=$(cat)
 # Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
 # slow disk can never stall the status line, and silent so it can never corrupt it.
 ( printf '%s' "$input" | "$HOME/.claude/usage-pace-record.sh" >/dev/null 2>&1 & ) 2>/dev/null
+# Same deal for the ongoing monthly $ spend estimate on backends with no usable
+# balance/spend API of their own (DeepSeek, Qwen).
+( printf '%s' "$input" | "$HOME/.claude/model-spend-record.sh" >/dev/null 2>&1 & ) 2>/dev/null
 
 # Extract session data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
@@ -15,10 +18,12 @@ MODEL=$(echo "$input" | jq -r '.model.display_name // "?"')
 # OpenRouter are billed by OpenRouter so their quota APIs do not apply, hence excluded.
 IS_GLM=0
 IS_DEEPSEEK=0
+IS_QWEN=0
 IS_OR=0
 case "$MODEL" in
   glm-*)      IS_GLM=1 ;;
   deepseek-*) IS_DEEPSEEK=1 ;;
+  qwen*)      IS_QWEN=1 ;;
   */*)        IS_OR=1 ;;     # provider/model prefix = OpenRouter
 esac
 
@@ -44,6 +49,7 @@ if [[ "$MODEL" != *" "* ]]; then     # only reformat raw ids, never pretty Anthr
   MODEL="${MODEL/ turbo/ Turbo}"
   MODEL="${MODEL/ pro/ Pro}"
   MODEL="${MODEL/ flash/ Flash}"
+  MODEL="${MODEL/ max/ Max}"
   MODEL="${MODEL/ lite/ Lite}"
   MODEL="${MODEL/ preview/ Preview}"
   MODEL="${MODEL/ non reasoning/ Non-Reasoning}"
@@ -136,6 +142,16 @@ make_bar() {
     printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}(%s)${RESET}" "$bar" "$pct" "$label"
 }
 
+# Reads the running monthly total model-spend-record.sh maintains for a provider
+# (deepseek/qwen). Empty output if there is no current-month total yet.
+month_spend() {
+    local f="$HOME/.claude/spend/monthly-$1.json"
+    [ -s "$f" ] || return 0
+    local this_month; this_month=$(date '+%Y-%m')
+    jq -r --arg m "$this_month" 'if .month == $m then (.total | tostring) else empty end' "$f" 2>/dev/null \
+        | awk '{printf "%.2f", $1}'
+}
+
 GLM_KEY_FILE="$HOME/.config/zai/coding-key"
 if [ "$IS_GLM" = 1 ] && [ -s "$GLM_KEY_FILE" ]; then
     # z.ai coding-plan quota: 5-hour token cycle (unit 3) + weekly quota (unit 6).
@@ -189,8 +205,19 @@ elif [ "$IS_DEEPSEEK" = 1 ] && [ -s "$HOME/.config/crush/deepseek-key" ]; then
     fi
     if [ -s "$CACHE" ]; then
         DOLLARS=$(jq -r '.balance_infos[0].total_balance // empty' "$CACHE" 2>/dev/null)
-        [ -n "$DOLLARS" ] && LC_NUMERIC=C printf "${PURPLE}\$%s${RESET} ${DIM}balance${RESET}\n" "$DOLLARS"
+        MTD=$(month_spend "deepseek")
+        if [ -n "$DOLLARS" ]; then
+            LINE2="${PURPLE}\$${DOLLARS}${RESET} ${DIM}balance${RESET}"
+            [ -n "$MTD" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} ${PURPLE}\$${MTD}${RESET} ${DIM}this month (est)${RESET}"
+            printf '%b\n' "$LINE2"
+        fi
     fi
+elif [ "$IS_QWEN" = 1 ]; then
+    # No usable balance/spend API on DashScope's pay-as-you-go tier with a plain
+    # bearer key (PAYG billing lives behind Alibaba Cloud's signed BSS API), so
+    # this is the locally estimated running total from model-spend-record.sh.
+    MTD=$(month_spend "qwen")
+    [ -n "$MTD" ] && printf '%b\n' "${PURPLE}\$${MTD}${RESET} ${DIM}this month (est)${RESET}"
 elif [ "$IS_OR" = 1 ] && [ -s "$HOME/.config/crush/openrouter-key" ]; then
     # OpenRouter monthly credit usage (GET /api/v1/auth/key). Cached + background-refreshed.
     OR_KEY_FILE="$HOME/.config/crush/openrouter-key"

@@ -1,3 +1,8 @@
+### 2.47.0: 2026-08-07
+
+* claude-code: add `model-spend-record.sh` and wire it into the statusline, showing an ongoing monthly $ estimate for `claudeds`/`claudeqwen` sessions. Qwen's DashScope pay-as-you-go tier has no balance/spend endpoint reachable with a plain API key (that lives behind Alibaba Cloud's signed BSS API), and DeepSeek's `/user/balance` gives remaining balance, not spend, so this tracks it locally instead: diffs the statusline's cumulative session token counts against a per-session snapshot and prices the delta at each model's known flat rate, accumulated per calendar month. Cache-hit input is priced at the full rate since the statusline does not expose cumulative cache tokens, so the number is a conservative upper bound, not a bill
+* claude-code: `qwen*` model ids now get their own statusline branch (was falling through to the generic Anthropic rate-limit display), and " max" now title-cases to " Max" in the prettified model label
+
 ### 2.46.0: 2026-08-07
 
 * claude-code: add `claude-code/model-backends.sh`, consolidating the `claudeglm`/`claudeor`/`claudeds` shell functions that were only living ad hoc in `infinity`'s `.bashrc`, plus a new `claudeqwen` for Qwen3.8-Max/Qwen3.6-Flash via DashScope's native Anthropic endpoint. No secrets in the file, each function reads its key from a local `~/.config/` path, so it is safe to publish
