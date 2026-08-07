@@ -1,3 +1,7 @@
+### 2.50.0: 2026-08-07
+
+* install.sh: symlink `claude-code/statusline.sh` to `~/.claude/statusline.sh` and `claude-code/append-changelog.sh` to `~/.claude/hooks/append-changelog.sh` in `setup_claude_code`. `settings.json` references both fixed paths but neither was ever wired into the installer, so a fresh machine needed them linked by hand - on this machine `append-changelog.sh` had drifted into a plain copy instead of a symlink, silently diverging from the repo on every edit; replaced with a real symlink
+
 ### 2.49.0: 2026-08-07
 
 * claude-code: set `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in `claudeglm`/`claudeor`/`claudeds`/`claudeqwen`. Confirmed by reading the shipped Claude Code binary's window-resolution logic that any model id not starting with `claude-` silently falls back to an assumed 200k-token context window, regardless of what the backend actually supports - `claudeqwen` was auto-compacting almost every turn (worse on `--resume`) despite DashScope's real 1M window. `claudeglm` is capped at 128000 (glm-4.5-air's real ceiling, since the var is one flat value covering its Haiku tier too), the others at 1000000
