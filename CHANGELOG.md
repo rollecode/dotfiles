@@ -1,3 +1,9 @@
+### 2.49.0: 2026-08-07
+
+* claude-code: set `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in `claudeglm`/`claudeor`/`claudeds`/`claudeqwen`. Confirmed by reading the shipped Claude Code binary's window-resolution logic that any model id not starting with `claude-` silently falls back to an assumed 200k-token context window, regardless of what the backend actually supports - `claudeqwen` was auto-compacting almost every turn (worse on `--resume`) despite DashScope's real 1M window. `claudeglm` is capped at 128000 (glm-4.5-air's real ceiling, since the var is one flat value covering its Haiku tier too), the others at 1000000
+* install.sh: `print_final_instructions` now lists where to drop the four backend API key files (`~/.config/zai/coding-key`, `~/.config/crush/deepseek-key`, `~/.config/crush/openrouter-key`, `~/.config/qwen/dashscope-key`) - the script wires the shell functions in automatically but, being gitignored secrets, cannot place the keys themselves, and previously said nothing about where they belong
+* claude-code: statusline `$` spend/balance figures (DeepSeek balance+estimate, OpenRouter credit usage, Qwen estimate) now render gold instead of purple, and the estimated (non-API-sourced) DeepSeek/Qwen monthly figures are prefixed `~` instead of suffixed `(est)`
+
 ### 2.48.0: 2026-08-07
 
 * claude-code: stop `usage-pace-record.sh` from recording samples for non-Anthropic backends (`claudeds`, `claudeqwen`, `claudeglm`, `claudeor`). `.rate_limits` is an Anthropic-account concept, but Claude Code still fires it from the cached OAuth session even when a session is routed elsewhere - `ANTHROPIC_BASE_URL` only redirects message traffic, not that status call - so those samples were inflating the real Anthropic weekly pace with usage that never touched the Anthropic plan
