@@ -1,3 +1,7 @@
+### 2.44.1: 2026-08-07
+
+* driftwm: stop restarting DMS on every unlock in `lock-with-capture.sh`. It was a workaround for the volume OSD dying across a lock cycle, which is now fixed in `DankOSD.qml` itself, and the restart masked the bug so the fix could never be verified
+
 ### 2.50.0: 2026-08-07
 
 * install.sh: symlink `claude-code/statusline.sh` to `~/.claude/statusline.sh` and `claude-code/append-changelog.sh` to `~/.claude/hooks/append-changelog.sh` in `setup_claude_code`. `settings.json` references both fixed paths but neither was ever wired into the installer, so a fresh machine needed them linked by hand - on this machine `append-changelog.sh` had drifted into a plain copy instead of a symlink, silently diverging from the repo on every edit; replaced with a real symlink
