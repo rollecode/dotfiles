@@ -33,6 +33,19 @@ command -v jq >/dev/null 2>&1 || exit 0
 INPUT=$(cat 2>/dev/null) || exit 0
 [ -n "$INPUT" ] || exit 0
 
+# The plan's 5h/7d rate limits are an Anthropic-account concept and have nothing
+# to do with a non-Anthropic backend's own quota - but Claude Code still fires
+# `.rate_limits` from the cached Anthropic OAuth session even when a session is
+# routed elsewhere via claudeds/claudeqwen/claudeglm/claudeor (ANTHROPIC_BASE_URL
+# only redirects the message traffic, not this status call). Recording those
+# samples would inflate the real Anthropic weekly pace with usage that never
+# touched the Anthropic plan. Same model-id patterns the statusline already uses
+# to detect these backends.
+MODEL_ID=$(printf '%s' "$INPUT" | jq -r '.model.id // empty' 2>/dev/null)
+case "$MODEL_ID" in
+  glm-*|deepseek-*|qwen*|*/*) exit 0 ;;
+esac
+
 SAMPLE=$(printf '%s' "$INPUT" | jq -c '
   (.rate_limits // {}) as $r
   | select(($r.seven_day.used_percentage != null) or ($r.five_hour.used_percentage != null))

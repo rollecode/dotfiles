@@ -1,3 +1,7 @@
+### 2.48.0: 2026-08-07
+
+* claude-code: stop `usage-pace-record.sh` from recording samples for non-Anthropic backends (`claudeds`, `claudeqwen`, `claudeglm`, `claudeor`). `.rate_limits` is an Anthropic-account concept, but Claude Code still fires it from the cached OAuth session even when a session is routed elsewhere - `ANTHROPIC_BASE_URL` only redirects message traffic, not that status call - so those samples were inflating the real Anthropic weekly pace with usage that never touched the Anthropic plan
+
 ### 2.47.1: 2026-08-07
 
 * claude-code: mark `model-spend-record.sh` executable. The exec bit did not survive the initial commit, so the statusline's background call silently failed with "permission denied" on `infinity`
