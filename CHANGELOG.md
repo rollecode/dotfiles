@@ -1,3 +1,8 @@
+### 2.46.0: 2026-08-07
+
+* claude-code: add `claude-code/model-backends.sh`, consolidating the `claudeglm`/`claudeor`/`claudeds` shell functions that were only living ad hoc in `infinity`'s `.bashrc`, plus a new `claudeqwen` for Qwen3.8-Max/Qwen3.6-Flash via DashScope's native Anthropic endpoint. No secrets in the file, each function reads its key from a local `~/.config/` path, so it is safe to publish
+* claude-code: `install.sh` now sources `model-backends.sh` from `.bashrc`/`.bash_profile`/`.zshrc` automatically (macOS reads `.bash_profile`, never `.bashrc`, same detection `setup_tmux` already used), and `infinity`'s hand-written functions were replaced with the same source line so both machines run the identical file
+
 ### 2.45.0: 2026-08-07
 
 * claude-code: add `date-context-hook.sh`, a UserPromptSubmit hook that stamps the real weekday and date onto every prompt. A session spanning midnight otherwise keeps the date it inferred at session start - `/plan_today` ran at 17:46 believing the workday was still open, then the next morning still reasoned from the previous day until asked directly whether the date had been checked. The hook makes the correction unconditional rather than depending on the model deciding to re-run `date`
