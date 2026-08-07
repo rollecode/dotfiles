@@ -1,4 +1,4 @@
-### 2.44.1: 2026-08-07
+### 2.50.1: 2026-08-07
 
 * driftwm: stop restarting DMS on every unlock in `lock-with-capture.sh`. It was a workaround for the volume OSD dying across a lock cycle, which is now fixed in `DankOSD.qml` itself, and the restart masked the bug so the fix could never be verified
 
