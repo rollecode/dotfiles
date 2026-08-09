@@ -1,3 +1,9 @@
+### 2.51.0: 2026-08-09
+
+* claude-code: statusline shows the reasoning effort between the model and the duration, lowercase, colour-coded by cost: low and medium green, high yellow, xhigh red, max a bold screaming red. Read from `.effort.level`, absent when the model has no effort parameter
+* claude-code: the 5h and 7d usage bars moved onto the first row and narrowed from width 10 to 6, so the statusline is a single line on Anthropic backends
+* claude-code: the bar labels dropped their parentheses (`5h`, `7d`) and the dot separators around them, and the 7d bar is followed by `reset in Xh` from `.rate_limits.seven_day.resets_at`, in whole hours
+
 ### 2.50.2: 2026-08-07
 
 * claude-code: set `DISABLE_FEEDBACK_COMMAND` and `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` in `settings.json`, so `/feedback`, `/bug`, `/share` and the transcript-share survey cannot upload private repo contents

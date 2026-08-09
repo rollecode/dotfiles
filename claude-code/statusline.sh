@@ -56,10 +56,22 @@ if [[ "$MODEL" != *" "* ]]; then     # only reformat raw ids, never pretty Anthr
   MODEL="${MODEL/ multi agent/ Multi-Agent}"
 fi
 MODEL="${MODEL}${CTX1M}"
+
+# Reasoning effort: live session value, lowercase, absent when the model has no
+# effort param. Colour ramps with cost: low/medium green, high yellow, xhigh red,
+# max a bolder screaming red.
+EFFORT=$(echo "$input" | jq -r '.effort.level // empty')
+
 DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 LINES_ADD=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
 LINES_REM=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
 CTX_PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | awk '{printf "%.0f", $1}')
+
+# Rate-limit usage, rendered as inline bars on the first row (Anthropic backends).
+# Empty on backends that report quota elsewhere (GLM, DeepSeek, ...).
+FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+WEEK=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+WEEK_RESET=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 
 # Ensure numeric values have defaults
 LINES_ADD=${LINES_ADD:-0}
@@ -85,8 +97,33 @@ YELLOW='\033[38;2;249;226;175m'
 RED='\033[38;2;243;139;168m'
 MAUVE='\033[38;2;203;166;247m'
 GOLD='\033[38;2;212;175;55m'
+PURPLE='\033[38;2;160;32;240m'
+SCREAM='\033[1m\033[38;2;255;0;0m'   # bold pure red for max
 DIM='\033[2m'
 RESET='\033[0m'
+
+# Map effort level to a colour once, here where the palette is defined.
+EFFORT_COLOR=""
+case "$EFFORT" in
+    low|medium) EFFORT_COLOR="$GREEN" ;;
+    high)       EFFORT_COLOR="$YELLOW" ;;
+    xhigh)      EFFORT_COLOR="$RED" ;;
+    max)        EFFORT_COLOR="$SCREAM" ;;
+esac
+
+# Narrow usage bar, shown inline on the first row.
+make_bar() {
+    local pct=${1%.*}
+    local label=$2
+    local width=6
+    local filled=$(( pct * width / 100 ))
+    [ "$filled" -gt "$width" ] && filled=$width
+    local empty=$(( width - filled ))
+    local bar=""
+    for ((i=0; i<filled; i++)); do bar+="━"; done
+    for ((i=0; i<empty; i++)); do bar+="─"; done
+    printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}%s${RESET}" "$bar" "$pct" "$label"
+}
 
 # Read Code::Stats XP for today from counter file
 XP_FILE="/tmp/codestats-xp-today"
@@ -104,6 +141,11 @@ fi
 
 # Build output line
 LINE="${CYAN}${MODEL}${RESET}"
+
+# Effort, between model and duration
+if [ -n "$EFFORT" ]; then
+    LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${EFFORT_COLOR}${EFFORT}${RESET}"
+fi
 
 # Duration and context %
 LINE="${LINE} ${DIM}\xC2\xB7${RESET} \033[38;2;187;194;206m${DURATION_FMT}${RESET} ${DIM}\xC2\xB7${RESET} \033[38;2;171;179;241m${CTX_PCT}%${RESET}"
@@ -125,23 +167,25 @@ if [ "$SESSION_XP" -gt 0 ]; then
     LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${XP_PART}"
 fi
 
-printf '%b\n' "$LINE"
+# Usage bars inline on the first row (Anthropic backends). Other backends report
+# their quota/balance below, since it needs a network fetch first.
+if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
+    USAGE_BARS=""
+    [ -n "$FIVE_H" ] && USAGE_BARS="$(make_bar "$FIVE_H" "5h")"
+    if [ -n "$WEEK" ]; then
+        [ -n "$USAGE_BARS" ] && USAGE_BARS="${USAGE_BARS}  "
+        USAGE_BARS="${USAGE_BARS}$(make_bar "$WEEK" "7d")"
+        # Hours until the 7-day window resets, rounded up so it never reads 0h early.
+        if [ -n "$WEEK_RESET" ]; then
+            RH=$(( (WEEK_RESET - $(date +%s) + 3599) / 3600 ))
+            [ "$RH" -lt 0 ] && RH=0
+            USAGE_BARS="${USAGE_BARS} ${DIM}reset in ${RH}h${RESET}"
+        fi
+    fi
+    LINE="${LINE}  ${USAGE_BARS}"
+fi
 
-# Second row: usage progress bars. On the z.ai GLM backend this shows the coding-plan
-# quota (5-hour token cycle + weekly); otherwise Claude.ai's own 5-hour + 7-day limits.
-PURPLE='\033[38;2;160;32;240m'
-make_bar() {
-    local pct=${1%.*}
-    local label=$2
-    local width=10
-    local filled=$(( pct * width / 100 ))
-    [ "$filled" -gt "$width" ] && filled=$width
-    local empty=$(( width - filled ))
-    local bar=""
-    for ((i=0; i<filled; i++)); do bar+="━"; done
-    for ((i=0; i<empty; i++)); do bar+="─"; done
-    printf "${PURPLE}%s${RESET} ${PURPLE}%d%%${RESET} ${DIM}(%s)${RESET}" "$bar" "$pct" "$label"
-}
+printf '%b\n' "$LINE"
 
 # Reads the running monthly total model-spend-record.sh maintains for a provider
 # (deepseek/qwen). Empty output if there is no current-month total yet.
@@ -240,18 +284,6 @@ elif [ "$IS_OR" = 1 ] && [ -s "$HOME/.config/crush/openrouter-key" ]; then
         LIMIT=$(jq -r '.data.limit // empty' "$CACHE" 2>/dev/null)
         [ -n "$USED" ] && [ -n "$LIMIT" ] && awk -v u="$USED" -v l="$LIMIT" 'BEGIN{printf "'"${GOLD}"'$%.2f'"${RESET}"' '"${DIM}"'/ $%.0f this month'"${RESET}"'\n", u, l}'
     fi
-else
-    FIVE_H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-    WEEK=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
-    if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
-        LINE2=""
-        if [ -n "$FIVE_H" ]; then
-            LINE2="$(make_bar "$FIVE_H" "5h")"
-        fi
-        if [ -n "$WEEK" ]; then
-            [ -n "$LINE2" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} "
-            LINE2="${LINE2}$(make_bar "$WEEK" "7d")"
-        fi
-        printf '%b\n' "$LINE2"
-    fi
 fi
+# Anthropic 5h/7d usage renders inline on the first row, so there is no default
+# second row here.
