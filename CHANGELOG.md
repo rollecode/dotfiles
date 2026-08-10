@@ -1,3 +1,7 @@
+### 2.52.2: 2026-08-10
+
+* claude-code: use Anthropic's actual plan names, "Max 20x" and "Team 6.25x", instead of the invented "Max x20 personal" / "Team Premium" from the previous pass - Rolle corrected both the multiplier order and the wording. Drops the seat-tier guess entirely since the multiplier itself is the real name. The multiplier is parsed out of `organizationRateLimitTier` and now supports a decimal (`.` or `_` as the separator), needed for Team's fractional 6.25x
+
 ### 2.52.1: 2026-08-10
 
 * claude-code: rework the account tag to show the plan name instead of the email. Both of Rolle's accounts share the same email, so `roni@dude.fi (Max)` told him nothing - the tag is now `Max x20 personal` (parsed from `organizationRateLimitTier`) or `Team <seat tier>` for a real company org, e.g. `Team Premium`

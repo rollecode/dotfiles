@@ -5,38 +5,30 @@
 input=$(cat)
 
 # Which subscription this session is authenticated as. Rolle runs two
-# accounts (a personal Max plan and a team org) under the same email, so the
-# email tells him nothing - only the plan/seat name distinguishes them, and
-# the only way to read that otherwise is to grep ~/.claude.json by hand.
+# accounts (Max and Team) under the same email, so the email tells him
+# nothing - only the plan name distinguishes them, and the only way to read
+# that otherwise is to grep ~/.claude.json by hand.
 #
-# The personal plan's org is auto-named "<email>'s Organization" by Anthropic
-# for individual subscribers, so that pattern is treated as "not a real team
-# org" and labelled "Max xNN personal" using organizationRateLimitTier (e.g.
-# "default_claude_max_20x" -> "Max x20"). A real company org is labelled
-# "Team" plus its seat tier when Anthropic reports one (seatTier), e.g. "Team
-# Premium" - untested against a live team account (this machine has only
-# authenticated as the personal plan), so the exact wording may need a tweak
-# once actually seen.
+# Official plan names are "Max 20x" and "Team 6.25x" (the multiplier is
+# Anthropic's own rate-limit tier number, not a made-up label), built from
+# organizationType ("claude_max" -> "Max", "claude_team" -> "Team", etc.) and
+# the multiplier parsed out of organizationRateLimitTier, e.g.
+# "default_claude_max_20x" -> 20, a hypothetical "default_claude_team_6.25x"
+# -> 6.25. Decimal separator may be "." or "_" in the raw tier string, both
+# are normalised to a dot.
 ACCOUNT_TAG=""
 if [ -f "$HOME/.claude.json" ]; then
     ACCOUNT_TAG=$(jq -r '
         .oauthAccount // empty
-        | (.organizationName // "") as $org
         | (.organizationType // "") as $type
         | (.organizationRateLimitTier // "") as $rateTier
-        | (.seatTier // "") as $seat
-        | ([$rateTier | capture("_max_(?<mult>[0-9]+)x$")?] | first.mult) as $mult
-        | (if $mult then "Max x" + $mult
-           elif ($rateTier | test("_pro")) then "Pro"
-           elif $type == "claude_max" then "Max"
+        | (if $type == "claude_max" then "Max"
+           elif $type == "claude_team" then "Team"
            elif $type == "claude_pro" then "Pro"
            elif $type != "" then $type
-           else "Personal" end) as $planLabel
-        | if ($org | endswith("'"'"'s Organization")) then
-            $planLabel + " personal"
-          else
-            "Team" + (if $seat != "" then " " + ($seat[0:1] | ascii_upcase) + $seat[1:] else " (" + ($org[0:16]) + ")" end)
-          end
+           else "Account" end) as $planLabel
+        | ([$rateTier | capture("_(?<mult>[0-9]+(?:[._][0-9]+)?)x$")?] | first.mult) as $mult
+        | if $mult then $planLabel + " " + ($mult | gsub("_"; ".")) + "x" else $planLabel end
     ' "$HOME/.claude.json" 2>/dev/null)
 fi
 # Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
