@@ -1,3 +1,7 @@
+### 2.52.3: 2026-08-10
+
+* claude-code: fix the account tag showing bare "Team" with no multiplier. `organizationRateLimitTier` only carries a multiplier for Max accounts ("default_claude_max_20x"); on Team it is "default_raven", an internal codename with no number in it at all - the regex from the previous pass could never have matched, guessed or not. Rolle read the real values off the team-account machine: `organizationType: claude_team`, `seatTier: team_tier_1`. The multiplier is Anthropic's own tier name, not derivable, so team_tier_1 is now a small lookup mapped to "6.25x"; an unmapped tier shows the raw seat-tier string instead of a fabricated number
+
 ### 2.52.2: 2026-08-10
 
 * claude-code: use Anthropic's actual plan names, "Max 20x" and "Team 6.25x", instead of the invented "Max x20 personal" / "Team Premium" from the previous pass - Rolle corrected both the multiplier order and the wording. Drops the seat-tier guess entirely since the multiplier itself is the real name. The multiplier is parsed out of `organizationRateLimitTier` and now supports a decimal (`.` or `_` as the separator), needed for Team's fractional 6.25x

@@ -9,26 +9,37 @@ input=$(cat)
 # nothing - only the plan name distinguishes them, and the only way to read
 # that otherwise is to grep ~/.claude.json by hand.
 #
-# Official plan names are "Max 20x" and "Team 6.25x" (the multiplier is
-# Anthropic's own rate-limit tier number, not a made-up label), built from
-# organizationType ("claude_max" -> "Max", "claude_team" -> "Team", etc.) and
-# the multiplier parsed out of organizationRateLimitTier, e.g.
-# "default_claude_max_20x" -> 20, a hypothetical "default_claude_team_6.25x"
-# -> 6.25. Decimal separator may be "." or "_" in the raw tier string, both
-# are normalised to a dot.
+# Official plan names are "Max 20x" and "Team 6.25x". The multiplier lives in
+# a DIFFERENT field depending on account type - confirmed by reading both live:
+#   Max:  organizationRateLimitTier = "default_claude_max_20x"  -> parse the "20"
+#   Team: organizationRateLimitTier = "default_raven" (an internal codename,
+#         no multiplier in it at all); the multiplier is really encoded in
+#         seatTier ("team_tier_1" confirmed = 6.25x), which needs a lookup
+#         table rather than a parse since Anthropic's tier-name -> multiplier
+#         mapping is not published anywhere. Add a row here if another team
+#         tier shows up; an unmapped one falls back to the bare seatTier
+#         string rather than a guessed number.
 ACCOUNT_TAG=""
 if [ -f "$HOME/.claude.json" ]; then
     ACCOUNT_TAG=$(jq -r '
         .oauthAccount // empty
         | (.organizationType // "") as $type
         | (.organizationRateLimitTier // "") as $rateTier
+        | (.seatTier // "") as $seat
+        | {"team_tier_1": "6.25x"} as $teamTierMultipliers
         | (if $type == "claude_max" then "Max"
            elif $type == "claude_team" then "Team"
            elif $type == "claude_pro" then "Pro"
            elif $type != "" then $type
            else "Account" end) as $planLabel
-        | ([$rateTier | capture("_(?<mult>[0-9]+(?:[._][0-9]+)?)x$")?] | first.mult) as $mult
-        | if $mult then $planLabel + " " + ($mult | gsub("_"; ".")) + "x" else $planLabel end
+        | if $type == "claude_team" then
+            if $teamTierMultipliers[$seat] then $planLabel + " " + $teamTierMultipliers[$seat]
+            elif $seat != "" then $planLabel + " (" + $seat + ")"
+            else $planLabel end
+          else
+            ([$rateTier | capture("_(?<mult>[0-9]+(?:[._][0-9]+)?)x$")?] | first.mult) as $mult
+            | if $mult then $planLabel + " " + ($mult | gsub("_"; ".")) + "x" else $planLabel end
+          end
     ' "$HOME/.claude.json" 2>/dev/null)
 fi
 # Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
