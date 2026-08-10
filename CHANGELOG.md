@@ -1,3 +1,8 @@
+### 2.52.1: 2026-08-10
+
+* claude-code: rework the account tag to show the plan name instead of the email. Both of Rolle's accounts share the same email, so `roni@dude.fi (Max)` told him nothing - the tag is now `Max x20 personal` (parsed from `organizationRateLimitTier`) or `Team <seat tier>` for a real company org, e.g. `Team Premium`
+* Fix a jq bug that made the personal-org branch fail silently for anything except the exact tier already seen: `capture(...)?` on a non-matching string yields zero values rather than `null`, so the `as $mult |` pipeline consuming it short-circuited and produced no output at all - not degraded output, none. Wrapping the capture in `[...]` so it always yields an array (empty or one element) fixes it, verified against a personal Max account, a synthetic team account with a seat tier, one without, and a synthetic Pro account
+
 ### 2.52.0: 2026-08-10
 
 * claude-code: statusline shows which account a session is authenticated as - `email (Max)` for the personal plan, `email (Org Name)` for a team org. Rolle runs a personal Max subscription and a team account and switches between them with `claude login`; without this the only way to tell which one is active was to grep `~/.claude.json` by hand. The personal plan's org is auto-named "`<email>`'s Organization" by Anthropic, so that pattern is what distinguishes it from a real team org rather than a hardcoded org id
