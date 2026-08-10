@@ -1,3 +1,7 @@
+### 2.52.0: 2026-08-10
+
+* claude-code: statusline shows which account a session is authenticated as - `email (Max)` for the personal plan, `email (Org Name)` for a team org. Rolle runs a personal Max subscription and a team account and switches between them with `claude login`; without this the only way to tell which one is active was to grep `~/.claude.json` by hand. The personal plan's org is auto-named "`<email>`'s Organization" by Anthropic, so that pattern is what distinguishes it from a real team org rather than a hardcoded org id
+
 ### 2.51.0: 2026-08-09
 
 * claude-code: statusline shows the reasoning effort between the model and the duration, lowercase, colour-coded by cost: low and medium green, high yellow, xhigh red, max a bold screaming red. Read from `.effort.level`, absent when the model has no effort parameter

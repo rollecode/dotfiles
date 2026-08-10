@@ -1,8 +1,37 @@
 #!/bin/bash
 # Claude Code status line with Code::Stats XP and token usage
-# Shows: Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
+# Shows: Account · Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
 
 input=$(cat)
+
+# Which subscription this session is authenticated as. Rolle runs two
+# accounts (a personal Max plan and a team org) and switches between them
+# with `claude login` - without this, the only way to tell which one a
+# session is spending against is to grep ~/.claude.json by hand.
+#
+# The personal plan's org is auto-named "<email>'s Organization" by Anthropic
+# for individual subscribers, so that pattern is treated as "not a real team
+# org" and labelled by plan tier instead. Any other org name is an actual
+# company/team org, so it is shown as-is (truncated so it cannot blow out the
+# line).
+ACCOUNT_TAG=""
+if [ -f "$HOME/.claude.json" ]; then
+    ACCOUNT_TAG=$(jq -r '
+        .oauthAccount // empty
+        | (.emailAddress // "?") as $email
+        | (.organizationName // "") as $org
+        | (.organizationType // "") as $type
+        | (if $type == "claude_max" then "Max"
+           elif $type == "claude_pro" then "Pro"
+           elif $type == "" then "personal"
+           else $type end) as $planLabel
+        | if ($org | endswith("'"'"'s Organization")) then
+            $email + " (" + $planLabel + ")"
+          else
+            $email + " (" + ($org[0:20]) + ")"
+          end
+    ' "$HOME/.claude.json" 2>/dev/null)
+fi
 # Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
 # slow disk can never stall the status line, and silent so it can never corrupt it.
 ( printf '%s' "$input" | "$HOME/.claude/usage-pace-record.sh" >/dev/null 2>&1 & ) 2>/dev/null
@@ -140,7 +169,11 @@ if [ -f "$XP_FILE" ]; then
 fi
 
 # Build output line
-LINE="${CYAN}${MODEL}${RESET}"
+LINE=""
+if [ -n "$ACCOUNT_TAG" ]; then
+    LINE="${MAUVE}${ACCOUNT_TAG}${RESET} ${DIM}\xC2\xB7${RESET} "
+fi
+LINE="${LINE}${CYAN}${MODEL}${RESET}"
 
 # Effort, between model and duration
 if [ -n "$EFFORT" ]; then
