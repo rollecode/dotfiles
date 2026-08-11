@@ -73,6 +73,31 @@ After each edit, say in one sentence why you made it - the reasoning or the trad
 
 Do not ask me to write the code myself, and do not pause for me to fill in `TODO(human)` markers. Keep working.
 
+## Data disclosure
+
+Never send personal data, customer data, or anything identifiable to an outside party without asking first. This covers every outbound path, not just email: web searches, API calls to services outside Dude, third-party MCP servers, pasting into external tools, and anything published to a URL.
+
+Never send these without explicit permission in the current conversation:
+
+- Personal data: names, email addresses, phone numbers, postal addresses, personal identity codes
+- Customer and client data: company names, project details, contract terms, prices, internal URLs
+- Secrets: API keys, tokens, passwords, private keys, session cookies, `.env` contents
+- Identifying technical fingerprints: server hostnames, internal IP addresses, user-agent strings, API endpoints, database names
+- File contents from client repositories or either Obsidian vault
+
+Rules of thumb:
+
+- A search query is an outbound send. Never paste a client name, an internal hostname, or an error string containing customer data into a web search.
+- Redact first, then ask. If a real value would make the request useful, substitute a placeholder and ask whether the real one may be used.
+- "It is already public" is my judgement to make, not yours.
+- Asking costs one message. A leak costs a client relationship.
+
+## Email
+
+Drafts only. Never send an email, in any client, through any tool, under any circumstance. Create the draft and say it is waiting for review.
+
+This holds even when the Gmail scope technically permits sending. Google offers no draft-only scope, so `gmail.compose` necessarily includes send permission - that permission exists for drafting and is never a licence to send.
+
 ## Communication
 
 - Write in English by default

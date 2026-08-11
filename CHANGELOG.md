@@ -1,3 +1,8 @@
+### 2.53.0: 2026-08-11
+
+* claude-code: add a data disclosure section to `user-memory.md`. Never send personal data, customer data, secrets or identifying technical fingerprints (hostnames, internal IPs, user-agent strings, API endpoints) to an outside party without asking first, on any outbound path - web searches and third-party MCP servers count, not just email. Redact and ask rather than guess, and treat "it is already public" as Rolle's call
+* claude-code: add an email section to `user-memory.md`. Drafts only, never send. Google has no draft-only scope so `gmail.compose` carries send permission whether or not it is wanted; the rule closes that gap before the scope is granted
+
 ### 2.52.3: 2026-08-10
 
 * claude-code: fix the account tag showing bare "Team" with no multiplier. `organizationRateLimitTier` only carries a multiplier for Max accounts ("default_claude_max_20x"); on Team it is "default_raven", an internal codename with no number in it at all - the regex from the previous pass could never have matched, guessed or not. Rolle read the real values off the team-account machine: `organizationType: claude_team`, `seatTier: team_tier_1`. The multiplier is Anthropic's own tier name, not derivable, so team_tier_1 is now a small lookup mapped to "6.25x"; an unmapped tier shows the raw seat-tier string instead of a fabricated number
