@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code status line with Code::Stats XP and token usage
-# Shows: Account · Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
+# Shows: host · Account · Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
 
 input=$(cat)
 
@@ -178,10 +178,58 @@ if [ -f "$XP_FILE" ]; then
     fi
 fi
 
+# Machine chip, first thing on the row. Sessions on different boxes are otherwise
+# indistinguishable, so the hostname carries a background colour derived from the
+# name itself: the same host is always the same colour without a per-machine
+# config, and unrelated names land on unrelated hues. Saturation is fixed and
+# lightness varies over three steps, so every generated colour stays legible.
+HOST_NAME=$(hostname -s 2>/dev/null) || HOST_NAME="${HOSTNAME%%.*}"
+HOST_TAG=""
+if [ -n "$HOST_NAME" ]; then
+    # CRC32 rather than a hash rolled by hand in awk. A rolling hash folded to
+    # 360 does not avalanche: mac and linux came out one degree apart and mbp
+    # and nanoclaw came out identical. cksum is POSIX and its CRC is specified,
+    # so macOS and Linux agree on the number for the same name.
+    HOST_HASH=$(printf '%s' "$HOST_NAME" | cksum | cut -d' ' -f1)
+    HOST_SGR=$(awk -v hash="${HOST_HASH:-0}" '
+        function hue2rgb(p, q, t) {
+            if (t < 0) t += 1
+            if (t > 1) t -= 1
+            if (t < 1 / 6) return p + (q - p) * 6 * t
+            if (t < 1 / 2) return q
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+            return p
+        }
+        BEGIN {
+            # Spend the whole 32-bit CRC rather than folding it to 360 hues: the
+            # low 16 bits drive a continuous hue, the next 8 saturation and the
+            # top 8 lightness. That is 2^32 distinct inputs landing in 24-bit
+            # colour, so two hosts collide only when their CRCs nearly do.
+            # Saturation and lightness stay inside bands that keep the chip
+            # readable - full range would allow near-black and near-white.
+            h = (hash % 65536) / 65536
+            s = 0.45 + 0.35 * ((int(hash / 65536) % 256) / 256)
+            l = 0.30 + 0.22 * ((int(hash / 16777216) % 256) / 256)
+            q = (l < 0.5) ? l * (1 + s) : l + s - l * s
+            p = 2 * l - q
+            r = int(hue2rgb(p, q, h + 1 / 3) * 255 + 0.5)
+            g = int(hue2rgb(p, q, h) * 255 + 0.5)
+            b = int(hue2rgb(p, q, h - 1 / 3) * 255 + 0.5)
+            # Perceived luminance picks the text colour, so a yellow-ish hue does
+            # not end up as white on near-white.
+            lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+            fg = (lum > 0.5) ? "38;2;17;17;27" : "38;2;255;255;255"
+            printf "48;2;%d;%d;%d;%s", r, g, b, fg
+        }
+    ')
+    HOST_TAG="\033[${HOST_SGR}m ${HOST_NAME} ${RESET}"
+fi
+
 # Build output line
 LINE=""
+[ -n "$HOST_TAG" ] && LINE="${HOST_TAG} "
 if [ -n "$ACCOUNT_TAG" ]; then
-    LINE="${MAUVE}${ACCOUNT_TAG}${RESET} ${DIM}\xC2\xB7${RESET} "
+    LINE="${LINE}${MAUVE}${ACCOUNT_TAG}${RESET} ${DIM}\xC2\xB7${RESET} "
 fi
 LINE="${LINE}${CYAN}${MODEL}${RESET}"
 

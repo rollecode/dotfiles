@@ -1,3 +1,7 @@
+### 2.54.0: 2026-08-11
+
+* claude-code: put the hostname first on the statusline as a coloured chip, so sessions on different boxes are distinguishable at a glance. The background colour is derived from the hostname itself, so a machine always gets the same colour with no per-machine config. Uses CRC32 via `cksum` rather than a hash rolled by hand in awk: a rolling hash folded to 360 hues does not avalanche, and put `mac` and `linux` one degree apart and `mbp` and `nanoclaw` on the identical colour. The full 32-bit CRC is spent across hue, saturation and lightness instead of only hue, and saturation and lightness are held inside bands that stay readable. Text colour flips between near-black and white on the background's perceived luminance
+
 ### 2.53.0: 2026-08-11
 
 * claude-code: add a data disclosure section to `user-memory.md`. Never send personal data, customer data, secrets or identifying technical fingerprints (hostnames, internal IPs, user-agent strings, API endpoints) to an outside party without asking first, on any outbound path - web searches and third-party MCP servers count, not just email. Redact and ask rather than guess, and treat "it is already public" as Rolle's call
