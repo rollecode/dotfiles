@@ -1,3 +1,7 @@
+### 2.54.1: 2026-08-12
+
+* claude-code: fix `/claudeusage` reporting "unavailable" every time. `burn_rates()` used `prev.get("ts", ts)` to default a missing timestamp, but a `.get(key, default)` default only fires when the key is absent - a ledger row carrying an explicit `"w": None` (rather than no `"w"` key at all) still returned `None`, and subtracting `None` from a number raised `TypeError`, killing the whole reading. Written on the Mac 11.8.2026, left uncommitted; verified the exact `{"w": None}` row crashes on the old code and degrades cleanly on the fix, and the existing test-claude-pace.py suite still passes in full
+
 ### 2.54.0: 2026-08-11
 
 * claude-code: put the hostname first on the statusline as a coloured chip, so sessions on different boxes are distinguishable at a glance. The background colour is derived from the hostname itself, so a machine always gets the same colour with no per-machine config. Uses CRC32 via `cksum` rather than a hash rolled by hand in awk: a rolling hash folded to 360 hues does not avalanche, and put `mac` and `linux` one degree apart and `mbp` and `nanoclaw` on the identical colour. The full 32-bit CRC is spent across hue, saturation and lightness instead of only hue, and saturation and lightness are held inside bands that stay readable. Text colour flips between near-black and white on the background's perceived luminance

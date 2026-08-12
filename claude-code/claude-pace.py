@@ -189,8 +189,16 @@ def burn_rates(rows, week_start, now):
             prev = None if ts is None or ts < week_start else r
             continue
         if prev is not None:
-            dt = ts - prev.get("ts", ts)
-            dw = w - prev.get("w", w)
+            # A default only applies when the KEY IS ABSENT: a row carrying an
+            # explicit "w": None returned None here and the subtraction raised
+            # TypeError, which killed the whole reading - /claudeusage answered
+            # "unavailable" every time (11.8.2026).
+            p_ts, p_w = prev.get("ts"), prev.get("w")
+            if p_ts is None or p_w is None:
+                prev = r
+                continue
+            dt = ts - p_ts
+            dw = w - p_w
             if 0 < dt <= ACTIVE_GAP_S and dw >= 0:
                 overall_dw += dw
                 overall_dt += dt
