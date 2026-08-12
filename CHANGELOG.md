@@ -2,6 +2,7 @@
 
 * Tighten commit and CHANGELOG conventions
 * Define patch vs minor vs major explicitly
+* Snapshot tmux layout on session create and close
 
 ### 2.55.0: 2026-08-12
 
