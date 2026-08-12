@@ -12,7 +12,8 @@
 - Use `*` as bullets in CHANGELOG.md
 - CHANGELOG.md bullets: 2-10 words
 - Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
-- One version bump per work session, not per commit or per fix. Consolidate same-day changes into a single sensible minor or patch bump instead of stacking patches
+- Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
+- One version bump per work session, not per commit or per fix. Consolidate same-day changes into it
 - Never use Claude watermark in commits (FORBIDDEN: "Co-Authored-By")
 - No emojis in commits or code
 - Keep CHANGELOG.md date up to date when adding entries

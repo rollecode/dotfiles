@@ -60,7 +60,8 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - MINIMAL, CONCISE, STRAIGHT TO THE POINT. Applies to code, comments, commits and PR bodies alike
 - No excessive code comments. A comment earns its place only when the code cannot state the constraint itself. Never write a paragraph to explain a few lines, never narrate what the next line does, never justify the change to a reviewer. If a comment is needed at all, one or two lines
 - Never `git add -A` or `git add .` when a build step can generate ignored files: stage explicit paths. During a rebase the ignore rules of the replayed commit apply, not the final ones, so a generated secret can slip in
-- One version bump per work session, not per fix. Consolidate same-day changes into a single sensible minor or patch bump instead of stacking patches
+- Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
+- One version bump per work session, not per fix. Consolidate same-day changes into it
 
 ## Task list discipline
 
