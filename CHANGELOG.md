@@ -1,6 +1,7 @@
 ### 2.55.1: 2026-08-12
 
 * Tighten commit and CHANGELOG conventions
+* Define patch vs minor vs major explicitly
 
 ### 2.55.0: 2026-08-12
 
