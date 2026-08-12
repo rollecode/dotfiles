@@ -1,3 +1,7 @@
+### 2.55.0: 2026-08-12
+
+* Fix the Dayflow filter in `kb-session-capture.sh`. It matched the custom MCP's tool names (`dayflow_get_timeline` and friends), which stopped existing when Dayflow 2.1.0's official server replaced them, so screen-observation noise was about to start leaking into the knowledge base. Now matches `mcp__dayflow__` and the new tool names too, keeping the old ones for sessions already in the vault
+
 ### 2.54.1: 2026-08-12
 
 * claude-code: fix `/claudeusage` reporting "unavailable" every time. `burn_rates()` used `prev.get("ts", ts)` to default a missing timestamp, but a `.get(key, default)` default only fires when the key is absent - a ledger row carrying an explicit `"w": None` (rather than no `"w"` key at all) still returned `None`, and subtracting `None` from a number raised `TypeError`, killing the whole reading. Written on the Mac 11.8.2026, left uncommitted; verified the exact `{"w": None}` row crashes on the old code and degrades cleanly on the fix, and the existing test-claude-pace.py suite still passes in full

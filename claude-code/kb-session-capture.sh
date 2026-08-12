@@ -117,8 +117,12 @@ lines = [
     "",
 ]
 for role, text in turns:
-    # Filter out Dayflow timeline data - it's noisy screen observations, not knowledge
-    if any(kw in text for kw in ["dayflow_get_timeline", "dayflow_get_observations", "dayflow_search_timeline", "dayflow_get_daily_stats", "dayflow_get_recent_activity", '"appSites"', '"distractions"', "start_ts", "end_ts"]):
+    # Filter out Dayflow timeline data - it's noisy screen observations, not knowledge.
+    # Tool names changed when the custom dayflow MCP was replaced by the official
+    # server in Dayflow 2.1.0 (12.8.2026): the dayflow_ prefix is gone, so the old
+    # keywords alone stopped matching anything. Both sets are kept, since older
+    # sessions in the vault still carry the prefixed names.
+    if any(kw in text for kw in ["dayflow_get_timeline", "dayflow_get_observations", "dayflow_search_timeline", "dayflow_get_daily_stats", "dayflow_get_recent_activity", "mcp__dayflow__", "get_time_breakdown", '"appSites"', '"distractions"', "start_ts", "end_ts"]):
         continue
     lines.append(f"## {role}")
     lines.append("")
