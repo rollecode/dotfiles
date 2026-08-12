@@ -2,15 +2,17 @@
 
 - 2 space indents
 - One logical change per commit
-- Keep commit messages concise (one line), use sentence case
+- Commit subjects: one line, under 50 characters (GitHub's display limit), sentence case
 - Commit each change
-- Update CHANGELOG.md after each change
 - Use present tense in commits and CHANGELOG.md
 - Use sentence case for headings (not Title Case)
 - Never use bold text as headings, use proper heading levels instead
 - Always add an empty line after headings
 - No formatting in CHANGELOG.md except `inline code` and when absolute necessary
 - Use `*` as bullets in CHANGELOG.md
+- CHANGELOG.md bullets: 2-10 words
+- Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
+- One version bump per work session, not per commit or per fix. Consolidate same-day changes into a single sensible minor or patch bump instead of stacking patches
 - Never use Claude watermark in commits (FORBIDDEN: "Co-Authored-By")
 - No emojis in commits or code
 - Keep CHANGELOG.md date up to date when adding entries

@@ -54,10 +54,13 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - No emojis in commits or code (emojis in conversation are fine)
 - Use present tense in commits
 - Use sentence case for headings
-- Logical one-line commits: concise but complete, never truncated. Keep the subject within 72 characters
+- Commit subjects: one line, under 50 characters (GitHub's display limit)
+- CHANGELOG.md bullets: 2-10 words
+- Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
 - MINIMAL, CONCISE, STRAIGHT TO THE POINT. Applies to code, comments, commits and PR bodies alike
 - No excessive code comments. A comment earns its place only when the code cannot state the constraint itself. Never write a paragraph to explain a few lines, never narrate what the next line does, never justify the change to a reviewer. If a comment is needed at all, one or two lines
 - Never `git add -A` or `git add .` when a build step can generate ignored files: stage explicit paths. During a rebase the ignore rules of the replayed commit apply, not the final ones, so a generated secret can slip in
+- One version bump per work session, not per fix. Consolidate same-day changes into a single sensible minor or patch bump instead of stacking patches
 
 ## Task list discipline
 
