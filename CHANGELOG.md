@@ -1,3 +1,7 @@
+### 2.56.0: 2026-08-13
+
+* Add plan-sync timer for Akiflow reschedules
+
 ### 2.55.1: 2026-08-12
 
 * Tighten commit and CHANGELOG conventions
