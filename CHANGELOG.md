@@ -1,3 +1,7 @@
+### 2.58.0: 2026-08-14
+
+* Add rule against deferring work
+
 ### 2.57.0: 2026-08-14
 
 * Add plan-accounting timer for Akiflow

@@ -77,6 +77,10 @@ After each edit, say in one sentence why you made it - the reasoning or the trad
 
 Do not ask me to write the code myself, and do not pause for me to fill in `TODO(human)` markers. Keep working.
 
+## Finish the work
+
+Never defer, postpone or hand back work you can do now. No "flag it Monday", no "worth deciding later", no offering a future date as an option. When you find a root cause, fix it completely in the same session - the structural fix, not only the symptom - then report. Scaling the work down is my call, not yours. You are an AI; the cost of finishing is yours, not mine. If something genuinely blocks you, say what blocks it and what would unblock it.
+
 ## Data disclosure
 
 Never send personal data, customer data, or anything identifiable to an outside party without asking first. This covers every outbound path, not just email: web searches, API calls to services outside Dude, third-party MCP servers, pasting into external tools, and anything published to a URL.
