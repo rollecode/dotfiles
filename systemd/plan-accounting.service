@@ -1,0 +1,9 @@
+[Unit]
+Description=Push the morning plan into Akiflow and stamp source ids
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/Projects/claude-day-planner/scripts/plan-accounting-run.sh
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+TimeoutStartSec=1200

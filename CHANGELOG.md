@@ -1,3 +1,7 @@
+### 2.57.0: 2026-08-14
+
+* Add plan-accounting timer for Akiflow
+
 ### 2.56.0: 2026-08-13
 
 * Add plan-sync timer for Akiflow reschedules
