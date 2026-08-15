@@ -1,3 +1,7 @@
+### 2.59.0: 2026-08-15
+
+* Remove the plan-accounting timer
+
 ### 2.58.0: 2026-08-14
 
 * Add rule against deferring work

@@ -857,10 +857,7 @@ setup_claude_code() {
             systemctl --user daemon-reload 2>/dev/null || true
             systemctl --user enable --now plan-sync.timer 2>/dev/null || true
         fi
-        ln -sfn "$dotfiles_dir/systemd/plan-accounting.service" "$HOME/.config/systemd/user/plan-accounting.service"
-        ln -sfn "$dotfiles_dir/systemd/plan-accounting.timer" "$HOME/.config/systemd/user/plan-accounting.timer"
-        systemctl --user enable --now plan-accounting.timer 2>/dev/null || true
-        print_success "Plan sync timers symlinked"
+        print_success "Plan sync timer symlinked"
     fi
 
     # Global instructions Claude Code reads at session start
