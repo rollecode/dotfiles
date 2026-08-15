@@ -1,6 +1,7 @@
 ### 2.59.0: 2026-08-15
 
 * Remove the plan-accounting timer
+* Show user@host in statusline chip
 
 ### 2.58.0: 2026-08-14
 

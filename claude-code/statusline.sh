@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code status line with Code::Stats XP and token usage
-# Shows: host · Account · Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
+# Shows: user@host · Account · Model · branch · 15k in 5k out · +156 -23 · XP: 123 (Shell)
 
 input=$(cat)
 
@@ -184,6 +184,7 @@ fi
 # config, and unrelated names land on unrelated hues. Saturation is fixed and
 # lightness varies over three steps, so every generated colour stays legible.
 HOST_NAME=$(hostname -s 2>/dev/null) || HOST_NAME="${HOSTNAME%%.*}"
+USER_NAME=$(id -un 2>/dev/null) || USER_NAME="$USER"
 HOST_TAG=""
 if [ -n "$HOST_NAME" ]; then
     # CRC32 rather than a hash rolled by hand in awk. A rolling hash folded to
@@ -222,7 +223,7 @@ if [ -n "$HOST_NAME" ]; then
             printf "48;2;%d;%d;%d;%s", r, g, b, fg
         }
     ')
-    HOST_TAG="\033[${HOST_SGR}m ${HOST_NAME} ${RESET}"
+    HOST_TAG="\033[${HOST_SGR}m ${USER_NAME}@${HOST_NAME} ${RESET}"
 fi
 
 # Build output line
