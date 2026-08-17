@@ -1,3 +1,7 @@
+### 2.60.0: 2026-08-17
+
+* Report task writes with id and link
+
 ### 2.59.0: 2026-08-15
 
 * Remove the plan-accounting timer
