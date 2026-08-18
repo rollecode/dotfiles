@@ -1,3 +1,7 @@
+### 2.61.0: 2026-08-18
+
+* Keep the persona in proactive lines
+
 ### 2.60.1: 2026-08-17
 
 * Select the Tokyo Night theme in `claude-code/settings.json`. The theme file has shipped since 2.36.0 and `install.sh` symlinks it, but nothing ever activated it, so a fresh machine got the theme available and unused until someone ran `/theme` by hand
