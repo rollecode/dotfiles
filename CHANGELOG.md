@@ -234,9 +234,6 @@
 * claude-code: `rm -rf node_modules`, `DELETE ... WHERE`, `git push` and the rest pass untouched, so auto mode keeps its speed. The SQL rules only fire when a database client is in the command, so grepping a migration for `DROP TABLE` is not read as running it
 * claude-code: add `require-permission-destructive-test.sh` and a 48 case fixture asserting each deny, ask and pass decision
 * install.sh: symlink the guard hook into `~/.claude/hooks`
-
-### 2.32.0: 2026-07-20
-
 * nvim: the nano-style shortcut bar at the bottom is off by default. The keys are muscle memory, `^G` still lists every one, and the two rows are better spent on the file. `enable_nano_shortcut_bar = true` in `lua/local.lua` brings it back. The top `nvim nano` title bar stays
 
 ### 2.31.2: 2026-07-20
