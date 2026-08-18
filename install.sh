@@ -847,18 +847,6 @@ setup_claude_code() {
     fi
     print_success "Claude Code pace tracking symlinked"
 
-    # Needs the planner repo and an authenticated Akiflow, so it stays off on
-    # machines that only have dotfiles.
-    if [[ "$OSTYPE" != "darwin"* ]] && [ -x "$HOME/Projects/claude-day-planner/scripts/plan-sync-run.sh" ]; then
-        mkdir -p "$HOME/.config/systemd/user"
-        ln -sfn "$dotfiles_dir/systemd/plan-sync.service" "$HOME/.config/systemd/user/plan-sync.service"
-        ln -sfn "$dotfiles_dir/systemd/plan-sync.timer" "$HOME/.config/systemd/user/plan-sync.timer"
-        if command -v systemctl >/dev/null 2>&1; then
-            systemctl --user daemon-reload 2>/dev/null || true
-            systemctl --user enable --now plan-sync.timer 2>/dev/null || true
-        fi
-        print_success "Plan sync timer symlinked"
-    fi
 
     # Global instructions Claude Code reads at session start
     ln -sfn "$dotfiles_dir/claude-code/user-memory.md" "$HOME/.claude/CLAUDE.md"

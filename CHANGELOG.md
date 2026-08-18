@@ -1,3 +1,7 @@
+### 2.62.0: 2026-08-18
+
+* Remove the Akiflow plan-sync timer
+
 ### 2.61.0: 2026-08-18
 
 * Keep the persona in proactive lines

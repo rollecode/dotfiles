@@ -1,9 +1,0 @@
-[Unit]
-Description=Mirror Akiflow reschedules into the Obsidian day plan
-
-[Timer]
-OnCalendar=Mon-Fri *-*-* 10..18:00/15:00
-Persistent=false
-
-[Install]
-WantedBy=timers.target
