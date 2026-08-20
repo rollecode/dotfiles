@@ -25,9 +25,7 @@ function M.apply(config)
   config.font_size = 14
 
   -- Font spacing optimized for 13pt
-  -- line_height bumped from 1.085 to 1.15 for Claude Code TUI legibility:
-  -- wall-of-text agent output scans faster with a bit more vertical breathing room
-  config.line_height = 1.15
+  config.line_height = 1.085
   config.cell_width = 0.87
 
   -- Window padding optimized for macOS
