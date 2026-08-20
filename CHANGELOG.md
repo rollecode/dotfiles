@@ -1,3 +1,7 @@
+### 2.63.0: 2026-08-20
+
+* Tune WezTerm rendering for Claude Code TUI legibility
+
 ### 2.62.0: 2026-08-18
 
 * Remove the Akiflow plan-sync timer

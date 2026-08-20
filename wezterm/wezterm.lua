@@ -55,6 +55,10 @@ config.window_padding = {
 -- Enable ligatures
 config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
 
+-- Boost bold weight in ANSI colours so Claude Code TUI headings and emphasised
+-- text stand out against the wall of body text
+config.bold_brightens_ansi_colors = true
+
 -- Initial terminal size
 config.initial_cols = 80
 config.initial_rows = 28
