@@ -817,7 +817,6 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/model-spend-record.sh" "$HOME/.claude/model-spend-record.sh"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace.py" "$HOME/.claude/claude-pace.py"
     ln -sfn "$dotfiles_dir/claude-code/claude-pace-export.sh" "$HOME/.claude/claude-pace-export.sh"
-    ln -sfn "$dotfiles_dir/claude-code/claude-pace-notice.py" "$claude_hooks_dir/claude-pace-notice.py"
     # Pace alerting needs a chat id and a private IPC path. Those stay OUT of
     # this public repo, so seed a local config from the example on first run.
     if [ ! -f "$HOME/.config/claude-pace/config.json" ]; then

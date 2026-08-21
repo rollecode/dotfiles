@@ -1,3 +1,7 @@
+### 2.62.1: 2026-08-21
+
+* Remove Claude Code pace nag hook
+
 ### 2.62.0: 2026-08-18
 
 * Remove the Akiflow plan-sync timer
