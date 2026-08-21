@@ -73,5 +73,6 @@
   "tui": "fullscreen",
   "effortLevel": "high",
   "remoteControlAtStartup": true,
-  "todoFeatureEnabled": true
+  "todoFeatureEnabled": true,
+  "showExpandedTodos": true
 }
