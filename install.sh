@@ -628,8 +628,8 @@ with open(path, "w") as fh:
     fi
 }
 
-# Merge env vars and attribution from the repo template into the live
-# settings.json. The template is never copied wholesale (it would clobber
+# Merge the repo template's env vars, attribution and plain settings into the
+# live settings.json. The template is never copied wholesale (it would clobber
 # per-machine permissions and hooks), so without this a fresh machine silently
 # misses keys the repo considers mandatory - the feedback-upload kill switches
 # among them. Per-key and additive: a value already set locally always wins.
@@ -669,6 +669,13 @@ for key, value in (tpl.get("env") or {}).items():
 if "attribution" in tpl and "attribution" not in live:
     live["attribution"] = tpl["attribution"]
     added.append("attribution")
+# Plain top-level settings (verbose, theme, effortLevel, tui...). Without this
+# the template carried them for nothing - a fresh machine got the hooks and the
+# env block but none of the preferences beside them.
+for key, value in tpl.items():
+    if isinstance(value, (bool, str, int)) and key not in live:
+        live[key] = value
+        added.append(key)
 
 if not added:
     print("NOCHANGE")
@@ -681,7 +688,7 @@ print(", ".join(added))
 ' "$settings_file" "$template"); then
         if [ "$added" = "NOCHANGE" ]; then
             rm -f "$settings_file.bak"
-            print_success "✓ Claude Code env and attribution already set"
+            print_success "✓ Claude Code settings already in sync"
         else
             print_success "Added to settings.json: $added (backup: settings.json.bak)"
         fi
