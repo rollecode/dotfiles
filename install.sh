@@ -669,9 +669,8 @@ for key, value in (tpl.get("env") or {}).items():
 if "attribution" in tpl and "attribution" not in live:
     live["attribution"] = tpl["attribution"]
     added.append("attribution")
-# Plain top-level settings (verbose, theme, effortLevel, tui...). Without this
-# the template carried them for nothing - a fresh machine got the hooks and the
-# env block but none of the preferences beside them.
+# Plain top-level settings (verbose, theme, tui...) - the template carried
+# them for nothing until now.
 for key, value in tpl.items():
     if isinstance(value, (bool, str, int)) and key not in live:
         live[key] = value
