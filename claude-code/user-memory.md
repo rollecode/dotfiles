@@ -64,6 +64,24 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - Never `git add -A` or `git add .` when a build step can generate ignored files: stage explicit paths. During a rebase the ignore rules of the replayed commit apply, not the final ones, so a generated secret can slip in
 - Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
 - One version bump per work session, not per fix. Consolidate same-day changes into it
+- Commit subject: imperative mood ("If applied, this commit will <subject>"), capitalised first letter, no trailing period
+
+## Code craft
+
+Adapted from Fabien Sanglard's agent.md, minus what the rules above already cover.
+
+- Extract recurring or meaningful values into named constants or enums. Keep self-explanatory one-off values inline. A value from a spec (HTTP 200) is always a constant
+- Reduce indentation. Prefer early return and continue over nesting. No arrow anti-pattern
+- Function names under 30 characters
+- Enums, not booleans, for function parameters
+- Blank lines between logical blocks, so the reader can breathe
+- Keep fields and functions private. Widening visibility (private to internal or public) is a breaking design shift: ask before doing it
+- Program to levels of abstraction. Encapsulate low-level mechanics (raw I/O, sector parsing, socket streams) behind a driver; expose high-level, domain APIs
+- A layer talks only to its immediate neighbour below. Never punch through: UI and controllers never call drivers, DB queries or low-level clients directly
+- Do not touch code unrelated to the change. Do not comment code you did not write or modify. Minimise changed lines
+- Always use braces, even on a one-line if
+- Use ASCII diagrams to explain whole systems
+- Fixing a bug: write the failing test first, watch it fail, then write the fix, watch it pass
 
 ## Task list discipline
 

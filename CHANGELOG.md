@@ -1,3 +1,8 @@
+### 2.63.0: 2026-08-24
+
+* Add code-craft rules to global CLAUDE.md
+* Add commit subject mood and casing rules
+
 ### 2.62.1: 2026-08-21
 
 * Remove Claude Code pace nag hook
