@@ -1,3 +1,7 @@
+### 2.63.1: 2026-08-27
+
+* Guard allow-passthrough for tmux older than 3.3
+
 ### 2.63.0: 2026-08-24
 
 * Add code-craft rules to global CLAUDE.md
