@@ -850,6 +850,13 @@ setup_claude_code() {
             systemctl --user enable --now claude-pace-export.timer 2>/dev/null || true
         fi
     fi
+    # A model told by its own harness to append Claude-Session will do it
+    # unless something downstream removes it. The hook is that something.
+    mkdir -p "$HOME/.config/git/hooks"
+    ln -sfn "$dotfiles_dir/git/hooks/commit-msg" "$HOME/.config/git/hooks/commit-msg"
+    git config --global core.hooksPath "$HOME/.config/git/hooks"
+    print_success "Commit-msg hook installed (strips AI trailers)"
+
     print_success "Claude Code pace tracking symlinked"
 
 

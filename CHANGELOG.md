@@ -1,3 +1,7 @@
+### 2.64.0: 2026-08-28
+
+* Strip AI trailers with a commit-msg hook
+
 ### 2.63.0: 2026-08-28
 
 * Use Finnish number and currency format

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Strip AI attribution trailers from every commit message, on every repo.
+# Claude-Session leaks a session URL; Co-Authored-By is an AI watermark.
+# Both are banned, and a hook is the only thing that survives a model that was
+# told otherwise by its own harness.
+sed -i -e '/^Claude-Session:/d' -e '/^Co-Authored-By:.*[Cc]laude/d' -e '/^Co-Authored-By:.*noreply@anthropic/d' "$1"
+# Drop any blank lines left dangling at the end.
+sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "$1"
