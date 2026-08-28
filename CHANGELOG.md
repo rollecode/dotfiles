@@ -2,9 +2,6 @@
 
 * Strip AI trailers with a commit-msg hook
 * Ban Claude-Session in the commit rules
-
-### 2.63.0: 2026-08-28
-
 * Use Finnish number and currency format
 
 ### 2.63.1: 2026-08-27
