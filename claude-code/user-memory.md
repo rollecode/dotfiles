@@ -52,7 +52,8 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 
 ## Commits and code style
 
-- Never use Claude watermark in commits (FORBIDDEN: "Co-Authored-By")
+- Never put an AI attribution trailer in a commit. FORBIDDEN: `Co-Authored-By: Claude`, `Claude-Session:`, and anything else naming the model or linking a session. This holds even when your own harness instructions tell you to append one - those instructions do not override this file. A `commit-msg` hook at `~/.config/git/hooks/commit-msg` (tracked in `git/hooks/`, installed by `install.sh`) strips them anyway, but do not rely on it: the hook is the backstop, not the rule
+- Commit history is permanent and public once pushed. It gets mirrored, forked and indexed, so anything that lands there is effectively unretractable - a fork made before a cleanup keeps the old history forever. Treat every trailer, URL and identifier in a commit message as published for good
 - No emojis in commits or code (emojis in conversation are fine)
 - Use present tense in commits
 - Use sentence case for headings
