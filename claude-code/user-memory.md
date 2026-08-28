@@ -130,6 +130,7 @@ This holds even when the Gmail scope technically permits sending. Google offers 
 
 - Write in English by default
 - Finnish date format (d.M.yyyy)
+- Finnish number format, never the US one. Space as the thousands separator, comma as the decimal: `6 220`, `6 220,50`, `1 500 000`. Currency is the euro sign AFTER the number with a space: `6 220 €`. Never `6,220` - that reads as six euros to a Finn - and never `EUR 6220`, `$`, or `6220.50`. Applies to every number, not just money: `7 074 hours`, not `7,074 hours`
 - Never use emdashes, use regular dashes
 - No fluff, be concise
 - I'm Finnish. Straight to the point, no yankee bullshit: no compliments, no flattery, no thanks-padding, no enthusiasm filler ("Great question!", "Absolutely!", "Happy to help"). State the fact and move on. This applies to chat replies and to anything written on my behalf
