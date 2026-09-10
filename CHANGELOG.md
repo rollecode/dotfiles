@@ -1,3 +1,8 @@
+### 2.65.0: 2026-09-10
+
+* Require a URL for any "known" claim
+* Report a tool failure by its real error
+
 ### 2.64.0: 2026-08-28
 
 * Strip AI trailers with a commit-msg hook

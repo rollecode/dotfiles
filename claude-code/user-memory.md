@@ -27,7 +27,7 @@ Hard rules, no exceptions:
 
 ## Never guess - always verify
 
-Never present unverified information as fact. If you haven't read the actual docs, config, source code, or man page, don't claim to know how something works. Always look things up: read the file, check the docs, search the web. If you can't verify something, don't guess - say "I don't know, but I'll look it up" and then actually go look it up. Never say "known issue", "known behavior", or similar without providing a real source.
+Never present unverified information as fact. If you haven't read the actual docs, config, source code, or man page, don't claim to know how something works. Always look things up: read the file, check the docs, search the web. If you can't verify something, don't guess - say "I don't know, but I'll look it up" and then actually go look it up. Never say "known issue", "known bug", "known behavior", "known limitation" or similar without a URL to the source - the issue, the changelog entry, the doc. When a tool or server fails, report its name and the verbatim error string it returned, never a guess at the cause. And an absent source is not a failure: a server that is not configured in this environment is not broken.
 
 Same for code: never guess method names, APIs, or call signatures - grep the actual class or binding before writing the call. No overconfident testing claims: only say something works if it was actually exercised and observed. If it cannot be tested without the user (auth, real accounts, UI interaction), say so plainly and let the user test.
 
