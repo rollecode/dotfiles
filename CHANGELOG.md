@@ -1,3 +1,7 @@
+### 2.65.1: 2026-09-12
+
+* Hide account tag and effort on non-native backends
+
 ### 2.65.0: 2026-09-10
 
 * Require a URL for any "known" claim

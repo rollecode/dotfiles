@@ -59,11 +59,12 @@ IS_GLM=0
 IS_DEEPSEEK=0
 IS_QWEN=0
 IS_OR=0
+IS_NATIVE=1                     # Claude model on Anthropic's own endpoint
 case "$MODEL" in
-  glm-*)      IS_GLM=1 ;;
-  deepseek-*) IS_DEEPSEEK=1 ;;
-  qwen*)      IS_QWEN=1 ;;
-  */*)        IS_OR=1 ;;     # provider/model prefix = OpenRouter
+  glm-*)      IS_GLM=1; IS_NATIVE=0 ;;
+  deepseek-*) IS_DEEPSEEK=1; IS_NATIVE=0 ;;
+  qwen*)      IS_QWEN=1; IS_NATIVE=0 ;;
+  */*)        IS_OR=1; IS_NATIVE=0 ;;   # provider/model prefix = OpenRouter
 esac
 
 # Prettify custom (non-Anthropic) model ids like "glm-5.2[1m]" or "z-ai/glm-5.2[1m]"
@@ -229,13 +230,14 @@ fi
 # Build output line
 LINE=""
 [ -n "$HOST_TAG" ] && LINE="${HOST_TAG} "
-if [ -n "$ACCOUNT_TAG" ]; then
+if [ -n "$ACCOUNT_TAG" ] && [ "$IS_NATIVE" = 1 ]; then
     LINE="${LINE}${MAUVE}${ACCOUNT_TAG}${RESET} ${DIM}\xC2\xB7${RESET} "
 fi
 LINE="${LINE}${CYAN}${MODEL}${RESET}"
 
-# Effort, between model and duration
-if [ -n "$EFFORT" ]; then
+# Effort, between model and duration. Anthropic-only; non-native backends have
+# no effort parameter and would show a stale level if one leaked through.
+if [ -n "$EFFORT" ] && [ "$IS_NATIVE" = 1 ]; then
     LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${EFFORT_COLOR}${EFFORT}${RESET}"
 fi
 
