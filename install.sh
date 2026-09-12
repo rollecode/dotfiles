@@ -710,6 +710,27 @@ setup_tmux() {
     print_success "tmux config symlinked"
 }
 
+setup_herdr() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+
+    if ! command_exists herdr; then
+        print_warning "herdr not installed - skipping herdr config"
+        return
+    fi
+
+    mkdir -p "$HOME/.config/herdr"
+    if [ -L "$HOME/.config/herdr/config.toml" ]; then
+        print_success "✓ Found existing herdr config symlink - preserving"
+    elif [ -f "$HOME/.config/herdr/config.toml" ]; then
+        mv "$HOME/.config/herdr/config.toml" "${HOME}/.config/herdr/config.toml.backup.$(date +%s)"
+        ln -sfn "$dotfiles_dir/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+        print_success "herdr config symlinked (old config backed up)"
+    else
+        ln -sfn "$dotfiles_dir/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+        print_success "herdr config symlinked"
+    fi
+}
+
 setup_model_backends() {
     local dotfiles_dir="$HOME/Projects/dotfiles"
 
@@ -1180,6 +1201,7 @@ main() {
     fi
 
     setup_tmux
+    setup_herdr
     setup_model_backends
 
     # Only ask about Syncthing on Linux/macOS

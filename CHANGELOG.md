@@ -3,6 +3,7 @@
 * Disable automatic tmux shell wrapping
 * Show DeepSeek balance inline
 * Copy on select and notify in foot
+* Disable herdr sidebars by default
 
 ### 2.65.1: 2026-09-12
 
