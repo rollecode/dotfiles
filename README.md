@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.65.1-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.66.0-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -317,17 +317,14 @@ For JavaScript/PHP projects, nvim-lint will automatically detect and use project
 
 This ensures project-specific rules and configurations are respected.
 
-### Persistent tmux over SSH
+### Terminal and remote control
 
-Mobile SSH clients get backgrounded fast, so a plain SSH shell dies with the app. `install.sh` handles this: it symlinks `tmux/tmux.conf` and appends `bash/ssh-auto-tmux.sh` to `~/.bashrc` or `~/.zshrc`, so every SSH login attaches or creates a `main` tmux session and reattaches to the same one next time. Local terminals are unaffected. Detach with `Ctrl+b d`.
+`install.sh` symlinks `tmux/tmux.conf` to `~/.config/tmux/tmux.conf` and adds `remoteControlAtStartup` to `~/.claude/settings.json`, so Claude Code sessions on that machine can be picked up from the phone without arming anything per session. A backup is written to `settings.json.bak` first.
 
-It also adds `remoteControlAtStartup` to `~/.claude/settings.json`, so Claude Code sessions on that machine can be picked up from the phone without arming anything per session. A backup is written to `settings.json.bak` first.
-
-All three steps are skipped cleanly if they are already done, if tmux is not installed, or if the login shell is neither bash nor zsh. To do it by hand instead:
+To set up tmux by hand instead:
 
 ```bash
 mkdir -p ~/.config/tmux && ln -sfn ~/Projects/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
-cat ~/Projects/dotfiles/bash/ssh-auto-tmux.sh >> ~/.bashrc
 ```
 
 ## Remote server setup
