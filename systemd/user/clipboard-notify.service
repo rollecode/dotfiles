@@ -1,0 +1,14 @@
+[Unit]
+Description=Notify when the Wayland clipboard changes
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/wl-paste --type text --watch %h/Projects/dotfiles/bin/clipboard-notify.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
