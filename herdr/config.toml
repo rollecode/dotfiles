@@ -1,0 +1,16 @@
+onboarding = false
+[keys]
+prefix = "ctrl+a"
+detach = "prefix+d"
+
+[theme]
+name = "tokyo-night"
+auto_switch = false
+
+[ui]
+status_indicators = "symbols"
+sidebar_start_collapsed = true
+sidebar_collapsed_mode = "hidden"
+
+[ui.toast]
+delivery = "system"
