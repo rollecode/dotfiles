@@ -261,8 +261,8 @@ if [ "$SESSION_XP" -gt 0 ]; then
     LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${XP_PART}"
 fi
 
-# Usage bars inline on the first row (Anthropic backends). Other backends report
-# their quota/balance below, since it needs a network fetch first.
+# Usage bars and DeepSeek balance inline on the first row. GLM, Qwen and OpenRouter
+# report their quota/balance below, since it needs a network fetch first.
 if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
     USAGE_BARS=""
     [ -n "$FIVE_H" ] && USAGE_BARS="$(make_bar "$FIVE_H" "5h")"
@@ -277,6 +277,30 @@ if [ -n "$FIVE_H" ] || [ -n "$WEEK" ]; then
         fi
     fi
     LINE="${LINE}  ${USAGE_BARS}"
+fi
+
+# DeepSeek account balance in dollars, straight from GET /user/balance, rendered
+# inline on the first row. Cached with a background refresh so the status line
+# never blocks on the network.
+if [ "$IS_DEEPSEEK" = 1 ] && [ -s "$HOME/.config/crush/deepseek-key" ]; then
+    DS_KEY_FILE="$HOME/.config/crush/deepseek-key"
+    CACHE="/tmp/deepseek-balance.json"
+    LOCK="/tmp/deepseek-balance.lock"
+    TTL=60
+    now=$(date +%s)
+    lock_age=$TTL
+    [ -f "$LOCK" ] && lock_age=$(( now - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) ))
+    if [ "$lock_age" -ge "$TTL" ]; then
+        touch "$LOCK"
+        ( curl -s --max-time 8 'https://api.deepseek.com/user/balance' \
+            -H "Authorization: Bearer $(cat "$DS_KEY_FILE")" \
+            -o "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE" ) >/dev/null 2>&1 &
+        disown 2>/dev/null
+    fi
+    if [ -s "$CACHE" ]; then
+        DS_BALANCE=$(jq -r '.balance_infos[0].total_balance // empty' "$CACHE" 2>/dev/null)
+        [ -n "$DS_BALANCE" ] && LINE="${LINE} ${DIM}\xC2\xB7${RESET} ${GOLD}\$${DS_BALANCE}${RESET} ${DIM}balance${RESET}"
+    fi
 fi
 
 printf '%b\n' "$LINE"
@@ -321,33 +345,6 @@ if [ "$IS_GLM" = 1 ] && [ -s "$GLM_KEY_FILE" ]; then
                 LINE2="${LINE2}$(make_bar "$GW" "7d")"
             fi
             [ -n "$GLVL" ] && LINE2="${LINE2} ${DIM}\xC2\xB7 GLM ${GLVL}${RESET}"
-            printf '%b\n' "$LINE2"
-        fi
-    fi
-elif [ "$IS_DEEPSEEK" = 1 ] && [ -s "$HOME/.config/crush/deepseek-key" ]; then
-    # DeepSeek account balance in dollars, straight from GET /user/balance (no separate
-    # management key needed, unlike x.ai). Cached with a background refresh so the
-    # status line never blocks on the network.
-    DS_KEY_FILE="$HOME/.config/crush/deepseek-key"
-    CACHE="/tmp/deepseek-balance.json"
-    LOCK="/tmp/deepseek-balance.lock"
-    TTL=60
-    now=$(date +%s)
-    lock_age=$TTL
-    [ -f "$LOCK" ] && lock_age=$(( now - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) ))
-    if [ "$lock_age" -ge "$TTL" ]; then
-        touch "$LOCK"
-        ( curl -s --max-time 8 'https://api.deepseek.com/user/balance' \
-            -H "Authorization: Bearer $(cat "$DS_KEY_FILE")" \
-            -o "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE" ) >/dev/null 2>&1 &
-        disown 2>/dev/null
-    fi
-    if [ -s "$CACHE" ]; then
-        DOLLARS=$(jq -r '.balance_infos[0].total_balance // empty' "$CACHE" 2>/dev/null)
-        MTD=$(month_spend "deepseek")
-        if [ -n "$DOLLARS" ]; then
-            LINE2="${GOLD}\$${DOLLARS}${RESET} ${DIM}balance${RESET}"
-            [ -n "$MTD" ] && LINE2="${LINE2} ${DIM}\xC2\xB7${RESET} ${GOLD}~\$${MTD}${RESET} ${DIM}this month${RESET}"
             printf '%b\n' "$LINE2"
         fi
     fi
