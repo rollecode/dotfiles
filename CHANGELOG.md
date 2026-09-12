@@ -1,3 +1,7 @@
+### 2.66.0: 2026-09-12
+
+* Disable automatic tmux shell wrapping
+
 ### 2.65.1: 2026-09-12
 
 * Hide account tag and effort on non-native backends

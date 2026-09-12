@@ -708,37 +708,6 @@ setup_tmux() {
     mkdir -p "$HOME/.config/tmux"
     ln -sfn "$dotfiles_dir/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
     print_success "tmux config symlinked"
-
-    # The SSH block is bash/zsh syntax, so only append it to a shell that can read it.
-    # macOS terminals start login shells, which read .bash_profile and never .bashrc,
-    # so on macOS the block has to go there or it simply never runs.
-    local rc
-    case "$(basename "${SHELL:-bash}")" in
-        bash)
-            if [ "$OS" = "macos" ]; then
-                rc="$HOME/.bash_profile"
-            else
-                rc="$HOME/.bashrc"
-            fi
-            ;;
-        zsh) rc="$HOME/.zshrc" ;;
-        *)
-            print_warning "Login shell is not bash or zsh - port bash/ssh-auto-tmux.sh by hand"
-            return
-            ;;
-    esac
-
-    # Source rather than copy, so a later pull updates the behaviour too
-    if grep -q "ssh-auto-tmux.sh" "$rc" 2>/dev/null; then
-        print_success "✓ Auto-tmux already in $(basename "$rc")"
-    else
-        {
-            printf '\n# Every interactive shell runs inside tmux, so anything started here\n'
-            printf '# stays reachable from another machine.\n'
-            printf '[ -f "$HOME/Projects/dotfiles/bash/ssh-auto-tmux.sh" ] && . "$HOME/Projects/dotfiles/bash/ssh-auto-tmux.sh"\n'
-        } >> "$rc"
-        print_success "Auto-tmux sourced from $(basename "$rc")"
-    fi
 }
 
 setup_model_backends() {
