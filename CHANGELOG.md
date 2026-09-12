@@ -1,6 +1,7 @@
 ### 2.66.0: 2026-09-12
 
 * Disable automatic tmux shell wrapping
+* Show DeepSeek balance inline
 
 ### 2.65.1: 2026-09-12
 
