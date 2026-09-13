@@ -4,11 +4,16 @@
 // phone as often as on the desktop.
 layout {
     default_tab_template {
+        // Claude Code activity per tab, top row. Replaces zellij's own tab bar.
+        pane size=1 borderless=true {
+            plugin location="file:~/.config/zellij/plugins/zellaude.wasm"
+        }
         children
         pane size=1 borderless=true {
             plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
                 format_left   "#[bg=#bb9af7,fg=#1a1b26,bold] {session} #[bg=#1a1b26] "
-                format_center "{tabs}"
+                // Tabs live in the zellaude row above, no need to repeat them.
+                format_center ""
                 format_right  "{notifications}{mode}{command_git_branch}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
                 format_space  "#[bg=#1a1b26]"
                 format_hide_on_overlength "true"
