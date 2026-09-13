@@ -842,6 +842,9 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/append-changelog.sh" "$claude_hooks_dir/append-changelog.sh"
     print_success "Append-changelog hook symlinked"
 
+    ln -sfn "$dotfiles_dir/claude-code/zellij-attention.sh" "$claude_hooks_dir/zellij-attention.sh"
+    print_success "Zellij attention hook symlinked"
+
     if [ -L "$claude_hooks_dir/task-list-reminder.sh" ]; then
         print_success "✓ Found existing task list reminder hook symlink - preserving"
     else
