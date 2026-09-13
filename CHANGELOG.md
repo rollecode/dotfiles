@@ -4,6 +4,7 @@
 * Add purple Tokyo Night zjstatus bar
 * Mark tabs when Claude needs input
 * Show the prefix hint in the bar
+* Add pin and move bindings for floats
 
 ### 2.66.0: 2026-09-12
 
