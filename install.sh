@@ -729,6 +729,7 @@ setup_zellij() {
     # of every session.
     local zjstatus_version="v0.25.0"
     local attention_version="v0.3.1"
+    local zellaude_version="v0.5.1"
 
     download_zellij_plugin() {
         local url="$1"
@@ -753,6 +754,9 @@ setup_zellij() {
     download_zellij_plugin \
         "https://github.com/KiryuuLight/zellij-attention/releases/download/$attention_version/zellij-attention.wasm" \
         "$plugin_dir/zellij-attention.wasm"
+    download_zellij_plugin \
+        "https://github.com/ishefi/zellaude/releases/download/$zellaude_version/zellaude.wasm" \
+        "$plugin_dir/zellaude.wasm"
 }
 
 setup_herdr() {
