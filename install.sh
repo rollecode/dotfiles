@@ -710,6 +710,51 @@ setup_tmux() {
     print_success "tmux config symlinked"
 }
 
+setup_zellij() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+    local plugin_dir="$HOME/.config/zellij/plugins"
+
+    if ! command_exists zellij; then
+        print_warning "zellij not installed - skipping zellij setup"
+        return
+    fi
+
+    mkdir -p "$plugin_dir"
+    ln -sfn "$dotfiles_dir/zellij/config.kdl" "$HOME/.config/zellij/config.kdl"
+    ln -sfn "$dotfiles_dir/zellij/layouts" "$HOME/.config/zellij/layouts"
+    ln -sfn "$dotfiles_dir/zellij/themes" "$HOME/.config/zellij/themes"
+    print_success "zellij config symlinked"
+
+    # Pinned, not "latest": a plugin ABI break otherwise lands on the next start
+    # of every session.
+    local zjstatus_version="v0.25.0"
+    local attention_version="v0.3.1"
+
+    download_zellij_plugin() {
+        local url="$1"
+        local target="$2"
+
+        [ -f "$target" ] && return 0
+        if curl -fsSL "$url" -o "$target.tmp"; then
+            mv "$target.tmp" "$target"
+            print_success "$(basename "$target") downloaded"
+        else
+            rm -f "$target.tmp"
+            print_warning "Could not download $(basename "$target")"
+        fi
+    }
+
+    download_zellij_plugin \
+        "https://github.com/dj95/zjstatus/releases/download/$zjstatus_version/zjstatus.wasm" \
+        "$plugin_dir/zjstatus.wasm"
+    download_zellij_plugin \
+        "https://github.com/dj95/zjstatus/releases/download/$zjstatus_version/zjframes.wasm" \
+        "$plugin_dir/zjframes.wasm"
+    download_zellij_plugin \
+        "https://github.com/KiryuuLight/zellij-attention/releases/download/$attention_version/zellij-attention.wasm" \
+        "$plugin_dir/zellij-attention.wasm"
+}
+
 setup_herdr() {
     local dotfiles_dir="$HOME/Projects/dotfiles"
 
@@ -1201,6 +1246,7 @@ main() {
     fi
 
     setup_tmux
+    setup_zellij
     setup_herdr
     setup_model_backends
 

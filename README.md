@@ -1,6 +1,6 @@
 # Rolle's dotfiles
 
-![Version](https://img.shields.io/badge/version-2.66.0-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.67.0-purple.svg?style=for-the-badge) ![bash](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&color=%23222222&logo=gnu-bash&logoColor=white) ![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white) ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white) ![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?style=for-the-badge&logo=neovim&logoColor=white) ![WezTerm](https://img.shields.io/badge/WezTerm-4E49EE?style=for-the-badge&logo=wezterm&logoColor=white)
   
 Cross-platform configuration files for Neovim and WezTerm with OS-specific settings.
 
@@ -325,6 +325,26 @@ To set up tmux by hand instead:
 
 ```bash
 mkdir -p ~/.config/tmux && ln -sfn ~/Projects/dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+```
+
+### Zellij
+
+Runs alongside tmux, nothing is replaced. `install.sh` symlinks `zellij/` into `~/.config/zellij` and downloads the pinned plugin binaries into `~/.config/zellij/plugins`.
+
+The config keeps zellij in locked mode, with `Ctrl+a` as the prefix into a tmux-shaped menu (`|` and `-` split, `c` new tab, `d` detach, `[` scroll, `s` session manager, `a` sends a literal `Ctrl+a`). `Alt+1`..`Alt+9` jump to a tab with no prefix. Every binding returns to locked, so no mode is ever left open on a keystroke the shell wanted.
+
+Plugins:
+
+- `zjstatus` draws the status bar, shaped like the tmux one, Tokyo Night with the purple accent
+- `zjframes` hides pane frames while only one pane is open
+- `zellij-attention` appends ⏳ to a tab when Claude Code wants input and ✅ when it finishes, cleared by focusing the pane. Driven by the `Notification` and `Stop` hooks in `claude-code/settings.json`, which no-op outside zellij
+
+On the first start each plugin asks for permissions once. Navigate to the bar pane or click it and press `y`.
+
+```bash
+mkdir -p ~/.config/zellij && ln -sfn ~/Projects/dotfiles/zellij/config.kdl ~/.config/zellij/config.kdl
+ln -sfn ~/Projects/dotfiles/zellij/layouts ~/.config/zellij/layouts
+ln -sfn ~/Projects/dotfiles/zellij/themes ~/.config/zellij/themes
 ```
 
 ## Remote server setup

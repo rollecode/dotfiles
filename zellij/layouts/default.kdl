@@ -1,0 +1,53 @@
+// zjstatus bar, same shape as the tmux status line: purple session block on
+// the left, tabs in the middle, prefix indicator + host + clock on the right.
+// Plain glyphs only, no powerline separators: this is read over SSH from a
+// phone as often as on the desktop.
+layout {
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+                format_left   "#[bg=#bb9af7,fg=#1a1b26,bold] {session} #[bg=#1a1b26] "
+                format_center "{tabs}"
+                format_right  "{notifications}{mode}{command_git_branch}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
+                format_space  "#[bg=#1a1b26]"
+                format_hide_on_overlength "true"
+
+                border_enabled "false"
+
+                mode_locked          ""
+                mode_tmux            "#[fg=#bb9af7,bold]PREFIX "
+                mode_normal          "#[fg=#bb9af7,bold]MENU "
+                mode_scroll          "#[fg=#e0af68,bold]SCROLL "
+                mode_search          "#[fg=#e0af68,bold]SEARCH "
+                mode_enter_search    "#[fg=#e0af68,bold]SEARCH "
+                mode_rename_tab      "#[fg=#e0af68,bold]RENAME "
+                mode_rename_pane     "#[fg=#e0af68,bold]RENAME "
+                mode_default_to_mode "normal"
+
+                tab_normal    "#[fg=#565f89,bg=#1a1b26] {index} {name} "
+                tab_active    "#[fg=#bb9af7,bg=#292e42,bold] {index} {name} "
+                tab_separator "#[bg=#1a1b26]"
+
+                notification_format_unread          "#[fg=#e0af68,bold]{message} "
+                notification_format_no_notifications ""
+                notification_show_interval          "10"
+
+                command_git_branch_command    "git rev-parse --abbrev-ref HEAD"
+                command_git_branch_format     "#[fg=#9ece6a]{stdout} #[fg=#565f89]· "
+                command_git_branch_interval   "10"
+                command_git_branch_rendermode "dynamic"
+                command_git_branch_cwd        "{focused_pane_cwd}"
+
+                command_host_command    "uname -n"
+                command_host_format     "{stdout}"
+                command_host_interval   "0"
+                command_host_rendermode "static"
+
+                datetime          "{format}"
+                datetime_format   "%H:%M"
+                datetime_timezone "Europe/Helsinki"
+            }
+        }
+    }
+}
