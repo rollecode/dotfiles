@@ -3,6 +3,7 @@
 * Add zellij config with tmux keys
 * Add purple Tokyo Night zjstatus bar
 * Mark tabs when Claude needs input
+* Show the prefix hint in the bar
 
 ### 2.66.0: 2026-09-12
 

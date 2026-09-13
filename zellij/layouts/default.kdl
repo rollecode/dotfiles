@@ -15,7 +15,7 @@ layout {
 
                 border_enabled "false"
 
-                mode_locked          ""
+                mode_locked          "#[fg=#565f89]Ctrl+a "
                 mode_tmux            "#[fg=#bb9af7,bold]PREFIX "
                 mode_normal          "#[fg=#bb9af7,bold]MENU "
                 mode_scroll          "#[fg=#e0af68,bold]SCROLL "
