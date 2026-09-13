@@ -1,3 +1,9 @@
+### 2.67.0: 2026-09-13
+
+* Add zellij config with tmux keys
+* Add purple Tokyo Night zjstatus bar
+* Mark tabs when Claude needs input
+
 ### 2.66.0: 2026-09-12
 
 * Disable automatic tmux shell wrapping
