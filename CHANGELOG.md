@@ -5,6 +5,7 @@
 * Mark tabs when Claude needs input
 * Show the prefix hint in the bar
 * Add pin and move bindings for floats
+* Add a floating shell binding
 
 ### 2.66.0: 2026-09-12
 

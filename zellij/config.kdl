@@ -60,6 +60,9 @@ keybinds {
         bind "w" { ToggleFloatingPanes; SwitchToMode "Locked"; }
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Locked"; }
         bind "i" { TogglePanePinned; SwitchToMode "Locked"; }
+        // A pane cannot float if it is the tab's last tiled one, so this opens
+        // a new floating shell rather than lifting the current pane.
+        bind "f" { Run "bash" { floating true; close_on_exit true; }; SwitchToMode "Locked"; }
         bind "m" { SwitchToMode "Move"; }
         bind "o" { FocusNextPane; SwitchToMode "Locked"; }
         bind "d" { Detach; }
