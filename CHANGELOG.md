@@ -9,6 +9,7 @@
 * Move the status bar to the top
 * Show Claude activity in the bar
 * Steady the bar, drop the git widget
+* Add claude-tmux session popup
 
 ### 2.66.0: 2026-09-12
 
