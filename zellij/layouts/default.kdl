@@ -8,7 +8,7 @@ layout {
             plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
                 format_left   "#[bg=#bb9af7,fg=#1a1b26,bold] {session} #[bg=#1a1b26] "
                 format_center "{tabs}"
-                format_right  "{notifications}{mode}{command_git_branch}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
+                format_right  "{notifications}{pipe_status}{mode}{command_git_branch}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
                 format_space  "#[bg=#1a1b26]"
                 format_hide_on_overlength "true"
 
@@ -27,6 +27,11 @@ layout {
                 tab_normal    "#[fg=#565f89,bg=#1a1b26] {index} {name} "
                 tab_active    "#[fg=#bb9af7,bg=#292e42,bold] {index} {name} "
                 tab_separator "#[bg=#1a1b26]"
+
+                // Claude Code activity, fed by the cc-zjstatus hook script.
+                // The script colours each symbol itself, so no colour here.
+                pipe_status_format     "{output} #[fg=#565f89]· "
+                pipe_status_rendermode "dynamic"
 
                 notification_format_unread          "#[fg=#e0af68,bold]{message} "
                 notification_format_no_notifications ""
