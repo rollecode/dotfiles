@@ -7,6 +7,7 @@
 * Add pin and move bindings for floats
 * Add a floating shell binding
 * Move the status bar to the top
+* Show Claude activity in the bar
 
 ### 2.66.0: 2026-09-12
 
