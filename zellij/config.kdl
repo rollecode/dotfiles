@@ -59,6 +59,8 @@ keybinds {
         bind "z" { ToggleFocusFullscreen; SwitchToMode "Locked"; }
         bind "w" { ToggleFloatingPanes; SwitchToMode "Locked"; }
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Locked"; }
+        bind "i" { TogglePanePinned; SwitchToMode "Locked"; }
+        bind "m" { SwitchToMode "Move"; }
         bind "o" { FocusNextPane; SwitchToMode "Locked"; }
         bind "d" { Detach; }
         bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
