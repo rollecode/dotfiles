@@ -1,14 +1,15 @@
-// zjstatus bar, same shape as the tmux status line: purple session block on
-// the left, tabs in the middle, prefix indicator + host + clock on the right.
+// zjstatus bar, shaped like the tmux status line. Everything that changes
+// width lives on the left, everything on the right is fixed width, and the
+// centre is empty: a centred block shifts on every keystroke of activity.
 // Plain glyphs only, no powerline separators: this is read over SSH from a
 // phone as often as on the desktop.
 layout {
     default_tab_template {
         pane size=1 borderless=true {
             plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
-                format_left   "#[bg=#bb9af7,fg=#1a1b26,bold] {session} #[bg=#1a1b26] "
-                format_center "{tabs}"
-                format_right  "{notifications}{pipe_status}{mode}{command_git_branch}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
+                format_left   "#[bg=#bb9af7,fg=#1a1b26,bold] {session} #[bg=#1a1b26] {pipe_status}{tabs}"
+                format_center ""
+                format_right  "{notifications}{mode}#[fg=#7aa2f7]{command_host} #[fg=#565f89]· #[fg=#c0caf5]{datetime} "
                 format_space  "#[bg=#1a1b26]"
                 format_hide_on_overlength "true"
 
@@ -36,12 +37,6 @@ layout {
                 notification_format_unread          "#[fg=#e0af68,bold]{message} "
                 notification_format_no_notifications ""
                 notification_show_interval          "10"
-
-                command_git_branch_command    "git rev-parse --abbrev-ref HEAD"
-                command_git_branch_format     "#[fg=#9ece6a]{stdout} #[fg=#565f89]· "
-                command_git_branch_interval   "10"
-                command_git_branch_rendermode "dynamic"
-                command_git_branch_cwd        "{focused_pane_cwd}"
 
                 command_host_command    "uname -n"
                 command_host_format     "{stdout}"
