@@ -1,3 +1,7 @@
+### 2.67.1: 2026-09-14
+
+* Copy WezTerm selection to clipboard on release
+
 ### 2.67.0: 2026-09-13
 
 * Add zellij config with tmux keys
