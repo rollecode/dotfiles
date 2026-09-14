@@ -282,11 +282,11 @@ config.mouse_bindings = {
     mods = 'NONE',
     action = wezterm.action.ExtendSelectionToMouseCursor 'Cell',
   },
-  -- Left mouse button UP does nothing (no copy)
+  -- Left mouse button UP copies the selection to the clipboard
   {
     event = { Up = { streak = 1, button = 'Left' } },
     mods = 'NONE',
-    action = wezterm.action.Nop,
+    action = wezterm.action.CompleteSelection 'ClipboardAndPrimarySelection',
   },
   -- Double click selects a word
   {
@@ -297,7 +297,7 @@ config.mouse_bindings = {
   {
     event = { Up = { streak = 2, button = 'Left' } },
     mods = 'NONE',
-    action = wezterm.action.Nop,
+    action = wezterm.action.CompleteSelection 'ClipboardAndPrimarySelection',
   },
   -- Triple click selects a line
   {
@@ -308,7 +308,7 @@ config.mouse_bindings = {
   {
     event = { Up = { streak = 3, button = 'Left' } },
     mods = 'NONE',
-    action = wezterm.action.Nop,
+    action = wezterm.action.CompleteSelection 'ClipboardAndPrimarySelection',
   },
   -- CTRL-Click opens hyperlinks
   {
