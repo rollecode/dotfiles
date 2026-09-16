@@ -19,8 +19,16 @@ input=$(cat)
 #         mapping is not published anywhere. Add a row here if another team
 #         tier shows up; an unmapped one falls back to the bare seatTier
 #         string rather than a guessed number.
+#
+# Which config this session runs under. CLAUDE_CONFIG_DIR moves the whole
+# profile, credentials included, so a work session reads its own .claude.json
+# rather than the personal one at $HOME. Without this the bar reported Max 20x
+# inside a Team session, which is the one thing it exists to tell apart.
+CLAUDE_JSON="${CLAUDE_CONFIG_DIR:+$CLAUDE_CONFIG_DIR/}.claude.json"
+[ -n "$CLAUDE_CONFIG_DIR" ] || CLAUDE_JSON="$HOME/.claude.json"
+
 ACCOUNT_TAG=""
-if [ -f "$HOME/.claude.json" ]; then
+if [ -f "$CLAUDE_JSON" ]; then
     ACCOUNT_TAG=$(jq -r '
         .oauthAccount // empty
         | (.organizationType // "") as $type
@@ -40,7 +48,7 @@ if [ -f "$HOME/.claude.json" ]; then
             ([$rateTier | capture("_(?<mult>[0-9]+(?:[._][0-9]+)?)x$")?] | first.mult) as $mult
             | if $mult then $planLabel + " " + ($mult | gsub("_"; ".")) + "x" else $planLabel end
           end
-    ' "$HOME/.claude.json" 2>/dev/null)
+    ' "$CLAUDE_JSON" 2>/dev/null)
 fi
 # Record the plan's live 5h/7d utilisation to the pace ledger. Backgrounded so a
 # slow disk can never stall the status line, and silent so it can never corrupt it.
