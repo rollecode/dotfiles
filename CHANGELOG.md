@@ -1,3 +1,8 @@
+### 2.68.0: 2026-09-16
+
+* Add claudeorv vision backend helper
+* Disable Claude Code pace and sleep nags
+
 ### 2.67.1: 2026-09-14
 
 * Copy WezTerm selection to clipboard on release
