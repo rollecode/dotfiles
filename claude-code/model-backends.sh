@@ -50,6 +50,11 @@ claudeor() {
   claude "$@"
 }
 
+# Vision model for image paste; override with ORV_MODEL (e.g. google/gemma-3-12b-it).
+claudeorv() {
+  OR_MODEL="${ORV_MODEL:-google/gemini-3.8-flash}" claudeor "$@"
+}
+
 # DeepSeek via its native Anthropic endpoint (https://api.deepseek.com/anthropic).
 # Proxy-free, confirmed working end-to-end 9.7.2026. Cheapest option: V4 Pro ~$0.435
 # in/$0.87 out, V4 Flash ~$0.14 in/$0.28 out per M tokens (cache-hit input down to
