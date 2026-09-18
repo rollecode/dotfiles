@@ -6,9 +6,18 @@
 # only place it hands that over (`.rate_limits`), so this is where the history
 # has to be captured from.
 #
-# Ledger: ~/.claude/usage-pace.jsonl, one JSON object per sample:
-#   {"ts":epoch,"w":weekly%,"h5":5h%,"wr":weekly_reset,"hr":5h_reset,"model":"id"}
-# Snapshot: ~/.claude/usage-pace-latest.json (always the newest sample).
+# Ledger: $CLAUDE_CONFIG_DIR/usage-pace.jsonl, one JSON object per sample:
+#   {"ts":epoch,"w":weekly%,"h5":5h%,"wr":weekly_reset,"hr":5h_reset,"model":"id",
+#    "cfg":"profile dir"}
+# Snapshot: $CLAUDE_CONFIG_DIR/usage-pace-latest.json (always the newest sample).
+#
+# The ledger MUST live beside the profile it measures. CLAUDE_CONFIG_DIR swaps
+# the whole account - a work seat and a personal seat have different weekly
+# allowances and different reset clocks - so a single shared ledger interleaves
+# two accounts and every pace figure derived from it is meaningless. That is
+# exactly what happened while this path was hardcoded to $HOME/.claude: one file
+# carried both Sunday-04:00 and Wednesday-05:00 reset cadences, and consecutive
+# pace reports disagreed by fifty points.
 #
 # Called from the statusline on every render, so it must be cheap and silent.
 # A sample is only appended when a percentage or the model changed, or after
@@ -16,10 +25,11 @@
 # needed to derive a burn rate.
 set -uo pipefail
 
-LEDGER="$HOME/.claude/usage-pace.jsonl"
-LATEST="$HOME/.claude/usage-pace-latest.json"
-LOCK="$HOME/.claude/.usage-pace.lock"
-LOCKDIR="$HOME/.claude/.usage-pace.lock.d"
+PROFILE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+LEDGER="$PROFILE_DIR/usage-pace.jsonl"
+LATEST="$PROFILE_DIR/usage-pace-latest.json"
+LOCK="$PROFILE_DIR/.usage-pace.lock"
+LOCKDIR="$PROFILE_DIR/.usage-pace.lock.d"
 HEARTBEAT_S=600
 MAX_LINES=5000
 
@@ -46,7 +56,7 @@ case "$MODEL_ID" in
   glm-*|deepseek-*|qwen*|*/*) exit 0 ;;
 esac
 
-SAMPLE=$(printf '%s' "$INPUT" | jq -c '
+SAMPLE=$(printf '%s' "$INPUT" | jq -c --arg cfg "$PROFILE_DIR" '
   (.rate_limits // {}) as $r
   | select(($r.seven_day.used_percentage != null) or ($r.five_hour.used_percentage != null))
   | {ts: (now | floor),
@@ -54,7 +64,8 @@ SAMPLE=$(printf '%s' "$INPUT" | jq -c '
      h5: $r.five_hour.used_percentage,
      wr: $r.seven_day.resets_at,
      hr: $r.five_hour.resets_at,
-     model: (.model.id // "?")}' 2>/dev/null) || exit 0
+     model: (.model.id // "?"),
+     cfg: $cfg}' 2>/dev/null) || exit 0
 [ -n "$SAMPLE" ] || exit 0
 
 # Snapshot is cheap and always current; readers that only need "right now" use it.
@@ -100,8 +111,8 @@ fi
 # change the moment Claude Code reports it, so escalations are pushed from here
 # rather than waited for on a cron. Throttled and backgrounded: this must never
 # add latency to a status line render.
-ALERT="$HOME/.claude/claude-pace-alert.py"
-ALERT_STAMP="$HOME/.claude/.usage-pace-alert.stamp"
+ALERT="$HOME/.claude/claude-pace-alert.py"  # shared, not per-profile
+ALERT_STAMP="$PROFILE_DIR/.usage-pace-alert.stamp"
 if [ -x "$ALERT" ] || [ -f "$ALERT" ]; then
   now_s=$(date +%s)
   last_s=0

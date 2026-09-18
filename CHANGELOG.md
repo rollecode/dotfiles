@@ -1,3 +1,8 @@
+### 2.70.0: 2026-09-18
+
+* Give each Claude seat its own pace ledger
+* Label the plan in every pace report
+
 ### 2.69.0: 2026-09-18
 
 * Add cw for the work Claude Code seat
