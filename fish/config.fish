@@ -40,6 +40,12 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias quota='df -B G'
 
+# Claude Code on the work seat. The variable swaps the whole profile, so the
+# work sessions are only listed when it is set; see claude-code/profiles.sh.
+function cw --description 'Claude Code under the work profile'
+    CLAUDE_CONFIG_DIR=$HOME/.claude-work claude $argv
+end
+
 # Git shortcuts
 alias s='git status'
 alias p='git push'
