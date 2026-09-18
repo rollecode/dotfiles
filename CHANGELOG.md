@@ -1,3 +1,7 @@
+### 2.69.0: 2026-09-18
+
+* Add cw for the work Claude Code seat
+
 ### 2.68.0: 2026-09-16
 
 * Add claudeorv vision backend helper
