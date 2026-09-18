@@ -1,0 +1,13 @@
+[
+  {
+    "_comment": "Copy to ~/.claude/pace/profiles.json. One entry per Claude Code seat on this machine. `dir` is what CLAUDE_CONFIG_DIR is set to for that seat; `label` is what the pace report calls it, so a nudge can never report one account's numbers under another's name. Kept out of this public repo because the plan tier is nobody else's business.",
+    "name": "personal",
+    "dir": "/home/YOU/.claude",
+    "label": "Claude Code (Max 20x)"
+  },
+  {
+    "name": "work",
+    "dir": "/home/YOU/.claude-work",
+    "label": "Claude Code (Team 6.25x)"
+  }
+]
