@@ -1,3 +1,7 @@
+### 2.70.2: 2026-09-23
+
+* Pass mouse bindings and `ctrl+space` to games
+
 ### 2.70.1: 2026-09-23
 
 * Detach KB session capture hook, cap note size

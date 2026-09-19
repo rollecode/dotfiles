@@ -243,3 +243,10 @@ decoration = "minimal"
 top_right = "zoom-to-fit"
 bottom_left = "spawn dms ipc call spotlight toggle"
 bottom_right = "cycle-windows forward"
+
+# Games: compositor mouse bindings (alt+drag pan, mod+drag) and the ctrl+space
+# launcher go to the game instead of driftwm.
+[[window_rules]]
+app_id = "steam_app_*"
+pass_mouse = true
+pass_keys = ["ctrl+space"]
