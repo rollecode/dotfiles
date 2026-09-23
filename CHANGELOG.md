@@ -1,0 +1,1313 @@
+### 2.70.1: 2026-09-23
+
+* Detach KB session capture hook, cap note size
+
+### 2.70.0: 2026-09-18
+
+* Give each Claude seat its own pace ledger
+* Label the plan in every pace report
+
+### 2.69.0: 2026-09-18
+
+* Add cw for the work Claude Code seat
+
+### 2.68.0: 2026-09-16
+
+* Add claudeorv vision backend helper
+* Disable Claude Code pace and sleep nags
+
+### 2.67.1: 2026-09-14
+
+* Copy WezTerm selection to clipboard on release
+
+### 2.67.0: 2026-09-13
+
+* Add zellij config with tmux keys
+* Add purple Tokyo Night zjstatus bar
+* Mark tabs when Claude needs input
+* Show the prefix hint in the bar
+* Add pin and move bindings for floats
+* Add a floating shell binding
+* Move the status bar to the top
+* Show Claude activity in the bar
+* Steady the bar, drop the git widget
+* Add claude-tmux session popup
+
+### 2.66.0: 2026-09-12
+
+* Disable automatic tmux shell wrapping
+* Show DeepSeek balance inline
+* Copy on select and notify in foot
+* Disable herdr sidebars by default
+
+### 2.65.1: 2026-09-12
+
+* Hide account tag and effort on non-native backends
+
+### 2.65.0: 2026-09-10
+
+* Require a URL for any "known" claim
+* Report a tool failure by its real error
+
+### 2.64.0: 2026-08-28
+
+* Strip AI trailers with a commit-msg hook
+* Ban Claude-Session in the commit rules
+* Use Finnish number and currency format
+
+### 2.63.1: 2026-08-27
+
+* Guard allow-passthrough for tmux older than 3.3
+
+### 2.63.0: 2026-08-24
+
+* Add code-craft rules to global CLAUDE.md
+* Add commit subject mood and casing rules
+
+### 2.62.1: 2026-08-21
+
+* Remove Claude Code pace nag hook
+
+### 2.62.0: 2026-08-18
+
+* Remove the Akiflow plan-sync timer
+
+### 2.61.0: 2026-08-18
+
+* Keep the persona in proactive lines
+
+### 2.60.1: 2026-08-17
+
+* Select the Tokyo Night theme in `claude-code/settings.json`. The theme file has shipped since 2.36.0 and `install.sh` symlinks it, but nothing ever activated it, so a fresh machine got the theme available and unused until someone ran `/theme` by hand
+
+### 2.60.0: 2026-08-17
+
+* Report task writes with id and link
+
+### 2.59.0: 2026-08-15
+
+* Remove the plan-accounting timer
+* Show user@host in statusline chip
+
+### 2.58.0: 2026-08-14
+
+* Add rule against deferring work
+
+### 2.57.0: 2026-08-14
+
+* Add plan-accounting timer for Akiflow
+
+### 2.56.0: 2026-08-13
+
+* Add plan-sync timer for Akiflow reschedules
+
+### 2.55.1: 2026-08-12
+
+* Tighten commit and CHANGELOG conventions
+* Define patch vs minor vs major explicitly
+* Snapshot tmux layout on session create and close
+
+### 2.55.0: 2026-08-12
+
+* Fix the Dayflow filter in `kb-session-capture.sh`. It matched the custom MCP's tool names (`dayflow_get_timeline` and friends), which stopped existing when Dayflow 2.1.0's official server replaced them, so screen-observation noise was about to start leaking into the knowledge base. Now matches `mcp__dayflow__` and the new tool names too, keeping the old ones for sessions already in the vault
+
+### 2.54.1: 2026-08-12
+
+* claude-code: fix `/claudeusage` reporting "unavailable" every time. `burn_rates()` used `prev.get("ts", ts)` to default a missing timestamp, but a `.get(key, default)` default only fires when the key is absent - a ledger row carrying an explicit `"w": None` (rather than no `"w"` key at all) still returned `None`, and subtracting `None` from a number raised `TypeError`, killing the whole reading. Written on the Mac 11.8.2026, left uncommitted; verified the exact `{"w": None}` row crashes on the old code and degrades cleanly on the fix, and the existing test-claude-pace.py suite still passes in full
+
+### 2.54.0: 2026-08-11
+
+* claude-code: put the hostname first on the statusline as a coloured chip, so sessions on different boxes are distinguishable at a glance. The background colour is derived from the hostname itself, so a machine always gets the same colour with no per-machine config. Uses CRC32 via `cksum` rather than a hash rolled by hand in awk: a rolling hash folded to 360 hues does not avalanche, and put `mac` and `linux` one degree apart and `mbp` and `nanoclaw` on the identical colour. The full 32-bit CRC is spent across hue, saturation and lightness instead of only hue, and saturation and lightness are held inside bands that stay readable. Text colour flips between near-black and white on the background's perceived luminance
+
+### 2.53.0: 2026-08-11
+
+* claude-code: add a data disclosure section to `user-memory.md`. Never send personal data, customer data, secrets or identifying technical fingerprints (hostnames, internal IPs, user-agent strings, API endpoints) to an outside party without asking first, on any outbound path - web searches and third-party MCP servers count, not just email. Redact and ask rather than guess, and treat "it is already public" as Rolle's call
+* claude-code: add an email section to `user-memory.md`. Drafts only, never send. Google has no draft-only scope so `gmail.compose` carries send permission whether or not it is wanted; the rule closes that gap before the scope is granted
+
+### 2.52.3: 2026-08-10
+
+* claude-code: fix the account tag showing bare "Team" with no multiplier. `organizationRateLimitTier` only carries a multiplier for Max accounts ("default_claude_max_20x"); on Team it is "default_raven", an internal codename with no number in it at all - the regex from the previous pass could never have matched, guessed or not. Rolle read the real values off the team-account machine: `organizationType: claude_team`, `seatTier: team_tier_1`. The multiplier is Anthropic's own tier name, not derivable, so team_tier_1 is now a small lookup mapped to "6.25x"; an unmapped tier shows the raw seat-tier string instead of a fabricated number
+
+### 2.52.2: 2026-08-10
+
+* claude-code: use Anthropic's actual plan names, "Max 20x" and "Team 6.25x", instead of the invented "Max x20 personal" / "Team Premium" from the previous pass - Rolle corrected both the multiplier order and the wording. Drops the seat-tier guess entirely since the multiplier itself is the real name. The multiplier is parsed out of `organizationRateLimitTier` and now supports a decimal (`.` or `_` as the separator), needed for Team's fractional 6.25x
+
+### 2.52.1: 2026-08-10
+
+* claude-code: rework the account tag to show the plan name instead of the email. Both of Rolle's accounts share the same email, so `roni@dude.fi (Max)` told him nothing - the tag is now `Max x20 personal` (parsed from `organizationRateLimitTier`) or `Team <seat tier>` for a real company org, e.g. `Team Premium`
+* Fix a jq bug that made the personal-org branch fail silently for anything except the exact tier already seen: `capture(...)?` on a non-matching string yields zero values rather than `null`, so the `as $mult |` pipeline consuming it short-circuited and produced no output at all - not degraded output, none. Wrapping the capture in `[...]` so it always yields an array (empty or one element) fixes it, verified against a personal Max account, a synthetic team account with a seat tier, one without, and a synthetic Pro account
+
+### 2.52.0: 2026-08-10
+
+* claude-code: statusline shows which account a session is authenticated as - `email (Max)` for the personal plan, `email (Org Name)` for a team org. Rolle runs a personal Max subscription and a team account and switches between them with `claude login`; without this the only way to tell which one is active was to grep `~/.claude.json` by hand. The personal plan's org is auto-named "`<email>`'s Organization" by Anthropic, so that pattern is what distinguishes it from a real team org rather than a hardcoded org id
+
+### 2.51.0: 2026-08-09
+
+* claude-code: statusline shows the reasoning effort between the model and the duration, lowercase, colour-coded by cost: low and medium green, high yellow, xhigh red, max a bold screaming red. Read from `.effort.level`, absent when the model has no effort parameter
+* claude-code: the 5h and 7d usage bars moved onto the first row and narrowed from width 10 to 6, so the statusline is a single line on Anthropic backends
+* claude-code: the bar labels dropped their parentheses (`5h`, `7d`) and the dot separators around them, and the 7d bar is followed by `reset in Xh` from `.rate_limits.seven_day.resets_at`, in whole hours
+
+### 2.50.2: 2026-08-07
+
+* claude-code: set `DISABLE_FEEDBACK_COMMAND` and `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` in `settings.json`, so `/feedback`, `/bug`, `/share` and the transcript-share survey cannot upload private repo contents
+* claude-code: set `attribution.commit` to empty, dropping the commit trailer for good
+* install.sh: `setup_claude_settings_merge` merges the template's `env` and `attribution` into `~/.claude/settings.json`, per-key and additive so local values win. The template is never copied wholesale, so new machines missed these entirely
+
+### 2.50.1: 2026-08-07
+
+* driftwm: stop restarting DMS on every unlock in `lock-with-capture.sh`. It was a workaround for the volume OSD dying across a lock cycle, which is now fixed in `DankOSD.qml` itself, and the restart masked the bug so the fix could never be verified
+
+### 2.50.0: 2026-08-07
+
+* install.sh: symlink `claude-code/statusline.sh` to `~/.claude/statusline.sh` and `claude-code/append-changelog.sh` to `~/.claude/hooks/append-changelog.sh` in `setup_claude_code`. `settings.json` references both fixed paths but neither was ever wired into the installer, so a fresh machine needed them linked by hand - on this machine `append-changelog.sh` had drifted into a plain copy instead of a symlink, silently diverging from the repo on every edit; replaced with a real symlink
+
+### 2.49.0: 2026-08-07
+
+* claude-code: set `CLAUDE_CODE_MAX_CONTEXT_TOKENS` in `claudeglm`/`claudeor`/`claudeds`/`claudeqwen`. Confirmed by reading the shipped Claude Code binary's window-resolution logic that any model id not starting with `claude-` silently falls back to an assumed 200k-token context window, regardless of what the backend actually supports - `claudeqwen` was auto-compacting almost every turn (worse on `--resume`) despite DashScope's real 1M window. `claudeglm` is capped at 128000 (glm-4.5-air's real ceiling, since the var is one flat value covering its Haiku tier too), the others at 1000000
+* install.sh: `print_final_instructions` now lists where to drop the four backend API key files (`~/.config/zai/coding-key`, `~/.config/crush/deepseek-key`, `~/.config/crush/openrouter-key`, `~/.config/qwen/dashscope-key`) - the script wires the shell functions in automatically but, being gitignored secrets, cannot place the keys themselves, and previously said nothing about where they belong
+* claude-code: statusline `$` spend/balance figures (DeepSeek balance+estimate, OpenRouter credit usage, Qwen estimate) now render gold instead of purple, and the estimated (non-API-sourced) DeepSeek/Qwen monthly figures are prefixed `~` instead of suffixed `(est)`
+
+### 2.48.0: 2026-08-07
+
+* claude-code: stop `usage-pace-record.sh` from recording samples for non-Anthropic backends (`claudeds`, `claudeqwen`, `claudeglm`, `claudeor`). `.rate_limits` is an Anthropic-account concept, but Claude Code still fires it from the cached OAuth session even when a session is routed elsewhere - `ANTHROPIC_BASE_URL` only redirects message traffic, not that status call - so those samples were inflating the real Anthropic weekly pace with usage that never touched the Anthropic plan
+
+### 2.47.1: 2026-08-07
+
+* claude-code: mark `model-spend-record.sh` executable. The exec bit did not survive the initial commit, so the statusline's background call silently failed with "permission denied" on `infinity`
+
+### 2.47.0: 2026-08-07
+
+* claude-code: add `model-spend-record.sh` and wire it into the statusline, showing an ongoing monthly $ estimate for `claudeds`/`claudeqwen` sessions. Qwen's DashScope pay-as-you-go tier has no balance/spend endpoint reachable with a plain API key (that lives behind Alibaba Cloud's signed BSS API), and DeepSeek's `/user/balance` gives remaining balance, not spend, so this tracks it locally instead: diffs the statusline's cumulative session token counts against a per-session snapshot and prices the delta at each model's known flat rate, accumulated per calendar month. Cache-hit input is priced at the full rate since the statusline does not expose cumulative cache tokens, so the number is a conservative upper bound, not a bill
+* claude-code: `qwen*` model ids now get their own statusline branch (was falling through to the generic Anthropic rate-limit display), and " max" now title-cases to " Max" in the prettified model label
+
+### 2.46.0: 2026-08-07
+
+* claude-code: add `claude-code/model-backends.sh`, consolidating the `claudeglm`/`claudeor`/`claudeds` shell functions that were only living ad hoc in `infinity`'s `.bashrc`, plus a new `claudeqwen` for Qwen3.8-Max/Qwen3.6-Flash via DashScope's native Anthropic endpoint. No secrets in the file, each function reads its key from a local `~/.config/` path, so it is safe to publish
+* claude-code: `install.sh` now sources `model-backends.sh` from `.bashrc`/`.bash_profile`/`.zshrc` automatically (macOS reads `.bash_profile`, never `.bashrc`, same detection `setup_tmux` already used), and `infinity`'s hand-written functions were replaced with the same source line so both machines run the identical file
+
+### 2.45.0: 2026-08-07
+
+* claude-code: add `date-context-hook.sh`, a UserPromptSubmit hook that stamps the real weekday and date onto every prompt. A session spanning midnight otherwise keeps the date it inferred at session start - `/plan_today` ran at 17:46 believing the workday was still open, then the next morning still reasoned from the previous day until asked directly whether the date had been checked. The hook makes the correction unconditional rather than depending on the model deciding to re-run `date`
+* install.sh: symlink the new hook on every machine that runs the installer
+* README: document the hook in the manual settings.json block, and note it in the remote-server setup section
+
+### 2.44.1: 2026-08-05
+
+* driftwm: bind `ctrl+space` to the DMS launcher as a second bind alongside `mod+k`, so the spotlight opens from either
+
+### 2.44.0: 2026-08-04
+
+* fastfetch: colour the logo with the original 1977 Apple rainbow (green, yellow, orange, red, purple, blue) instead of a single flat accent. The macOS logo has six colour slots and only two were set, so the top half fell back to the terminal palette. Note the config is shared, so a Linux host renders the Arch logo in these colours until the palette is made per-OS
+
+### 2.43.2: 2026-08-04
+
+* tmux: carry `WAYLAND_DISPLAY` through the SSH-to-tmux hop, alongside `FASTFETCH_VIEW`. A shell inside tmux inherits the server's environment from when it first started, not the attaching client's, so wl-copy/wl-paste guessed the wrong socket (`wayland-0` instead of `wayland-1`) and failed inside every SSH tmux session
+
+### 2.43.1: 2026-08-03
+
+* bash: local macOS terminals no longer start inside tmux. The Mac is never reached over SSH and its windows are not left open, so wrapping every shell in tmux only added a layer that broke copy/paste and scroll for nothing. Linux desktops keep the local auto-tmux, and the SSH branch still applies on any host
+* bash: the fastfetch banner now draws in a bare local macOS shell, where it used to be suppressed on the assumption that tmux was about to take over the screen
+
+### 2.43.0: 2026-08-03
+
+* claude-code: make pace tracking work on macOS. `usage-pace-record.sh` locked the ledger with `flock`, which does not ship with macOS, so the `|| exit 0` fired on every statusline render and the script returned before appending. The snapshot was written and the ledger never was, which reads as "no pace data yet" indefinitely rather than as a failure. Falls back to an atomic `mkdir` lock, reaping one older than a minute so a killed session cannot wedge the recorder
+* claude-code: read file mtimes through a `_mtime` helper that tries the BSD flag before the GNU one. `stat -c %Y` is Linux-only, so the alert throttle read an empty timestamp on macOS and treated every sample as due
+* launchd: add `com.rolle.claude-pace-export.plist`, the macOS counterpart to the systemd timer, on the same ten-minute cadence. Pace drifts with the clock rather than with usage, so the export has to keep running while no session is open. `install.sh` now picks the scheduler by platform instead of only wiring systemd
+* claude-code: mark `claude-pace-export.sh` and `usage-pace-record.sh` executable. launchd ran the exporter directly and exited 126
+
+### 2.42.2: 2026-08-02
+
+* chromium: stop forcing the ANGLE `gl` backend, it was noticeably slow. Left to Chromium's default GL path, accepting the occasional overlay flicker for speed. Vulkan stays banned (it hung the GPU); Chromium does not pick it on its own on Linux, so the default is safe
+
+### 2.42.1: 2026-08-02
+
+* chromium: switch the ANGLE backend from `vulkan` to `gl`. Vulkan on nvidia-open under Wayland hung the whole GPU (Xid 38 firmware error, RC watchdog could not recover, full freeze needing a reboot), which is a known Chromium+Vulkan+NVIDIA+Wayland lockup. `gl` is stable at the cost of minor opaque-overlay corruption; a GPU hang is far worse. Brave was already on `gl`
+
+### 2.42.0: 2026-08-01
+
+* fastfetch: show the compact view on the phone even when the shell runs inside tmux. Termius sets `FASTFETCH_VIEW=compact` and its startup runs `tmux new-session`, but tmux spawns shells from the server's environment, not the SSH connection's, so the banner never saw the var and rendered the full, wrapping view. tmux now carries it via `set -ag update-environment FASTFETCH_VIEW`, and the wrapper reads it back from the tmux session env as a backstop
+
+### 2.42.0: 2026-07-29
+
+* Send the pace nudge to one place instead of everywhere at once. It now picks the chat with the most recent inbound message, so it follows Rolle to whichever channel he is actually using rather than broadcasting to Telegram and Slack together. The channel list and the message database live in the local config, keeping identifiers out of this public repo
+* Say nothing in chat while a Claude Code session is live. A ledger sample newer than ten minutes means a session is running and its own hook is already showing the pace, so a chat message on top of it was pure duplication - and the most annoying kind, since it arrived exactly while he was looking at the same number
+* Raise the unchanged-state floor from 11 to 20 hours. Combined with the deduplication above, the steady state is now at most one message a day
+
+### 2.41.1: 2026-07-28
+
+* Switch Chromium to ANGLE on Vulkan in `browser-flags/chromium-flags.conf`, which finally stops opaque modals flashing the page content underneath them on NVIDIA Wayland. Chromium 150 permits only three backends, all through ANGLE: `opengl` and `opengles` both corrupt overlay compositing, and `--use-gl=egl` is not a valid implementation at all - the GPU process fails to boot and everything silently drops to software rendering, which is why it looked flicker-free but slow. Vulkan keeps Canvas, compositing, rasterization, video decode, WebGL and WebGPU hardware accelerated, and cuts the applied driver bug workarounds from nine to four
+
+### 2.41.0: 2026-07-27
+
+* Make the pace alert fire on underspend, which it could not do at all. `alert_key` tracked only the verdict, the critical flag and the 5-hour bucket, so a week tracking to finish at 78% sat on verdict `on_pace` and never said a word - exactly the "you are not spending enough" case the whole thing exists for. The projected end of week is now part of the key, bucketed so it announces once per band, and a projection that wastes 20% or more becomes the headline instead of a footnote
+* Add a daily floor to the alert. Pushing only on change meant total silence for a day at a time while the week quietly drifted; the same situation now gets one message every 11 hours at most
+* Stop relying on `systemMessage` alone for the in-session notice. It reaches the terminal but is easy to miss, and the model had been told to mention the pace only if useful, so a whole day passed with nothing shown. When the week is at risk, ahead, or heading for a 20% underspend, the model is now told to state it in one line at the top of its reply
+* Fix model names rendering as "opus 4 7" in the in-session notice
+
+### 2.40.1: 2026-07-26
+
+* Keep the personal chat id and the private project path out of this public repo. The pace alerter had them as hardcoded defaults; they now come from `~/.config/claude-pace/config.json` (gitignored by living outside the repo, mode 600) or the environment, with a committed example file. With neither configured the alert simply does not push and the in-session notice is unaffected
+
+### 2.40.0: 2026-07-26
+
+* Fix the burn rate reading about six times too high, which made an hour of Opus 5 look like the whole day's budget. Concurrent sessions report slightly different roundings of the same weekly percentage, so the raw series flickers 4,5,4,5,4,5 around a boundary; summing per-pair deltas kept every +1 and discarded every -1, counting one real 1% step three times. Usage never falls inside a window, so the series is now forced non-decreasing with a running maximum before anything is measured. On the live ledger that took Opus 5 from 5.84% to 1.27% per hour, against a ground truth of 0.97% per hour including idle time
+* Write durations in full words everywhere: "1 hour", "2 hours", "3 hours 45 minutes", "6 days 8 hours". No "1.0h", no "6d 8h", and singular and plural handled separately so "hour(s)" never appears. Working spans round to the nearest five minutes rather than pretending to be precise
+
+### 2.39.0: 2026-07-26
+
+* Make the pace message readable. "Used 4% of the weekly limit, 9% of the week gone" put two percentages of two different things side by side with no labels, so it read as a contradiction rather than as spending against a clock. Every figure now names what it measures (allowance spent versus time passed) and the comparison is stated in words, with "pp" dropped everywhere as jargon
+* Fix the at-risk threshold, which fired on a week that was comfortably behind pace. Running out 19 hours before the reset is the target, not a risk, but anything more than 12 hours early was flagged critical and advised switching to a cheaper model - the exact opposite of the right call. Critical now means more than two days early, and a new on-target band says plainly when the projection lands close to the reset
+* Show the in-session notice to the user instead of only to the model. The hook emitted `hookSpecificOutput.additionalContext`, which never reaches the terminal, so whether the pace was ever seen depended on the model choosing to mention it. It now emits the documented `systemMessage` field alongside the context, so the line is displayed and the model still gets the detail
+* Fix model names rendering as "opus 5" in pushed alerts
+
+### 2.38.0: 2026-07-26
+
+* Add Claude Code weekly-limit pace tracking, so the Max x20 allowance can be spent almost exactly by the Sunday 04:00 reset instead of running dry on Thursday or finishing the week far under. The plan's live 5-hour and 7-day utilisation is only handed to the status line (`.rate_limits` on its stdin payload), so `usage-pace-record.sh` captures it from there into a ledger at `~/.claude/usage-pace.jsonl`, appending only on a change or a 10-minute heartbeat
+* Add `claude-pace.py`, which turns that ledger into a verdict: behind, on pace, ahead, or at risk. It derives the week window from the plan's own `resets_at` rather than hardcoding a weekday, so it stays correct if the anchor moves. Burn rates are measured per model from the ledger instead of assuming price multipliers, and stay unquoted until there is enough active time to be honest about them
+* Weight today's budget by the hours actually worked, taken from `hourCounts` in `stats-cache.json`. A flat split across wall-clock hours reserves quota for hours spent asleep
+* Convert the burn rate into calendar time using observed active hours per day. Projecting a per-active-hour rate as if the next 24 hours were all working hours predicted running dry almost immediately and produced a report that said "use it freely" directly above its own exhaustion warning
+* Report underspend as a first-class failure: when the projection lands past the reset it now says how much of a paid-for allowance the week is on track to waste, rather than calling it "close to the reset"
+* Surface it in two places. A `UserPromptSubmit` hook (`claude-pace-notice.py`) injects the pace into the session, speaking on a slow interval but immediately when the verdict changes. `claude-pace-alert.py` pushes escalations straight into nanoclaw's IPC queue, which reaches Telegram in about a second with no container spawn and no model call, driven from the recorder so it fires the moment the percentage moves
+* Publish the verdict to `~/.claude/pace/` via a `claude-pace-export` systemd user timer, so pace stays current while no session is open. Being idle on a Tuesday is exactly when "you are behind" is worth hearing
+* Add `test-claude-pace.py`, covering a fresh week, Thursday burnout, per-model hours, the reset boundary, exact-on-pace and a missing ledger
+
+### 2.37.0: 2026-07-26
+
+* Add OpenRouter credit usage to status line: on OR-routed models (provider/model slug) shows monthly usage vs. limit ($X.XX / $Y this month) from /api/v1/auth/key
+
+### 2.36.0: 2026-07-26
+
+* Add MiniMax model label prettification to status line: `minimax-*` ids render as `MiniMax M3` etc, routed through OpenRouter's Anthropic Skin like other non-native providers
+
+### 2.35.0: 2026-07-26
+
+* Add Gemini model label prettification to the status line: bare `gemini-*` ids render as `Gemini 3.1 Pro Preview` and `Gemini 3.1 Flash Lite` with proper capitalization of suffix words (lite → Lite, preview → Preview)
+
+### 2.34.0: 2026-07-22
+
+* nvim: Ctrl+Backspace deletes the word left of the cursor in nano mode. Terminals disagree on how they encode it, so both spellings are claimed: `<C-BS>` when the kitty keyboard protocol is in play, `<C-H>` (0x08) when it is not. `<M-BS>` is mapped too, since that is nano's own binding for the same thing
+* nvim: claiming `<C-H>` is safe here because plain Backspace arrives as 0x7f, which foot and tmux both report as `kbs=^?`. On a terminal that sends 0x08 for Backspace instead, this would eat a word where a character was meant
+* nvim: the deletion feeds `<C-w>` through `feed()`, which is noremap, so it reaches vim's builtin rather than nano's own `<C-w>` binding for Where is
+
+### 2.33.0: 2026-07-21
+
+* Add `bin/rgb-apply.sh`, `bin/rgb-shine.sh` and `rgb-apply.service`: NZXT case strip, AER RGB 2 fans, Kraken X3 pump head and Corsair RGB DIMMs all driven from Linux in the driftwm Quantum Realm purples, reapplied on boot and on wake. liquidctl handles the NZXT gear, OpenRGB the RAM
+* The colours are deliberately saturated with the green channel near zero. LEDs emit where a screen reflects, so a pale theme tint like the DMS accent `#BC9AFA` renders as dim dirty white on an LED
+* `rgb-shine.sh` puts a static bright spot on one side of each fan ring using `super-fixed`, the only mode with per-LED colour. `SHINE_PEAK` rotates it, `RGB_SHINE=0 rgb-apply.sh` restores the flowing fans
+* Requires the `nzxt_smart2` and `nzxt_kraken3` kernel modules to stay blacklisted and OpenRGB's NZXT detectors disabled; both fight liquidctl for the devices. Full write-up lives in the Obsidian vault, not here, since it is machine specific
+
+### 2.32.1: 2026-07-21
+
+* fastfetch: wait for the real terminal size before building the compact view. At SSH login the PTY starts at the 80x24 default and Termius sends the actual window size a beat later, so the banner was sized for 80 columns and wrapped on a 63-column phone, which looked like the full view had leaked onto mobile. It now polls the tty size until it leaves that default, capped at about 600ms, and assumes a phone width if the resize never arrives, so the worst case is short values rather than a wrapped mess
+
+### 2.32.0: 2026-07-20
+
+* claude-code: add `require-permission-destructive.sh`, a `PreToolUse` hook that hard-blocks commands with nothing to undo. Auto mode already screens for these, but it screens with an LLM classifier, so the same command can be allowed once and blocked the next time. The hook does not vary, and unlike `permissions.deny` rules it still applies in `bypassPermissions`
+* claude-code: the guard denies recursive `rm` at `/`, `~`, `$HOME`, `/home/<user>` and the system directories, `--no-preserve-root`, `mkfs`, `wipefs`, `dd of=/dev/*`, `DROP DATABASE|SCHEMA|TABLE`, `TRUNCATE TABLE`, `DELETE FROM` with no `WHERE`, `wp db reset`, `drush sql-drop`, `artisan migrate:fresh`, `tmux kill-*`, `systemctl stop` on the session units and `reboot`
+* claude-code: force and delete pushes, `reset --hard`, `clean -fd`, `branch -D` and `stash drop` prompt rather than block, since the work is recoverable and the intent is often real
+* claude-code: `rm -rf node_modules`, `DELETE ... WHERE`, `git push` and the rest pass untouched, so auto mode keeps its speed. The SQL rules only fire when a database client is in the command, so grepping a migration for `DROP TABLE` is not read as running it
+* claude-code: add `require-permission-destructive-test.sh` and a 48 case fixture asserting each deny, ask and pass decision
+* install.sh: symlink the guard hook into `~/.claude/hooks`
+* nvim: the nano-style shortcut bar at the bottom is off by default. The keys are muscle memory, `^G` still lists every one, and the two rows are better spent on the file. `enable_nano_shortcut_bar = true` in `lua/local.lua` brings it back. The top `nvim nano` title bar stays
+
+### 2.31.2: 2026-07-20
+
+* README: point the manual Claude Code setup at `codestats-hook.py`, it still told you to symlink and configure the `.sh` name that was renamed in 2.9.6, so following the manual instructions produced the same dead hook `install.sh` used to
+
+### 2.31.1: 2026-07-20
+
+* tmux: copy pipes straight to `pbcopy` (or `wl-copy`) where it exists, instead of trusting OSC 52. 2.31.0 verified only that tmux emits the escape sequence, never that the terminal accepts it, and when it does not it fails silently with nothing on the clipboard. OSC 52 stays as the fallback for remote hosts, where it is the only thing that can cross SSH
+* tmux: drag now ends in `copy-pipe-and-cancel`, so copy-mode exits on release. 2.31.0 used `copy-selection-no-clear`, which held copy-mode open, parked a `[0/25]` position indicator in the corner and turned every following keypress into a copy-mode command
+* tmux: right click pastes the system clipboard, replacing the default right-click menu
+* tmux: `y` in copy-mode copies to the system clipboard too
+
+### 2.31.0: 2026-07-20
+
+* tmux: `set-clipboard on`, so copying in tmux reaches the real system clipboard. The default `external` only forwards OSC 52 that an application inside tmux sent itself, so a mouse selection went to tmux's own paste buffer and never to the Mac, and with `mouse on` tmux owns the drag, so Cmd+C was left with nothing to copy
+* tmux: declare `*:clipboard` in `terminal-features` so OSC 52 is used whatever the outer `TERM` is, covering foot and Termius as well as WezTerm
+* tmux: `allow-passthrough on`, so a tmux inside SSH inside tmux can push its OSC 52 out through the outer tmux instead of losing it at the first hop
+* tmux: releasing a drag now copies with `copy-selection-no-clear` rather than the default `copy-pipe-and-cancel`, which exited copy-mode and snapped back to the bottom of the scrollback on every selection
+
+### 2.30.2: 2026-07-20
+
+* bin: `fastfetch-responsive` resolves the binary from `PATH`, the hardcoded `/usr/bin/fastfetch` made the whole script exit silently on macOS where Homebrew installs elsewhere
+* bin: `fastfetch-responsive` and `dms-fade-lock-patcher.sh` are executable, neither could be run as shipped
+* claude-code: record the executable bit for `update-cross-channel-context.sh`, a fresh clone got a `Stop` hook that could not run
+
+### 2.30.1: 2026-07-20
+
+* claude-code: `task-list-reminder.sh` is executable, without the bit the hook could not run at all
+* install.sh: symlink `codestats-hook.py`, the hook was renamed in 2.9.6 and installs kept a dangling `codestats-hook.sh` that silently dropped Code::Stats XP
+* install.sh: symlink `fastfetch/` to `~/.config/fastfetch`, the configs shipped in 2.18.0 but nothing ever linked them
+* install.sh: append the auto-tmux block to `.bash_profile` on macOS, where terminals start login shells that never read `.bashrc`
+
+### 2.30.0: 2026-07-19
+
+* claude-code: add `task-list-reminder.sh`, a `UserPromptSubmit` hook that re-injects the task list rule every turn so it cannot decay mid-session
+* claude-code: `settings.json` sets `todoFeatureEnabled`
+* install.sh: symlink the new hook
+
+### 2.29.0: 2026-07-19
+
+* tmux: `Alt+1` to `Alt+9` jump to a tab without the prefix
+
+### 2.28.0: 2026-07-19
+
+* bash: every interactive shell runs inside tmux, not only SSH logins. Local terminals get a session named after the directory, SSH shares `main`
+* tmux: prefix is `C-a`, `|` and `-` split
+* install.sh: source the shell block instead of copying it
+
+### 2.27.1: 2026-07-30
+
+* driftwm: start Steam at boot instead of the nvtop terminal, in the same slot
+
+### 2.27.0: 2026-07-19
+
+* install.sh: symlink `tmux/tmux.conf`, append the shell block, merge `remoteControlAtStartup` into `~/.claude/settings.json`
+
+### 2.27.0: 2026-07-26
+
+* driftwm: hot corners take a list of actions and alternate between them on each entry, restarting at the first after ten seconds untouched
+* driftwm: corner mapping is now top right fit all then cycle windows, bottom left the launcher, bottom right cycle windows
+
+### 2.26.2: 2026-07-26
+
+* driftwm: mirror the live `[hot_corners]` config now that the migration shim has folded it in
+
+### 2.26.1: 2026-07-26
+
+* driftwm: shift the realm's core and peak tints further from blue toward violet
+
+### 2.26.0: 2026-07-19
+
+* claude-code: `settings.json` sets `remoteControlAtStartup`
+* tmux: add `tmux/tmux.conf`, Tokyo Night status line
+* bash: add `bash/ssh-auto-tmux.sh`, tmux session on SSH login
+
+### 2.26.0: 2026-07-22
+
+* driftwm: mirror the boot-safety tooling: `driftwm-preflight` (rolls back a bad binary or config at boot), `driftwm-rebuild` (refuses to install a build missing local patches or one the config cannot parse) and the systemd drop-ins (config guard, DMS display pin, hot corners migration shim)
+* driftwm: realm shader no-white grade: additive peaks compress through a soft knee into the violet family, so pulses read as light violet and nothing clips to screaming white; core and black hole palettes moved into purple, deep purple and bluish tones
+* driftwm: config mirror refreshed (hot corners staged, animate_blur_fps drives the frost alone)
+
+### 2.25.0: 2026-07-17
+
+* claude-code: `settings.json` sets `showThinkingSummaries` and `effortLevel: high`. `verbose` and `alwaysThinkingEnabled` were already here but never made thinking visible on their own: `alwaysThinkingEnabled` only decides whether the model thinks, and `showThinkingSummaries` defaults to off, so the thinking was happening and never being shown. It is the setting that puts thinking in the conversation and in the `Ctrl+O` transcript
+* claude-code: document in `claude-code/README.md` which of the three settings does what, since the split between thinking and showing thinking is the whole reason this looked broken
+
+### 2.25.0: 2026-07-22
+
+* driftwm: add `[hot_corners]` to the config: top right toggles the launcher, bottom right fits all windows. Compositor-side detection, so shell overlays cannot occlude the triggers
+
+### 2.24.1: 2026-07-15
+
+* fastfetch: the banner is now the full view everywhere by default, on the local terminal and over SSH alike, and the compact phone view is opt-in. Picking compact for any SSH session was wrong: the desktop is reached over SSH too, and Termius identifies itself with nothing but a bare `xterm-256color`, indistinguishable from a desktop SSH client, so desktop SSH sessions were being shrunk. The phone now asks for the compact view by exporting `FASTFETCH_VIEW=compact` (set once in Termius; sshd here accepts it via an `AcceptEnv FASTFETCH_VIEW` drop-in). Nothing on the desktop sets it, so a desktop session, local or SSH, is never shrunk
+* fastfetch: the compact view always keeps the real Arch logo. Width only decides how hard each value is truncated so it sits beside the logo without wrapping (at a 63-column phone the values shorten to about eleven characters, and grow as the screen widens)
+* fastfetch: drop the Packages line from both views. It grew an `(appimage)` entry and ran to 91 columns, well past the 78 the terminal fits, and there is no combined placeholder to truncate it with
+* fastfetch: print CPU frequency with one decimal (`display.freq.ndigits`), so the CPU line is 78 columns instead of 79 and stops wrapping in a 78-column foot window, which is what the extra logo padding had pushed it over
+
+### 2.24.0: 2026-07-15
+
+* nvim: `Esc` is now the way into vim. In nano, `Esc` only ever cancels, so it was dead weight: it used to do nothing at all here, because the "back to typing" autocmd immediately undid it. Pressing it from typing now hands you normal mode and holds it there, and any nano key (or vim's own `i`) resumes typing. `F12` and `:Vim` still turn nano mode off completely, which is the heavier hammer
+* nvim: `Esc` with an active selection just cancels the selection and leaves you typing, rather than dropping to normal mode, which is what nano's mark does
+* nvim: the "never strand them in normal mode" guard now distinguishes a deliberate `Esc` from accidentally landing in normal mode. It stays out of the way after `Esc`, and re-arms the moment you type again, so typing still can never silently run commands
+
+### 2.23.1: 2026-07-15
+
+* nvim: the dashboard gate in `plugins.lua` now checks `vim.g.nano_default` as well as the `enable_nano` flag, matching the rule `shared/nano.lua` already used. `nvim --cmd 'lua vim.g.nano_default = false'` therefore starts a genuinely plain nvim, dashboard included, instead of a modal nvim that was still missing its start screen
+
+### 2.23.0: 2026-07-14
+
+* Add `nvim/lua/shared/nano.lua`: nano-like modeless editing, on by default. Typing works immediately and nano's control keys do nano things: `^O` write out, `^X` exit, `^W` where is, `^\` replace, `^K` cut line (consecutive cuts append to the cutbuffer, like nano), `^U` paste, `^A` and `^E` for start and end of line, `^_` go to line, `^C` where am I, `^G` help, `M-U` and `M-E` for undo and redo. A two-row shortcut bar sits at the bottom and a nano-style title bar in the winbar. Shift+arrows select. Neovim removed the `insertmode` option (`E519`), so this follows the `BufWinEnter` plus `startinsert` emulation from `:help vim_diff`, with `<Cmd>` mappings so no action has to leave insert mode
+* nvim: every nano key is bound in every mode, insert, normal, visual and select, so there is no such thing as pressing the wrong key in the wrong mode. Any nano key also puts you back to typing when it is done, and a `ModeChanged` autocmd returns you to insert if you ever land in normal mode inside a file buffer, so typing can never silently run commands instead of inserting text. Telescope, mini.files, help and Trouble are left alone, since they are not file buffers and need their normal-mode navigation
+* nvim: add `^T` to run a `:` command. When you never leave insert mode, `:` is otherwise unreachable, which would put `:Vim`, `:Lazy` and every other command out of reach
+* nvim: `:Vim` (or `F12`) turns nano mode off completely, restoring `laststatus`, `relativenumber`, the winbar and every overridden keymap; `:Nano` turns it back on. `enable_nano = false` in `lua/local.lua` boots into plain modal vim instead
+* nvim: dashboard-nvim no longer loads while nano mode is on, gated on `enable_nano` in `plugins.lua`. The dashboard is fundamentally incompatible with modeless editing: it does not open a buffer of its own but converts the startup buffer in place after `VimEnter`, sets `modifiable = false`, and renders asynchronously through `vim.schedule_wrap`, so it lands back on top of the empty buffer nano puts you in. Plain `nvim` with no file left you on a screen you could not type into and where none of the nano keys were bound. Racing it with an `enew` does not hold, so the dashboard simply stays out of the way
+* nvim: add an `enable_completion` flag and gate blink.cmp behind it, alongside the existing `enable_lsp`. `is_enabled` now takes a default, and both of these default to **off**, so a machine whose `local.lua` predates the flags (the Mac) gets the same editor as this one without needing to be configured there: no popup completion and no language servers, which is the point of nano mode. Set either to `true` in `local.lua` to bring them back per machine. blink.cmp, nvim-lspconfig, mason.nvim, mason-lspconfig and friendly-snippets drop out of the plugin spec, 34 plugins down to 29, and startup goes from 153ms to 139ms
+* nvim: `nvim-lspconfig` no longer hard-depends on blink.cmp. It only lists it as a dependency when `enable_completion` is on, and falls back to `vim.lsp.protocol.make_client_capabilities()` when blink is absent, so the two flags can be toggled independently
+* nvim: while completion is on, nano and blink.cmp share the keys they both want (`^E`, `^K`, `^N`, `^P`, `^B`, `^F`, `^Y`): they go to blink while its completion menu is open and to nano otherwise. blink applies buffer-local keymaps on every `InsertEnter`, which shadows any global mapping, so nano mirrors that and re-applies to the buffer right after it. Turning nano off clears blink's buffer maps too, because blink skips re-applying if any of its own maps are still present, and would otherwise never restore the keys nano took
+* nvim: nano mode is defined entirely in shared config, so it behaves the same on Linux and on the Mac. The only machine-specific part left is `local.lua`, and every flag it can set now has a sensible default in the shared code
+
+### 2.22.1: 2026-07-14
+
+* nvim: resolve nvm's node path in `os/linux.lua` without spawning a shell. `~/.nvm/current` does not exist on this machine, so every single launch hit the fallback and ran `bash -c "source nvm.sh && nvm which current"` synchronously, which alone cost about 70ms of a 225ms startup to compute a path that never changes. It now reads `~/.nvm/alias/default` and globs `~/.nvm/versions/node`, picking the highest version numerically so `v9` does not sort above `v22`. Startup drops to about 150ms, and `node` still resolves to the same `v22.20.0` for the linters
+
+### 2.22.0: 2026-07-14
+
+* Remove the live diff stream added in 2.19.0 and themed in 2.20.0, along with `claude-code/live-diff/`, its `PreToolUse`, `PostToolUse` and `SessionStart` hooks, and the `delta` and `bat` install step. It was a bad idea for two reasons. Claude Code already renders a diff of every edit in the transcript, so the pane duplicated something that was already on screen, and stacking delta's line number gutter and word level emphasis on top of a hand rolled header made it harder to read than the thing it replaced, not easier
+* It also could not be made automatic without a cost that was not worth paying. No process can split its own terminal; it needs a multiplexer or a terminal with a remote control CLI, so a pane that opens by itself would have meant either requiring tmux everywhere or special casing each terminal, and a pane you have to remember to open by hand is not a workflow
+* What is kept is the part that earned its place: `verbose` and `alwaysThinkingEnabled` in `settings.json`, the Tokyo Night theme, and the instruction in `user-memory.md` to explain the reasoning behind each edit rather than narrate the diff back
+* `delta` and `bat` are left installed where 2.20.0 put them, they are useful for `git diff` in their own right, but nothing in this repo depends on them any more
+
+### 2.21.1: 2026-07-14
+
+* Point every repo URL at `rollecode/dotfiles` after the GitHub username change from `ronilaukkarinen`. The install one-liner, the clone commands and the tarball URLs in `README.md`, and `repo_url` in `install.sh`. GitHub redirects the old paths, so nothing was broken, but a fresh clone should not depend on a redirect that can be reclaimed if the old username is ever registered again
+* The Code::Stats identity `rolle` is left alone, it is a different account and not affected by the rename
+
+### 2.21.0: 2026-07-14
+
+* Add `claude-code/themes/tokyonight.json`, symlinked to `~/.claude/themes/`: a Tokyo Night theme for the Claude Code TUI itself, so the interface and the live diff stream share one palette. Select it with `/theme`, it live-reloads without a restart
+* Thinking text is purple, with a caveat worth writing down: Claude Code has no colour token for thinking. Reasoning output is just de-emphasised secondary text, so `inactive` and `subtle` are both set to purple, and thinking comes out purple whichever of the two drives it. Hints, timestamps and faint borders turn purple as well, which on this palette reads as intentional rather than broken
+* The theme also repaints the inline diff colours, the eight subagent colours and the usage meter, so nothing in the interface is left on the stock accent
+
+### 2.20.0: 2026-07-14
+
+* Theme the live diff stream Tokyo Night, with purple hunk headers, purple keywords and word level emphasis on the parts of a line that actually changed. `install.sh` installs `delta` (`git-delta` on brew and pacman, a `.deb` from upstream on Debian and Ubuntu, where it is not in every apt release)
+* `bat` is installed alongside it, as a hard dependency of the theme rather than a nicety: delta loads a custom syntax theme only from bat's compiled cache, so without `bat` there is no Tokyo Night, only delta's built-ins. `install.sh` copies the theme into `$(bat --config-dir)/themes` and runs `bat cache --build`. Verified rather than assumed: delta ignores a `.tmTheme` dropped in that directory until the cache is rebuilt
+* Vendor `claude-code/live-diff/themes/tokyonight_night.tmTheme` from `folke/tokyonight.nvim`, so a server with no network still gets the theme
+* The palette lives at the top of `lib.sh` as `CC_TN_*` variables, one source of truth instead of hexes scattered across the hooks. Flags are passed to delta explicitly rather than through a `[delta]` section in `~/.gitconfig`, so the stream renders the same on a machine whose gitconfig this repo does not control
+* Degrades in two steps rather than breaking: no `bat` falls back to delta's built-in themes, no `delta` falls back to plain `git diff` colour
+
+### 2.19.0: 2026-07-14
+
+* Add `claude-code/live-diff/`: a live stream of every change Claude Code makes, meant for a second pane. A `PreToolUse` hook snapshots each file before the edit and a `PostToolUse` hook diffs the snapshot against the file on disk, so the diff is per-edit rather than cumulative and works outside a git repo, which `git diff` alone cannot do. `why.sh` lets Claude append a one-line rationale, so the reasoning sits next to the change it explains instead of scrolling past in the chat pane. `bash`, `git` and `jq` only, no `nvim`, `tmux` or `lazygit` dependency, so it behaves the same over SSH on the servers as it does locally. Renders through `delta` when installed and falls back to plain `git diff` colour when not. View it with `~/.claude/live-diff/watch.sh`, or `--split` to split a tmux pane
+* The stream is written to `~/.claude/live-diff-stream.log`, deliberately not inside `~/.claude/live-diff/`, because that path is a symlink into this repo and the stream carries diffs of whatever is being edited at the time. Writing it there would have committed a log of every edit in every project into a public repo
+* Add `claude-code/user-memory.md`, symlinked to `~/.claude/CLAUDE.md`: asks Claude to explain implementation choices as it works, to log the why of each edit into the stream, and to always keep a task list. Named `user-memory.md` and not `CLAUDE.md` because a file with that name inside `claude-code/` would be loaded as directory-scoped instructions whenever you worked in that folder. This replaces the built-in Explanatory output style, which was deprecated and moved out into a plugin
+* `claude-code/settings.json`: set `verbose` and `alwaysThinkingEnabled`. Verbose is a persisted setting and not only the `Ctrl+O` toggle, so the detailed transcript, the thinking blocks and the task list show without pressing anything each session. On subscription plans the API returns summarised thinking rather than raw reasoning, so there is a ceiling here no setting can lift
+* `install.sh`: `setup_claude_code` symlinks `live-diff/` and `user-memory.md` into `~/.claude/`
+
+### 2.18.1: 2026-07-14
+
+* fastfetch: two spaces of gap after the logo, in both the full and the compact view. The padding first landed in the full config only, so a narrow terminal (which gets the compact view) showed no change at all
+
+### 2.18.0: 2026-07-14
+
+* Add `fastfetch/` and `bin/fastfetch-responsive`: fastfetch now picks its view from the session instead of a fixed config. Local desktop gets the full detail (CPU cores and frequency, GPU vendor, memory used of total), SSH and Termius get a compact view whose truncation width is computed from the live column count and which drops the logo below 62 columns. Width alone cannot tell the two apart: the desktop terminals here run about 78 columns, the same as a phone, so the SSH session is the signal. `FASTFETCH_VIEW=full|compact` forces one
+* fastfetch colors: logo, keys and title use the real Arch blue `#1793D1` as true colour. The logo has two colour slots and only the first was obvious, so the second stayed cyan; the title needed the `{#title}` placeholder because fastfetch only auto-colours the default title format, not a custom one
+
+### 2.17.1: 2026-07-12
+
+* Revert the NVDEC hardware video decode flags from `browser-flags/chromium-flags.conf`: the VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) cause GPU compositing corruption on NVIDIA under Wayland, first flickering and then whole gradients and elements disappearing, because `VaapiIgnoreDriverChecks` forces Chromium past the driver sanity checks that exist to prevent exactly that; do not retry this, hardware-decoded video belongs in mpv via ff2mpv, outside Chromium's GPU process
+
+### 2.17.0: 2026-07-11
+
+* Enable NVDEC hardware video decode in `browser-flags/chromium-flags.conf`: add the Chromium 149 `Accelerated*` VA-API features (`AcceleratedVideoDecodeLinuxGL`, `VaapiIgnoreDriverChecks`, `VaapiOnNvidiaGPUs`) for GPU video decode on the RTX 3070, paired with `libva-nvidia-driver` and the `LIBVA_DRIVER_NAME=nvidia`/`NVD_BACKEND=direct` env vars, verified as hardware accelerated in `chrome://gpu`; the zero-copy paths (`--enable-zero-copy`, `AcceleratedVideoDecodeLinuxZeroCopyGL`) and `--ignore-gpu-blocklist` are deliberately left out and `--disable-gpu-memory-buffer-video-frames` kept, since they trigger DMA-BUF flicker on Wayland/NVIDIA
+
+### 2.16.0: 2026-07-09
+
+* Replace x.ai Grok status line support with DeepSeek: Claude Code's x.ai backend turned out to reject every request (`400 Invalid message role`, a known Claude Code system-message injection that x.ai validates strictly against), so it is dismantled; the status line now detects a bare `deepseek-*` model id (direct DeepSeek native Anthropic endpoint) and shows the account balance in dollars from `GET api.deepseek.com/user/balance` instead of percentage bars, cached with the same background refresh pattern as the GLM quota
+
+### 2.15.0: 2026-07-09
+
+* Add x.ai Grok support to the status line: detect a bare `grok-*` model id (direct x.ai native Anthropic endpoint) and prettify the label (`grok-4.3` to `Grok 4.3`, `grok-4.20-0309-non-reasoning` to `Grok 4.20 0309 Non-Reasoning`), and show the x.ai prepaid credit balance in dollars from the Management API (`management-api.x.ai/v1/billing/teams/{team_id}/prepaid/balance`) instead of percentage bars; the balance parse is type-safe across object and scalar `total` shapes, and no-ops until `~/.config/xai/management-key` and `~/.config/xai/team-id` are filled
+
+### 2.14.0: 2026-07-09
+
+* Prettify non-Anthropic model ids in the status line: `glm-5.2[1m]` renders as `GLM 5.2 (1M context)` to match Claude's own label style, with the same treatment for DeepSeek, Kimi, Grok and Qwen ids; real Claude names pass through untouched
+* Show z.ai GLM coding-plan quota in the status line on the GLM backend: 5-hour token cycle and weekly quota bars plus the plan level, read from `api.z.ai/api/monitor/usage/quota/limit` and cached with a non-blocking background refresh so rendering never waits on the network; key read from `~/.config/zai/coding-key`
+
+### 2.13.4: 2026-07-08
+
+* Update `driftwm/patches/background-animate-fps.patch` (PR #184) after a second review round: rebased onto main past the maintainer's own per-output blur follow-up, the shared-blur refresh now also requires the background to have ticked since its last refresh (animate_blur_fps stopped re-blurring frames the background hadn't changed), and the idle due-check plus the tick-timer's wait calculation are now scoped to outputs that actually render the background (active, not fullscreen) via one shared helper — a DPMS-off or fullscreen output can no longer read as permanently due and starve the others, and a stale stamp from an output that went fullscreen can no longer collapse the wait to a 1ms busy-reschedule
+* Update `driftwm/patches/blur-scaling.patch` (PR #185) per review: rebased just the mask-caching commit onto main, rekeyed its `blur_cache` lookups onto main's `(output_name, surface_id)` tuple key, and added a comment documenting the accepted alpha-only staleness tradeoff (subsurface map/unmap or a CSD corner-radius change at constant geometry)
+
+### 2.13.3: 2026-07-07
+
+* Update `driftwm/patches/background-animate-fps.patch` after upstream review of PR #184: rebased onto main (no longer stacked on #182, lands independently), animation tick timestamps now keyed per output name (a single global stamp let whichever monitor renders first satisfy the interval and starve the rest under a cap), idle tick timer arms for the soonest-due output, output disconnect drops the stamp
+* Fix a latent bug found while addressing the review: the transparent-window full-redraw checked due-ness after the tick was already stamped, so with a cap set it never fired; `update_background_element` now returns whether it advanced the animation and both backends key the buffer-age reset off that
+* Update `driftwm/patches/animated-blur-shared.patch` (PR #182) the same way per the reviewer's consistency note: shared blurred-background state keyed per output name (one global entry recreates and fully re-blurs every frame once two different-sized outputs exist), plus docs regen and a clippy let-chain fix on that branch
+* Upstream merged PR #179 (blur edge-fade): first of the six driftwm PRs to land. Full #182 review addressed same day: branch rebased onto main (was reported dirty, now mergeable, edge-fade commit dropped as merged), the blocking multi-output contamination was already fixed by the morning's per-output keying, shared blur textures now freed on hot-reload when `animate_blur` is disabled (two full-output textures stayed resident before), and windows fall through to the per-window blur path when the shared textures are missing instead of rendering an invisible blur
+* Quantum realm: asteroids now live. Each rock sways glacially around its anchor at its own pace (5-10 min cycles), the clump density pattern itself morphs over tens of minutes so swarms slowly reshape, and rocks born or dissolved by that evolution fade smoothly instead of popping. Rock placement pulled in from cell edges so the sway never clips. Verified by diffing two off-screen canvas captures of a swarm 120 s apart (every rock displaced independently, some faded)
+* Auto-revive the volume OSD after unlock: DMS's per-screen OSD component silently dies across a hyprlock cycle (upstream [DankMaterialShell #2694](https://github.com/AvengeMedia/DankMaterialShell/issues/2694), open, no fix; reproduced on driftwm with zero idle management, so the trigger is the session-lock cycle itself, not DPMS). `lock-with-capture.sh` now restarts `dms-driftwm.service` when hyprlock exits; `KillMode=process` keeps launcher-spawned apps (chromium and friends share the cgroup) untouched
+* Update `driftwm/patches/wheel-notch-bindings.patch` after upstream review of PR #186: rebased onto main as a single commit (PR went from conflicting to mergeable), sub-notch v120 deltas from free-spinning wheels now accumulate to whole notches before firing (one flick fired the action once per event before), notch bindings restricted to wheel sources (continuous scroll no longer slips through), they now fire during fullscreen like keybindings without exiting it, and the config reference comment reworded so generated docs stop rendering a broken bullet
+
+### 2.13.2: 2026-07-06
+
+* Boot nvtop terminal: autostart opens `foot --app-id=nvtop-boot nvtop` right after Discord, frosted like other terminals, geometry frozen from the live window (902x822 below the comms row); custom app-id keeps the rule off regular foot windows
+* Add `driftwm/discord-launch.sh` and use it in autostart: Discord's renderer segfaulted twice at voice engine init when launched 13 s after login (audio stack still settling) and the app then exits permanently ("double crashed ... RIP"); the launcher retries up to 3 times, keyed on runtime (a run over 120 s counts as healthy so quitting Discord manually is not fought)
+* Add `driftwm/patches/background-animate-paused.patch`: new `[background] animate_paused` freezes animated shader backgrounds entirely (no ticks, no time advance, no animated-blur refreshes; realm stays visible and pans still work), toggleable via config hot-reload. Gaming mode sets it while a game runs and falls back to a 1 fps throttle when the running compositor predates the patch (it rejects unknown config keys)
+
+### 2.13.1: 2026-07-05
+
+* Single-instance guard in `lock-with-capture.sh`: the grim capture delays the lock UI a beat, inviting a double Super+L; two hyprlocks then fight over the session lock and typing lands in the invisible one (locked Rolle out 6.7.). Rescue that worked: kill all hyprlock instances, spawn one fresh (screen stays locked throughout)
+* Bind Super+MiddleClick to `focus-center`: zoom into any window by pointing at it from the Super+W overview (mouse twin of Super+X; the displaced default duplicated Super+F fullscreen)
+* Screenshots reworked: Print = crop select to clipboard AND `~/Pictures/Screenshots` (timestamped), Shift+Print = full screen to `~/Pictures/Screenshots`, Ctrl+Print = focused window to clipboard (unchanged); Esc during crop aborts cleanly
+* Drop an obsolete Hyprland-only keybind left over from before the driftwm migration
+* Comms neighborhood: Signal, Ayugram and Discord autostart at login into side-by-side canvas slots one screen left of home, sizes frozen from the live windows (Signal 1045x851, Ayugram 722x853, Discord 1362x885: matching what the apps restore themselves, so mapping is flash-free); final autostart step parks the camera back at home
+* Add `driftwm/patches/blur-scaling.patch` (upstream PR #185): masks captured only on geometry changes instead of per animated tick (nine idle terminals cost ~180 full-screen ops/s before), pad textures allocated lazily, dead scratch texture removed: idle frosted windows now cost ~nothing regardless of count
+* Add `driftwm/patches/wheel-notch-bindings.patch` (upstream PR #186): new `wheel-up`/`wheel-down` mouse triggers run any action once per notch; `mod+shift+wheel` now changes volume 1% per notch with the DMS OSD, verified live
+
+### 2.13.0: 2026-07-04
+
+* Quantum realm: living procedural wallpaper for the driftwm canvas. Transparent evolving fbm fog (colored regions, breathing pockets, energy filaments, distant sheet-lightning, star-gap windows) over a swaybg starmap layer. Endless and non-repeating by construction. Only the final shader is kept in `driftwm/wallpapers/`, iterations live in git history
+* Quantum realm landmarks, tuned from 14 reference photos: radiant cores in four colors (the bright areas), super-rare gargantua black holes (streaming accretion disc, photon ring, pure black horizon), rare asteroid swarms (organic clumps of tiny distant rocks), and a single hand-placed hero planet at canvas `16000 -9000`
+* Landmarks are canvas-anchored (no parallax): driftwm scales the background externally, so objects stick under pan and zoom instead of sliding
+* Cut shader GPU cost from 48% to 11-29% SM (~165 W to ~58-79 W total draw): landmark cell scans reduced from 3x3 to the nearest 2x2 block, two-octave warp vectors, simpler near veil
+* Add `driftwm/wallpapers/lockbg-refresh.sh`: hyprlock background is a fresh quantum realm frame captured at each login (screenshot mode grabs black on driftwm)
+* Add `systemd/user/xwayland-satellite.service`: self-healing X11 support under driftwm (satellite crashed 3.7. and every X11 app was dead until manual restart). Owns `:0`, exports `DISPLAY`, restarts on failure; driftwm's fire-and-forget built-in spawn is disabled via `[xwayland] enabled = false`
+* driftwm screenshot binds (were never actually bound): Print full screen, Shift+Print cropped region, Ctrl+Print isolated focused window, all to clipboard
+* Quantum realm: sparser and fainter energy filaments (dense bright veins read as snakes at far zoom-out), subtler starfield through the fog gaps, gaps close entirely below ~35% zoom (`u_zoom`-aware alpha: shrunken gap windows at overview read as punched holes), star-gap windows removed entirely (the far plane's 4000+ px features made any thresholded gap a screen-sized hole); stars now glimmer faintly inside thin fog, smoothly capped (measured: max 8% leak-through vs a fully opaque A/B); lightning scan restored to 3x3 and core halos, pockets and asteroid bands now fade out before the 2x2 scan window can drop them (worst-case exclusion is 0.75 cells, not the assumed 1.15: clipped halos drew straight seams and square edges), and distant lightning boosted (60% of cells, 12-30 s periods, brighter flashes)
+* Quantum realm: add Alioth, a vast organic shadow leviathan (noise-wobbled darkness with a violet rim and a green inner flicker, patrols super-rare 16000 px cells, ~1 per 40 screens; nearest to home at camera `-8000 -8000`). The rest of the Loki multiverse experiment (timeline branches, reality shards, portholes, pruning bursts, rifts, citadel) was rejected: geometric primitives read as clipart against the organic fog, realm law is noise-shaped elements only. Pre-multiverse fallback kept as `quantum-realm-classic.glsl`
+* Add `driftwm/patches/blur-edge-fade-125.patch`: real fix for the blur edge-fade bevel (upstream driftwm #125, open). The blur cropped exactly the window rect so edge samples clamped to border pixels and smeared the backdrop inward; the patch blurs a padded crop and keeps only the centre. Built from `~/Projects/driftwm-patched`, installed as `/usr/local/bin/driftwm` shadowing the pacman binary. Sent upstream as driftwm PR #179
+* Add `driftwm/patches/animated-blur-shared.patch`: `animate_blur` re-rendered the whole scene per frosted window per frame (measured 87% GPU / 216 W); now the background is blurred once into a shared full-output texture, throttled to new `[effects] animate_blur_fps` (default 20, forced on camera moves), and windows slice their rect from it. Measured 36% / 79 W live (vs 33% / 72 W blur-off). Windows stacked over other windows fall back to the exact per-window path at the same cadence so lower windows still show in the frost
+* Add `driftwm/patches/background-animate-fps.patch` and set `[background] animate_fps = 30`: animated shader backgrounds ran at the full 144 Hz output rate (37% GPU / 79 W idle, 155 W+ under any load, fans never idle); the new knob pushes animated uniforms at a capped rate and the compositor reuses the composited result between ticks. First version stuttered (animation only advanced alongside other redraws); fixed with a self-arming one-shot timer so the cadence is even on an idle desktop, verified by consecutive frame diffs. Final: 21% / 61 W with the full realm and living frost, smooth. Sent upstream as driftwm PR #184; shared blur is PR #182
+* Add `driftwm/wallpapers/lock-with-capture.sh` and rebind Super+L to it: hyprlock's background is now a grim capture of the current screen taken at the keypress (hyprlock blurs it via its existing `blur_passes`), so the lock always reflects what was on screen. hyprlock's own screenshot mode grabs black on driftwm; the login-time `lockbg-refresh.sh` stays as a fallback so the image always exists
+* Add `Environment=DISPLAY=:0` to `dms-driftwm.service`: DMS races the satellite's DISPLAY export at login, and a DMS without DISPLAY silently breaks every X11-forced app launched from the launcher (Todoist died instantly). The satellite unit pins `:0`, so hardcoding is always correct
+* Harden `xwayland-satellite.service` and autostart: bounded socket wait (`timeout 20` + env guard + `TimeoutStartSec=30`) and `reset-failed` + `--no-block` starts. A satellite crash at logout left a stuck activation whose blocking start held DMS hostage for ~90 s on the next login
+
+### 2.12.2: 2026-07-03
+
+* Add `driftwm/wallpapers/starmap-regrade.sh`: regenerates the canvas starmap variants (neutral, vivid, purple) from the NASA source EXR
+* Add `driftwm/wallpapers/canvasify.sh` (any image or URL to pyramidal canvas, lanczos default, AI opt-in) and `wallset.sh` (fixed wallpapers)
+* Canvas background finalized: purple starmap "whisper" variant (0.5px veil kills the 1:1 noise-blanket, overview unchanged)
+* Add `systemd/user/dms-driftwm.service` (auto-restarting DMS under driftwm, exclusive with the Hyprland unit); Super+L now runs the real hyprlock (works on driftwm)
+* hyprlock: starmap-slice background (screenshot mode grabs black on driftwm) and explicit capslock/numlock/bothlock colors: `-1` ("no change") paints the pill WHITE when numlock is on, and driftwm enables numlock at login, which made the input unreadable
+* Remove hypridle everywhere: no idle management, no auto-lock, no DPMS timers, screens stay on until Super+L
+* driftwm: Alt+drag pans the canvas from anywhere, even over windows
+* Add `driftwm/wallpapers/wallset.sh` (fixed viewport wallpapers with auto ultrawide crop); moon-in-clouds set as the fixed wallpaper
+
+### 2.12.1: 2026-07-03
+
+* driftwm: flat 1:1 mouse, force `3440x1440@144`, barless frosted foot, solid dark titlebars elsewhere, single-pass blur (works around upstream edge-fade #125), The Lounge at 785px
+
+### 2.12.0: 2026-07-03
+
+* Add `niri.service` and `driftwm.service` to the Hyprland login compositor sweep (leftover sessions ghost-eat app launches)
+* Add `driftwm/` config for the canvas compositor trial: DMS shell, Hyprland-matched keybinds and mouse feel, The Lounge pinned to screen, foot blur
+* Add `driftwm/wallpapers/space.glsl` endless space shader
+* driftwm polish: NASA 16k starmap canvas background with a purple grade, hyprbars-matched titlebars, no shadows, foot blur
+
+### 2.11.0: 2026-07-03
+
+* Add `thelounge-sticky` windowrule: The Lounge IRC (Electron, class `thelounge-app`) floats pinned on every workspace at the right edge (`size 721 1167`, `move 100%-721 89`, geometry frozen from the live window), so IRC is always visible and usable
+* Autostart The Lounge at login via exec-once (6 s delay so DMS is up first)
+
+### 2.10.9: 2026-07-03
+
+* Add a recovery exec-once to `hypr/hyprland.conf`: on every Hyprland login stop leftover `y5.service` and `y5-dev.service` (a Y5 compositor survives logout as a zombie and its stale Wayland socket makes app singletons like chromium and 1Password open windows on an invisible compositor), import `XDG_CURRENT_DESKTOP` and `WAYLAND_DISPLAY` into the user manager so the dms.service Hyprland guard passes, reset-failed and restart `dms.service`. Also fixes DMS not starting on re-login: `default.target` only fires at user manager start (reboot), not per login, so a stopped DMS stayed stopped forever
+
+### 2.10.8: 2026-07-03
+
+* Gate `systemd/user/dms.service` on `XDG_CURRENT_DESKTOP=Hyprland` via a second `ExecStartPre` that exits 1 under any other compositor. Under y5 (Nourish) or any non Hyprland session DMS was starting anyway and rendering a broken bar and dock (no `ext_foreign_toplevel_list`, no `ext_workspace`, no `ext_session_lock`, etc), plus wasting a chunk of RAM. Now it only starts under Hyprland
+
+### 2.10.7: 2026-07-02
+
+* Retire `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service`. The v2 patch it applied to `DankOSD.show()` unconditionally tore down and rebuilt the OSD surface on every call, which caused visible flicker on rapid volume keypresses. The hyprlock-wrapper `pkill -TERM dms` workaround from 2.10.6 already refreshes DMS state on every unlock, so the DankOSD level patch is redundant
+* Local DMS QML files restored to upstream v1.4.6, no more flicker
+
+### 2.10.6: 2026-06-24
+
+* Move the AvengeMedia/DankMaterialShell#2694 workaround from `hypr/hypridle.conf` `unlock_cmd` to `hypr/scripts/hyprlock-wrapper.sh` (after the existing monitor and window restore steps). The hypridle path never fires when hyprlock is invoked from the SUPER+L keybind because hyprlock by default does not flip logind LockedHint, so hypridle does not see the unlock. The wrapper runs on every unlock unconditionally
+* Revert `hypr/hypridle.conf` `unlock_cmd` to the original test touch
+
+### 2.10.5: 2026-06-24
+
+* Change `hypr/hypridle.conf` `unlock_cmd` to `pkill -TERM dms` as a workaround for AvengeMedia/DankMaterialShell#2694: after a hyprlock unlock plus DPMS resume cycle, DMS Volume OSD popup stops appearing on volume keypress until DMS is restarted. With `KillMode=process` already in `dms.service`, SIGTERM on unlock refreshes the DMS process while every other app in the cgroup (chromium, terminals, MCP servers, etc) stays running. Brief bar and dock flicker on each unlock, OSD works for the rest of the session
+
+### 2.10.4: 2026-06-23
+
+* Add `KillMode=process` to `systemd/user/dms.service` so a `systemctl --user restart dms.service` only signals the main `dms` process. Default `KillMode=control-group` would SIGTERM every process in the cgroup (chromium, terminals, Signal, Telegram, claude sessions, MCP servers, etc), making any DMS restart destructive to the whole session
+* With this in place, restarting DMS to pick up patched QML (e.g. `dms-osd-unstick-patcher.sh`) keeps all apps alive. Tested by SIGTERM'ing the main dms PID: every app PID survived, `Restart=always` respawned a fresh dms + qs pair in 3-6 seconds, the next hyprlock cycle's volume OSD rendered correctly with the unstick guard active
+
+### 2.10.3: 2026-06-22
+
+* Refuse live cache overwrites in `hypr/scripts/hyprbars-patch-deploy.sh` and `hypr/scripts/hymission-rebuild.sh` when the plugin is mapped in a running Hyprland process. Live overwrites have crashed the compositor (kernel keeps the mapped inode alive but the loader/watch chain reacts to the file change), so the deploy scripts now stage to `~/.local/state/hypr/staged-plugins/` and exit cleanly instead
+* `hypr/scripts/hyprpm-ensure.sh` now picks up any staged `.so` files at the top of the script and moves them into the hyprpm cache before `hyprpm reload`, so a manual deploy made while Hyprland is up activates on the next clean Hyprland start without further action
+
+### 2.10.2: 2026-06-21
+
+* Add `bin/dms-osd-unstick-patcher.sh` and `systemd/user/dms-osd-unstick-patcher.service` to fix the year-old "no OSD popup after hyprlock unlock" bug in `dms-shell` v1.4.6. The volume chime still plays and the bar widget updates, but the OSD never appears - because `DankOSD.show()` early-returns on a stuck `shouldBeVisible` flag whose underlying surface was cleared by hyprlock's exclusive grab
+* Patches `/usr/share/quickshell/dms/Widgets/DankOSD.qml` to reset the flag and timers when `shouldBeVisible && !visible` (the desynced state). Idempotent, backs up the original, no DMS restart needed - the patched QML loads on the next DMS process spawn
+* Filed upstream as AvengeMedia/DankMaterialShell#2680
+
+### 2.10.1: 2026-06-20
+
+* Add `bin/dms-fade-lock-patcher.sh` and `systemd/user/dms-fade-lock-patcher.service` to backport upstream DankMaterialShell PR #2653 onto installed `dms-shell` v1.4.6 — without it, a custom-lock command (hyprlock here) leaves the fade-to-lock black overlay up after unlock, breaking volume HUD and the rest of the desktop
+* Patcher edits four QML files in `/usr/share/quickshell/dms/` to add a `dismissFadeToLock` signal path: new `dismiss()` on `FadeToLockWindow`, signal on `IdleService`, emit from `Lock.qml`'s custom-lock branch, handler in `DMSShell.qml`. Idempotent, backs up originals, refuses to half-apply
+* Unit is on-disk but not enabled; run the script manually after each `dms-shell` package upgrade (or enable the unit to auto-reapply on login). Retire once `dms-shell` ships >= v1.4.7 / v1.5
+
+### 2.10.0: 2026-06-20
+
+* Activate `graphical-session.target` on Hyprland startup so `xdg-desktop-portal` can run (its packaged unit has `Requisite=graphical-session.target`). Without this, GTK4 apps like Nautilus 50 can't query the portal for `color-scheme` and the sidebar stays light while the rest of the app is dark
+* Add `systemd/user/graphical-session.target.d/allow-manual.conf` to lift `RefuseManualStart` so the `systemctl --user start graphical-session.target` exec-once is allowed (the target is normally blocked from manual activation, expecting a session manager to pull it in)
+
+### 2.9.9: 2026-06-19
+
+* Fix `dms.service` regression from 2.9.7: revert to `WantedBy=default.target` and drop `PartOf=graphical-session.target` — `graphical-session.target` never auto-starts on this box (no uwsm), so the 2.9.7 unit was silently never invoked, leaving every boot with no DMS bar/dock
+* Harden `hyprpm-ensure.sh` so a Hyprland version bump can't leave the desktop without plugins: write the version stamp unconditionally after the rebuild block (partial failures no longer retry the heavy chain every login), and retry `hyprpm reload -n` up to 30 s until `hyprctl plugins list` confirms plugins actually loaded (covers the IPC race that left hyprbars + hymission unloaded on 0.55.1 → 0.55.4 today)
+* Disable the `launch-discord.sh` exec-once so Discord stops autostarting on Hyprland session start
+
+### 2.9.8: 2026-06-19
+
+* Remove `dms restart` from `hyprlock-wrapper.sh` post-unlock — the default `KillMode=control-group` on `dms.service` SIGKILLs every app that DMS spawned (terminals, browsers, claude, element-desktop, dbus-daemon...) because they inherit DMS's cgroup. The original purpose was an NVIDIA-only workaround for a black background on monitor power cycle (commits 1f1198a / 8e991bb)
+
+### 2.9.7: 2026-06-14
+
+* Add `systemd/user/dms.service` so DMS auto-restarts on crash and survives Hyprland safe-mode respawns, where the previous `exec-once` launcher would never re-fire
+* Unit waits for `$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY` to exist before starting (replaces the brittle `sleep 8` and the Hyprland `hyprctl monitors` polling loop) and ties into `graphical-session.target` so it dies cleanly with the session
+* Carry `QT_QPA_PLATFORMTHEME=gtk3` into the unit so DMS still picks the gtk3 Qt theme without the Hyprland exec
+* Remove the duplicate DMS `exec-once` from `hypr/hyprland.conf` so login no longer spawns two DMS instances (double bar, double dock)
+* Set `misc:disable_splash_rendering = true` to hide the rotating Hyprland splash quotes ("Thanks raf!" etc) from the wallpaper
+* Bind `Alt + Print` to `~/.local/bin/gifcap` for GIF screen recording, replacing the broken xdg-desktop-portal-hyprland path (cursor mode 0)
+
+### 2.9.6: 2026-06-13
+
+* Replace bash `claude-code/codestats-hook.sh` with `codestats-hook.py`, language is derived from a closed extension table and unknown extensions drop the event entirely instead of being coerced to "Plain text"
+* The previous bash hook had safeguards but still emitted a pulse for any file, polluting language stats and leaving room for future regressions; the Python version makes path-as-language bugs structurally impossible by construction
+* Add `claude-code/README.md` describing the hook, install steps, and how to add a new language
+
+### 2.9.5: 2026-06-09
+
+* Add `hyprswitch.service` systemd user unit with `MemoryMax=256M` and `Restart=always` to cap the daemon's runaway memory leak (3.4 GB RAM + 14.3 GB swap after 2 hours of use)
+* `ExecStartPre` clears the stale `hyprswitch.sock` so a leaked/killed instance never blocks the restart with "Daemon already running"
+* Move `hyprswitch` out of Hyprland `exec-once` since systemd now manages it
+* `cleanup-headless.sh` and `monitor-event-listener.sh` now `systemctl --user restart hyprswitch.service` instead of `pkill` + relaunch, so the service config (memory cap, socket cleanup) actually applies on monitor topology changes
+
+### 2.9.4: 2026-06-07
+
+* Add `wl-clip-persist.service` systemd user unit so Wayland clipboard contents survive after the source app exits, auto-restarts on crash via `Restart=always`, compositor-agnostic
+* Move `wl-clip-persist` out of Hyprland `exec-once` since systemd now manages it
+* Add `setup_systemd_user_services` to `install.sh` so new machines symlink and enable units from `systemd/user/`
+
+### 2.9.4: 2026-06-09
+
+* Add Claude.ai rate limit progress bars (5h + 7d) as a second row in the statusline, rendered in purple with thin `━`/`─` blocks
+
+### 2.9.3: 2026-06-01
+
+* Fix `oklch-color-picker.nvim` LspAttach error on Neovim 0.12 by nesting `disable_builtin_lsp_colors = false` under `highlight` opts
+* Switch Python formatter from `black` to `ruff_format` in `conform.nvim`
+* Document `ruff` and `python-flake8` as Python tooling dependencies
+
+### 2.9.3: 2026-06-06
+
+* Remove hyprswitch IPC socket before relaunching in `cleanup-headless.sh` and `monitor-event-listener.sh`, otherwise the new instance saw the orphaned socket and refused to start with "Daemon already running", leaving Alt+Tab broken
+
+### 2.9.2: 2026-05-31
+
+* Add `cleanup-headless.sh` to remove orphan `HEADLESS-*` outputs left by crashed Moonlight/Sunshine sessions, runs once on Hyprland startup
+* Add `monitor-event-listener.sh` that watches Hyprland IPC and restarts `hyprswitch` on monitor topology changes, so Alt+Tab UI doesn't render on a stale/removed output
+
+### 2.9.1: 2026-05-16
+
+* Add flock single-instance guard to `dms-hide-on-fullscreen.sh` so duplicate copies can't fight over bar/dock visibility and leave DMS stuck on top of fullscreen games
+* Re-assert hidden state on active-window changes while a window is fullscreen, so DMS popping its own bar/dock up (notifications, spotlight, workspace switches) no longer lingers over the game
+
+### 2.9.0: 2026-05-16
+
+* Switch hymission to upstream's official `v0.3.3-0.55.0` (proper Hyprland 0.55 port) instead of the local partial port that kept crashing the compositor
+* Re-apply fork patches on top: `toggle_switch_mode` off, `outer_padding_top` 32, hover-retarget dwell 150ms, hyprbars titlebar suppression during overview
+* Add `hymission-rebuild.sh`: rebuilds the patched `rolle/0.55-fixes` branch from source and stages it in the hyprpm cache, never hot-swapping a running session
+* Rewrite `hyprbars-patch-deploy.sh` to rebuild hyprbars from source with the `m_bCancelledDown` patch instead of copying an ABI-pinned prebuilt `.so`
+* `hyprpm-ensure.sh` now detects Hyprland version changes and, only then, runs `hyprpm update` followed by the two re-patch scripts so patched plugins survive Hyprland upgrades automatically; unchanged-version boots stay a fast `hyprpm reload`
+
+### 2.7.10: 2026-05-14
+
+* Swap Alt+Tab and Super+Tab: Alt+Tab now runs hyprswitch (lightweight, no GL framebuffer allocation, safe during VRAM-saturated game sessions); Super+Tab opens hymission. Super+A and its variants still trigger hymission as before.
+
+### 2.7.8: 2026-05-14
+
+* Simplify `dms-hide-on-fullscreen.sh`: track only Hyprland's fullscreen event, drop the per-game class regex. Auto-handles any game that goes fullscreen (OW, RDR2, Sims 4, any future title) without a maintenance list. Windowed games (BG3) keep the bar visible.
+* Always start with bar revealed, then re-sync once from `hyprctl activewindow`. Fixes stuck-hidden state after a Hyprland/DMS crash cascade.
+
+### 2.8.1: 2026-05-14
+
+* Disable hymission keybindings and config block while the `port/hyprland-0.55` build is verified in nested Hyprland; live-deploying the partial port crashed the compositor
+
+### 2.8.0: 2026-05-14
+
+* Drop `dwindle:pseudotile` config option (removed in Hyprland 0.55; pseudotile now always available via dispatcher)
+* Note hymission `port/hyprland-0.55` branch in keybind comment; the stub-port covers the 0.55 ABI break and is what's deployed in `/var/cache/hyprpm/$USER/hymission/hymission.so`
+
+### 2.7.9: 2026-05-13
+
+* Drop `hyprpm update` from `hyprpm-ensure.sh`
+* Startup no longer rebuilds plugins from upstream and clobbers local patches
+* Run `hyprpm update` manually when you want upstream changes, then re-apply patches via the deploy scripts
+
+### 2.7.8: 2026-05-12
+
+* Drop the `hyprctl dispatch exec` wrapper from the hyprbars minimize button so the bar plugin runs `~/.local/bin/hypr-minimize.sh` directly (one fewer subprocess hop)
+* Add `hypr/scripts/hyprbars-patch-deploy.sh` to deploy the locally-built patched hyprbars `.so` and reload it live via `hyprpm disable`/`enable`, so the upstream `m_bCancelledDown` leak fix can be re-applied after `hyprpm update` clobbers it; full diagnosis and patch in `rollecode/dms-minimize#upstream-hyprbars-m_bcancelleddown-leak-patch-below`
+
+### 2.7.7: 2026-05-12
+
+* `dms-hide-on-fullscreen.sh` now also tracks the active window class/title so the DMS bar and dock hide when BG3, Sims 4 (TS4_x64.exe), Overwatch, Battle.net or any Steam app is focused, even when the game runs windowed (Hyprland's fullscreen event alone misses windowed-fullscreen games)
+* Use correct DMS IPC calls: `bar hide index 0` / `bar reveal index 0` and `dock hide` / `dock reveal`; previous `manualHide` call was a no-op against this Quickshell build
+
+### 2.7.6: 2026-05-12
+
+* Route Alt+Tab through hymission mission control; keep Super+Tab on hyprswitch GUI
+* Render brave-origin-nightly hyprbars titlebar as solid black
+* Autostart `dms-hide-on-fullscreen.sh` so the DMS bar/dock auto-hide when any window is fullscreen
+
+### 2.7.5: 2026-05-12
+
+* Switch hyprbars minimize glyph back to `nf-md-window_minimize` after trying several plain-minus alternatives that the bar font cannot render cleanly
+
+### 2.7.4: 2026-05-12
+
+* Restore hyprbars minimize button with macOS-style red and yellow dots (close `#ED5256`, minimize `#E8AF0F`) using dark red and dark amber for the hover icons
+* Resize hyprbars buttons to 12px and bump `bar_padding` to 8 with `bar_button_padding` 8 for macOS-style spacing
+* Switch minimize glyph to a centered minus
+
+### 2.7.3: 2026-05-12
+
+* Switch hymission plugin source from `gfhdhytghd/hymission` to fork `rollecode/hymission` so locally-developed PRs (toggle default, raise-on-select, damage-tracking-override, hover-dwell, hyprbars suppression, reserved-area awareness, close button) stay live until merged upstream
+* Drop the manual `plugin = ...libhymission.so` directive from `hypr/hyprland.conf`; hyprpm now manages the build and reload, so plugin survives Hyprland updates without manual rebuilds
+
+### 2.7.2: 2026-05-10
+
+* Bump hyprswitch `--size-factor` from 5 to 8 for larger Alt+Tab thumbnails
+* Remove `max-width` cap on hyprswitch monitor containers so they grow with size factor
+* Raise hyprswitch monitor `min-width` from 400px to 600px
+* Include `special:minimized` workspace in hyprswitch switcher and restore minimized windows automatically when selected via `hyprswitch-dispatch-with-restore.sh` wrapper
+* Add `immediate on` windowrule for `bg3.*`, `ts4_x64.exe`, and `battle.net.*` to enable screen tearing during gameplay for low input lag
+* Drop invalid `noanim`, `noborder`, `bordersize`, and `idleinhibit` windowrule fields that no longer exist in Hyprland 0.54 and were spamming on-screen config errors
+
+### 2.7.1: 2026-05-10
+
+* Disable Super key press that opened app selector
+* Comment out `hyprmissionctrl` keybinds (plugin crashes Hyprland)
+
+### 2.7.0: 2026-05-09
+
+* Add Wayfire compositor config at `wayfire/wayfire.ini` with DMS autostart, scale exposé on `Super+A`, hot corners, floating window rules, and Hyprland-style keybinds
+* Add `setup_wayfire` function to `install.sh` that symlinks `wayfire/wayfire.ini` to `~/.config/wayfire.ini`
+* Leave mouse acceleration unset so libinput uses the per-device default, matching Hyprland's empty `accel_profile` behaviour
+* Disable `Super+M` minimize binding because Wayfire has no taskbar to restore from
+
+### 2.6.4: 2026-05-09
+
+* Restore hyprbars `bar_height` to 28
+
+### 2.6.3: 2026-05-08
+
+* Slim hyprbars: smaller bar height, smaller text, zero button padding
+* Make close button background transparent with white X on hover
+* Bump close icon size for better hover target
+
+### 2.6.2: 2026-05-03
+
+* Add `browser-flags/` directory with `chromium-flags.conf`, `brave-flags.conf`, `brave-origin-nightly-flags.conf`
+* Disable hardware video decoding in Brave Origin Nightly to prevent NVIDIA GPU hangs on autoplay videos
+* Add `setup_browser_flags` function to `install.sh` that symlinks browser flag configs to `~/.config`
+
+### 2.6.1: 2026-05-03
+
+* Remove labwc compositor configs - labwc cannot match Hyprland's blur, animations, or DMS dock minimize integration
+* Remove hyprbars minimize button - clicking it triggers a click-leak bug that makes the next click in the unminimized window act as a drag; use Super+M instead
+
+### 2.6.0: 2026-05-03
+
+* Add labwc compositor configs (`rc.xml`, `autostart`, `environment`, `menu.xml`) as a parallel session alongside Hyprland with ported keybinds, window rules, autostart, and built-in floating titlebars
+* Symlink `~/.config/labwc` to `labwc/` in the dotfiles repo
+
+### 2.5.13: 2026-05-03
+
+* Autostart `wl-paste --watch cliphist store` for text and images so clipboard history persists after source apps close
+* Add Brave Origin Nightly windowrule with the same float and size as Brave
+
+### 2.5.12: 2026-05-03
+
+* Add Brave windowrule to always float at 1710x1200 centered
+
+### 2.5.11: 2026-04-13
+
+* Add `claude-code/update-cross-channel-context.sh` hook that patches Son of Anton handoff file on every Claude Code Stop event
+* Register Stop hook in `claude-code/settings.json` reference config
+* Symlink the new hook in `install.sh` so fresh installs pick it up automatically
+
+### 2.5.10: 2026-04-10
+
+* Use Catppuccin Mocha Peach for orange/yellow ANSI color instead of Mauve
+
+### 2.5.9: 2026-04-07
+
+* Update foot config: green blinking cursor, disable bell, hide mouse when typing
+* Add OSC 7 note for preserving CWD on spawn-terminal
+
+### 2.5.8: 2026-04-06
+
+* Add `focus_on_activate` windowrule to prevent minimized windows from stealing focus
+* Add `suppress_event maximize` windowrule for all windows
+* Add Super+M keybind for minimize
+* Switch default terminal to foot
+
+### 2.5.7: 2026-04-05
+
+* Speed up Hyprland animations for snappier feel
+* Set hyprbars `bar_part_of_window` to true
+* Disable window rounding to fix blur sharp corners on hyprbars
+* Remove autogenerated config header
+
+### 2.5.6: 2026-04-04
+
+* Add `hyprpm-ensure.sh` script to auto-rebuild plugins on Hyprland startup
+* Replace manual `hyprpm reload` with update + reload for post-update compatibility
+* Invoke hyprpm-ensure via `bash` to avoid dotfiles sync stripping execute permissions
+
+### 2.5.5: 2026-04-03
+
+* Add safeguard to prevent file paths leaking as language names to Code::Stats
+* Set WezTerm opacity to 0.65 on macOS for `qllervo` user
+
+### 2.5.4: 2026-04-03
+
+* Use `dms-minimize` for hyprbar minimize button instead of `toggle-minimize.sh`
+* Enable `icon_on_hover` for hyprbar buttons with close and minimize icons
+* Increase hyprbar button size from 12 to 14
+* Remove workspace 99 minimize keybind
+
+### 2.5.3: 2026-04-03
+
+* Remove non-existent `dms/outputs.conf` source reference from Hyprland config
+
+### 2.5.2: 2026-03-25
+
+* Move planner commands and CLAUDE.md to separate `claude-day-planner` repo
+
+### 2.5.1: 2026-03-24
+
+* Enforce exhaustive fetching of all Linear issues and Sunsama backlog with pagination
+* Reference previous day/week plans for carry-over tasks
+* Exclude planning meta-entries from changelog
+* Switch Gmail MCP to actively maintained ArtyMcLabin fork (pure stdio, no port)
+
+### 2.5.0: 2026-03-19
+
+* Add ääkköset rule and task status verification to global `CLAUDE.md`
+* Add `/finish-day` command for end-of-day Timely + changelog wrap-up
+* Add task completion tracking to sync changelog and daily plan
+* Add GitHub MCP server for commits and releases
+* Switch Slack MCP from bot token to user token for all-channel access
+* Add revenue-first prioritization tiers to planner commands
+* Add Help Scout, Linear inbox, and Obsidian note scanning to planners
+* Enforce English, present tense, and no source labels in changelog entries
+
+### 2.4.9: 2026-03-17
+
+* Fix Code::Stats language detection leaking file paths as language names
+* Fix XP counter reading wrong line from daily counter file
+* Add comprehensive file extension to language mapping
+
+### 2.4.8: 2026-03-14
+
+* Re-enable DMS restart after hyprlock unlock to restore volume HUD
+* Add free time planner command (`/plan-freetime`) for personal task planning
+* Fix black border on area screenshots by disabling slurp layer animation
+
+### 2.4.7: 2026-03-12
+
+* Add global `CLAUDE.md` with MCP-first tool preferences
+* Update task completion to sync both changelog and daily plan
+* Enforce English and present tense in changelog entries
+* Remove source labels from changelog entries in `/finish-day`
+* Switch Slack MCP from bot token to user token for all-channel access
+
+### 2.4.6: 2026-03-10
+
+* Add `/finish-day` command for end-of-day Timely + changelog wrap-up
+* Add revenue-first prioritization tiers to planner commands
+* Add workaholic protection with strict overtime rules
+* Add Help Scout support to planner commands
+* Add GitHub MCP server for commits and releases
+* Emphasize Obsidian note scanning for uncaptured action items
+* Emphasize Sunsama backlog check in planners
+
+### 2.4.5: 2026-03-08
+
+* Disable F3 window expose and hot corner (no working solution available)
+* Remove `window-overview.sh` script
+
+### 2.4.4: 2026-03-07
+
+* Disable hy3 plugin, switch to dwindle layout (hy3 incompatible with hyprland 0.54.x)
+* Load plugins via hyprpm instead of manual hyprctl plugin load
+
+### 2.4.3: 2026-03-05
+
+* Fix Discord zombie processes on boot by removing redundant background fork from exec-once
+* Add auto-update wrapper script for Discord to prevent stuck splash screen on version mismatch
+
+### 2.4.2: 2026-03-04
+
+* Improve planner prompts: timeblocked schedule, work categories, analysis section, week lookahead
+* Add CTO role context and full team Linear board search
+* Filter personal tasks, use checkbox lists, Finnish date format
+* Silently skip failed MCP sections
+
+### 2.4.1: 2026-03-03
+
+* Add `append-changelog.sh` hook for auto-logging completed tasks to Obsidian Life changelog
+* Add PostToolUse hook for Sunsama and Linear task completions
+* Add `plan-today`, `plan-week` and `done` command prompts for Claude Code
+
+### 2.4.0: 2026-03-03
+
+* Add context window usage percentage to status line
+* Add custom colors for duration and context percentage in status line
+
+### 2.3.9: 2026-03-02
+
+* Disable WezTerm background transparency on macOS
+
+### 2.3.8: 2026-02-28
+
+* Remove DMS restart after hyprlock unlock
+
+### 2.3.7: 2026-02-24
+
+* Switch Neovim AI helper to OpenAI direct API with gpt-4.1-nano for instant responses
+* Add OpenAI API key to secrets configuration
+
+### 2.3.6: 2026-02-10
+
+* Remove unbounded codestats-hook.log and debug log that caused CPU spikes
+* Replace log-parsing statusline loop with lightweight daily counter file (/tmp/codestats-xp-today)
+
+### 2.3.5: 2026-02-09
+
+* Fix status line script permissions (add execute bit)
+* Fix integer expression errors in status line when variables are empty
+* Add default values for LINES_ADD, LINES_REM, and DURATION_MS
+
+### 2.3.4: 2026-02-08
+
+* Add Claude Code status line with session duration, lines changed, and Code::Stats XP display
+* Fix macOS compatibility in status line (replace grep -oP with portable sed)
+* Update README with status line setup docs and symlink instructions
+
+### 2.3.3: 2026-02-07
+
+* Restore hy3 layout, keybindings, and tab styling config
+* Change Super+G to hy3:makegroup tab toggle for proper tab toggling
+* Make Code::Stats XP hook async and non-blocking (systemMessage instead of notify-send/WezTerm overlay)
+
+### 2.3.2: 2026-02-07
+
+* Fix windows going off-screen after monitor power cycle and hyprlock unlock
+* Save window positions before lock, restore with monitor bounds clamping after unlock
+* Fix monitor-watcher overwriting saved positions on hyprlock restart
+
+### 2.3.1: 2026-02-04
+
+* Disable hy3 plugin due to version mismatch with Hyprland 0.53.3
+* Switch from hy3 to dwindle layout temporarily
+* Update windowrule syntax for Hyprland 0.53 breaking changes
+* Convert all windowrulev2 to windowrule format
+* Comment out hy3 keybindings, add dwindle equivalents for window moving
+* Remove invalid windowrule properties (nofocus, noborder, noshadow, etc.)
+* Comment out hyprbars plugin windowrules (syntax incompatible)
+
+### 2.3.0: 2026-01-24
+
+* Add hy3 plugin for i3-like manual tiling with smart autotile
+* Configure autotile with 800px width and 500px height thresholds to prevent tiny windows
+* Add transparent blurred tab styling matching hyprbars theme
+* Add hy3 keybindings: Super+H/J/G for horizontal/vertical/tab groups
+* Add Super+U to untab, Super+O to toggle layout orientation
+* Add Super+E to expand window, Super+A/Z for parent/child focus
+* Update arrow key bindings to use hy3:movefocus and hy3:movewindow
+* Move workspace switching to Super+Alt+arrows
+* Move file manager to Super+Shift+E
+* Document all Hyprland keybindings in README
+
+### 2.2.6: 2026-01-18
+
+* Keep DMS restart after unlock (bugs not fixed in recent updates)
+* Add custom title bar color for The Lounge IRC app
+
+### 2.2.5: 2026-01-17
+
+* Remove clipboard management (cliphist, wl-clip-persist, clipboard-notify) - DMS 1.2 has native clipboard
+* Remove Sunsama, Signal, AyuGram, The Lounge from autostart; Discord starts minimized to tray
+
+### 2.2.4: 2026-01-11
+
+* Update Hyprland config for 0.53 windowrule syntax
+* Fix float rule: use new `windowrule = match:class .*, float on` syntax
+* Fix hyprbars plugin rules: use block syntax without `plugin:` prefix per [hyprland-plugins#586](https://github.com/hyprwm/hyprland-plugins/issues/586)
+* Convert windowrulev2 to new windowrule format where applicable
+
+### 2.2.3: 2026-01-11
+
+* Fix deprecated windowrule syntax for Hyprland (suppressevent, nofocus)
+
+### 2.2.2: 2025-12-29
+
+* Add Fish shell configuration with Oh My Posh support
+* Add Oh My Posh catppuccin_macchiato theme
+* Update starship config: add git branch icon, path truncation with ../ symbol
+* Symlink starship.toml to ~/.config/
+
+### 2.2.1: 2025-12-22
+
+* Add wallpaper-sync.sh to auto-sync hyprpaper wallpaper to hyprlock
+* Remove deprecated hyprlock options (grace, fail_transition)
+* Disable IRC autostart, add thelounge-app
+
+### 2.2.0: 2025-12-14
+
+* Fix hyprlock black background after monitor power cycle (NVIDIA workaround)
+* Add monitor-watcher.sh to detect monitor reconnect and restart hyprlock
+* Add hyprlock-wrapper.sh for DMS restart after unlock
+* Add hypridle with unlock_cmd support
+* Add allow_session_lock_restore to Hyprland misc config
+
+### 2.1.17: 2025-12-06
+
+* Remove markdown from conform.nvim formatters
+* Disable waybar
+
+### 2.1.16: 2025-12-05
+
+* Add .inputrc with readline config for macOS: disable bracketed paste, Option+Arrow word movement
+
+### 2.1.15: 2025-11-30
+
+* Super+scroll for volume, Super+Shift+scroll for workspaces
+* Remove steam from startup, all apps launch on workspace 1
+* Fix scroll bind delay with scroll_event_delay = 0
+
+### 2.1.14: 2025-11-29
+
+* Only assign apps to workspaces at startup, not on every launch
+* Make AyuGram's window decoration more minimal
+
+### 2.1.13: 2025-11-28
+
+* Disable Hyprland window shadows
+* Let WezTerm handle its own opacity instead of Hyprland override
+* Disable hyprbars for AyuGram Desktop
+
+### 2.1.12: 2025-11-26
+
+* Remove custom paste keybindings on macOS to fix bracketed paste escape sequence leakage
+
+### 2.1.11: 2025-11-22
+
+* Fix Hyprland config compatibility with stable version 0.52.1 (remove deprecated options: no_border_on_floating, allow_tearing, rounding_power)
+
+### 2.1.10: 2025-11-21
+
+* Improve WezTerm macOS visual style: 60% opacity with blur, 13pt font, 1.15 line height, 0.9 letter spacing
+
+### 2.1.9: 2025-11-18
+
+* Wrap macOS IRC SSH connection in local screen session to persist when detaching
+
+### 2.1.8: 2025-11-17
+
+* Add hyprlock
+* NVIDIA settings
+
+### 2.1.7: 2025-11-15
+
+* Fix duplicate clipboard notifications by adding hash-based deduplication
+* Make clipboard notifications more reliable by handling errors gracefully
+* Add timeouts to prevent clipboard monitoring from hanging
+
+### 2.1.6: 2025-11-10
+
+* Fix double dollar sign in the prompt by disabling Starship git stash indicator
+
+### 2.1.5: 2025-11-09
+
+* Comment out PS1 export in .bash_profile (conflicts with Starship)
+
+### 2.1.4: 2025-11-08
+
+* Switch nvim colorscheme from Catppuccin Mocha to GitHub Dark
+* Add GitHub theme plugin for nvim
+* Make WezTerm font spacing OS-specific (cell_width 0.9 on Linux, 0.85 on macOS)
+* Adjust WezTerm foreground color brightness (#d9e0ee)
+* Set bold font weight to 600 (SemiBold) instead of 620
+* Set Linux font size to 10
+* Remove custom purple variable color overrides in nvim
+
+### 2.1.3: 2025-11-08
+
+* Remove hardtime plugin completely
+* Replace Dracula with Catppuccin Mocha color scheme for WezTerm
+* Set macOS WezTerm to 99% opacity with blur
+* Restore green cursor color
+* Adjust macOS WezTerm padding (3.5cell left/right)
+
+### 2.1.2: 2025-11-07
+
+* Change variable colors from orange to bright purple
+* Disable mini.files from auto-opening when opening directories
+
+### 2.1.1: 2025-11-06
+
+* Remove native Vim keybinding overrides (Ctrl+A, Ctrl+E, Ctrl+T, Ctrl+P) to preserve standard functionality
+* Fix leap.nvim keybind conflict by changing from 's' to '<leader>s' to avoid interfering with substitute command
+* Add Tokyo Night theme with Telescope theme picker (Space+s+t) for live preview
+* Disable Trouble diagnostics panel from auto-opening by default
+
+### 2.1.0: 2025-11-05
+
+* Revert Ollama model to qwen2.5-coder:7b (codeqwen:code doesn't support FIM API for completions)
+* Fix WezTerm window decoration glitches on Linux by making window_decorations OS-specific (INTEGRATED_BUTTONS on macOS, NONE on Linux)
+* Add GPU acceleration to WezTerm with WebGpu and HighPerformance power preference
+
+### 2.0.9: 2025-11-04
+
+* Add Cmd+Shift+? keybind for Neovim AI helper on macOS via WezTerm translation
+* Fix Cmd+Shift+? not working - WezTerm now translates it to Ctrl+? for Neovim
+* Update plugin list in README to match actual installed plugins
+
+### 2.0.8: 2025-11-03
+
+* Make treesitter installation more bulletproof with proper directory setup and permissions
+* Add setup_nvim_directories() function to install.sh to create all required Neovim directories before plugin installation
+* Add enhanced error handling and permission validation for treesitter parser installation
+* Fix "tar: tree-sitter-lua-tmp: Cannot open: No such file or directory" errors on remote servers
+* Add directory writability checks with helpful warning messages
+* Pre-create ~/.local/share/nvim, ~/.local/share/nvim/lazy, ~/.cache/nvim, and ~/.cache/nvim/nvim-treesitter directories
+
+### 2.0.7: 2025-11-02
+
+* Add Mission Control-style window overview with hot corner and F3 keybind
+* Add top-right hot corner script for instant window grid overview
+* Improve window-overview.sh with minimum window size (400×300) to keep windows readable
+* Add max 5 columns limit to prevent tiny windows in grid layout
+* Add lightweight Vim AI helper with Ctrl+Shift+? (Cmd+Shift+? on Mac) for quick Neovim questions
+* Replace CodeCompanion with minimal custom floating window using OpenRouter API directly
+* Optimize window grid spacing and margins for better screen space usage
+* Add DMS overview patches for showing only workspaces with windows
+* Create patch-dms-overview script to reapply customizations after DMS updates
+* Re-enable wayland support
+
+### 2.0.6: 2025-11-01
+
+* Add cross-platform desktop notifications to Code::Stats hook (Linux/macOS, safe for headless systems)
+* Add automatic claude-conversation-saver plugin installation in install.sh for auto-archiving all conversations to markdown
+* Add Super+Shift+C keybind to center windows in Hyprland
+* Set Hyprland border_size to 1 with low opacity for subtle borders
+* Reduce extend_border_grab_area from 25 to 10 pixels
+* Enable no_hardware_cursors in Hyprland for proper cursor shape changes
+* Add mouse_move_enables_dpms and key_press_enables_dpms to Hyprland
+
+### 2.0.5: 2025-10-31
+
+* Add CodeCompanion AI chat plugin for asking Neovim questions with <Space>nv hotkey (uses OpenRouter auto-router)
+* Add "Open Link" and "Open in Incognito" options to WezTerm right-click context menu for URLs (incognito Linux-only, uses chromium)
+* Add automatic URL detection and selection on right-click in WezTerm
+* Add selected URL/text preview as first item in WezTerm right-click context menu
+* Improve URL detection to recognize domains without protocol (example.com, github.io, etc.)
+* Fix right-click menu losing selection by preserving existing selection before showing menu
+* Add auto-restart capability to clipboard-notify.sh with systemd service integration
+* Move clipboard-notify from hyprland.conf exec-once to systemd service for better reliability
+* Add documentation for auto-saving Claude Code conversations with claude-conversation-saver plugin
+* Add individual linter activation prompts in install.sh for phpcs, stylelint, flake8, luacheck, jsonlint, and eslint
+* Add linter feature flags to local.lua configuration file
+* Make nvim-lint conditionally enable linters based on flags in local.lua
+* Add comprehensive linter documentation to README with manual activation instructions and installation commands
+* Document project-specific linter detection for ESLint and phpcs
+* Fix Ctrl+W and Ctrl+K not working in nano on SSH servers by changing WezTerm shortcuts to Alt+W and Alt+K
+* Fix Ctrl+P to search all files in project instead of only recent files
+* Replace heavy neo-tree with lightweight mini.files file explorer
+* Fix phpcs and eslint to always use project-local vendor/bin or node_modules/.bin executables when available
+* Fix phpcs to automatically detect and use phpcs.xml or phpcs.xml.dist from project root
+* Fix linters to set correct working directory for project-specific configurations
+* Fix nvim-lint invalid args error by using directory-change wrapper instead of modifying linter configs
+* Fix unused local variable warning in darwin.lua by prefixing with underscore
+* Add Super+Shift+C keybind to center windows on current workspace in Hyprland (fixes windows appearing outside screen)
+
+### 2.0.4: 2025-10-30
+
+* Add LSP (Language Server Protocol) as optional feature with explanation in install.sh
+* Make Mason and LSP plugins optional with enable_lsp flag (defaults to enabled)
+* Install Node.js via nvm when LSP enabled (no sudo required, per-user installation)
+* Explain LSP features: autocomplete, go-to-definition, error checking, hover docs
+* Show LSP requirements during install: Node.js/npm (~100MB), language servers (~50-200MB)
+* Add leap.nvim for quick motion jumping (s/S to jump forward/backward)
+* Replace broken session plugins with auto-session + cd-project.nvim for VSCode Project Manager workflow
+* SaveProject command saves current directory to projects (prompts for optional name)
+* OpenProject/Cmd+Shift+O in nvim opens saved projects picker to browse and switch
+* Cmd+Shift+O in WezTerm shows project menu reading from cd-project.nvim.json (works even outside nvim)
+* Sessions auto-save on exit and restore when switching projects (no empty buffer tabs)
+* Fix all Cmd+Shift keybindings on macOS (E for neo-tree, O for projects) - match WezTerm Ctrl translations
+* Auto-refresh neo-tree when switching projects via cd-project hook
+* Disable Kitty keyboard protocol in WezTerm to prevent escape sequences in copied text
+* Configure dashboard to show recent projects with hyper theme
+* Add Cmd+Shift+S to prepare for screenshots (sets opacity to 100% for 5 seconds, macOS only)
+* Projects stored in ~/.config/nvim/cd-project.nvim.json (manually editable)
+
+### 2.0.3: 2025-10-29
+
+* Add optional feature flags system with install.sh prompts for Ollama AI, Discord Rich Presence, and Gamify plugin
+* Create lua/local.lua (gitignored) with machine-specific feature flags
+* Make plugins conditionally load based on local.lua configuration (backward compatible - defaults to enabled)
+* Make install.sh idempotent with prompts before backing up configs (WezTerm, Neovim, Hammerspoon), building/upgrading Neovim, and installing Git
+* Add automatic Neovim version detection and upgrade to latest release (0.10+) in install.sh
+* Build Neovim from source on Ubuntu/Debian to avoid GLIBC compatibility issues
+* Use pre-built binaries for Fedora/RHEL/CentOS (newer GLIBC)
+* Change install.sh to use HTTPS for git clone instead of SSH for better remote server compatibility
+* Add Comment.nvim plugin with Cmd+Shift+7 (macOS) and Ctrl+Shift+7 (Linux/Windows) keybindings for toggling comments
+* Add Hammerspoon configuration for macOS with Cmd+Option+Left/Right Mouse drag for window move/resize (Hyprland-style)
+* Use canvas preview for smooth resizing (SkyRocket.spoon approach), Cmd+Option+Click without drag passes through to apps
+* Remove Ctrl+D and Ctrl+Shift+D WezTerm split keybindings to restore default terminal behavior (close/terminate)
+* Fix lualine always showing (independent of gamify), CodeStats XP shown even when gamify disabled, better error handling
+* Add backup of local.lua when re-running install.sh to preserve settings
+* Add version badge to README.md
+* Make install.sh explicitly state which existing config files are found and preserved (not overwritten)
+* Fix plugins not loading when optional features disabled (filter out nil values from plugin table)
+* Fix project switcher not working on macOS (add Cmd+Shift+O keybinding)
+* Fix Cmd+P (file finder) and Cmd+Shift+P (command palette) not working in nvim on macOS
+* Add Cmd+Shift+F for live grep text search across all files in project
+* Add ripgrep installation to install.sh (required for Telescope live_grep)
+* Fix nvim-lint ESLint to search from file location upward, use project-local installation with proper working directory for node_modules resolution
+* Fix ESLint notifications showing for non-JavaScript files (only run for JS/TS files)
+* Add phpcs project-local configuration (searches for vendor/bin/phpcs, auto-detects phpcs.xml and composer.json rules)
+* Disable TypeScript LSP diagnostics (use ESLint for JavaScript/TypeScript linting instead)
+* Replace persistence.nvim and project.nvim with neovim-project (VSCode Project Manager-like experience)
+* Remove WezTerm project switcher menu, pass Cmd+Shift+O to nvim for project management
+* Configure neovim-project to only show manually saved projects (no auto-discovery)
+* Add :SaveProject command (accessible via Cmd+Shift+P command palette) to save current directory to projects
+* Add LSP keybindings: gd (go-to-definition), K (hover), Ctrl+Click (go-to-definition), gr (references), etc.
+* Fix neo-tree to not create state files in project directories
+* Fix missing TSConfig fields in nvim-treesitter configuration (sync_install, ignore_install, modules)
+* Fix Claude Code XP hook to work globally from any directory (use ~/.claude/settings.json instead of settings.local.json)
+
+### 2.0.2: 2025-10-27
+
+* Add nvim-treesitter plugin for better syntax highlighting and code understanding with auto-parser directory creation
+* Add Cmd+A for select all in nvim on macOS (keeps Ctrl+A for beginning of line)
+* Add Ctrl+A for select all in nvim on Linux/Windows
+* Add Tab/Shift+Tab for indenting/dedenting in nvim (all platforms)
+* Add Cmd+Click to open URLs in default browser on macOS (WezTerm)
+* Enable cursorline in nvim to highlight current line
+* Add Claude Code integration with automatic Code::Stats XP tracking via hooks
+* Add claude-code directory with codestats-hook.sh and secrets management
+* Add XP logging to ~/.claude/codestats-hook.log with timestamps
+* Add yellow ASCII box WezTerm overlay notifications showing XP (1 XP per line written by Claude)
+* Add simple code-stats implementation for nvim without external dependencies
+* Add Cmd+V paste and Cmd+C copy keybindings for macOS in wezterm
+* Add Telescope search keymaps (<leader>s prefix for search operations)
+* Fix gamify streak recalculation on nvim startup (handles Syncthing sync and DST transitions)
+* Set leader key to space in nvim
+* Increase bottom padding in wezterm for macOS (0.5cell → 1.5cell)
+* Update .gitignore to exclude claude-code/secrets.sh
+* Update starship.toml, show full path
+
+### 2.0.1: 2025-10-26
+
+* Add hyprland config
+* Add barbar for nvim with custom styling (dim grey background, purple bottom border for active tab)
+* Configure barbar to auto-hide when only one buffer is open
+* Add Ctrl+T keybinding to open new tab
+* Remove minimap plugin (wfxr/minimap.vim)
+* Add neo-tree as default file explorer
+* Add oklch-color-picker plugin for color picking
+* Fix Code::Stats integration (custom XP submission workaround for broken plugin)
+* Add Code::Stats XP display in lualine statusline with yellow color
+* Fix CTRL + SHIFT + E (toggle neo-tree) and CTRL + SHIFT + A (toggle Trouble diagnostics) keybindings
+* Configure WezTerm to pass through Ctrl+Shift+A and Ctrl+Shift+E to Neovim
+* Set Trouble and neo-tree to load on startup (not lazy-loaded)
+* Add luacheck compliance to keymaps configuration
+* Remove nodeadkeys (too used to Mac's tilde with space)
+* Update Hyprland config to use WezTerm instead of Ghostty (terminal variable, IRC autostart, restore-layout.sh)
+* Disable hyprsession in Hyprland config
+* Simplify connect-irc.sh script (remove manual window positioning)
+* Remove redundant launch-ssh-tmux.sh script
+* Add bash tab completion with trailing slashes for directories
+
+### 2.0.0: 2025-10-26
+
+* Revamp dotfiles after years of hiatus
+* Release directly 2.0.0
+* Open CHANGELOG.md
+* Release os-specific wezterm and nvim settings
