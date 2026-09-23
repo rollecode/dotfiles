@@ -13,6 +13,7 @@
 - CHANGELOG.md bullets: 2-10 words
 - Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
 - Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
+- Patch unless the release adds a thing that did not exist: a new script, tool, integration or config file. Editing, tuning, fixing or removing existing config is a patch, however many files it touches
 - One version bump per work session, not per commit or per fix. Consolidate same-day changes into it
 - Never use Claude watermark in commits (FORBIDDEN: "Co-Authored-By")
 - No emojis in commits or code
