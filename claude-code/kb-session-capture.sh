@@ -11,6 +11,14 @@ mkdir -p "$KB_RAW"
 
 INPUT="$(cat)"
 
+# Claude Code cancels SessionEnd hooks that outlive the exiting process, and a
+# long session's transcript (hundreds of MB) takes far longer than that to parse.
+# Re-run detached so exit never kills the capture.
+if [ "${1:-}" != "--worker" ]; then
+  printf '%s' "$INPUT" | nohup "$0" --worker >/dev/null 2>&1 &
+  exit 0
+fi
+
 /usr/bin/python3 - <<'PY' "$INPUT" "$KB_RAW" "$LOG"
 import json, sys, os, datetime, re
 
@@ -116,7 +124,21 @@ lines = [
     f"**Captured:** {iso_now}",
     "",
 ]
-for role, text in turns:
+# Cap the note: a multi-week session renders to tens of MB, and a 7.5 MB note
+# once hung Obsidian's indexer. Keep the most recent turns under the cap.
+CAP = 500_000
+kept, size = [], 0
+for role, text in reversed(turns):
+    size += len(text) + 20
+    if size > CAP and kept:
+        break
+    kept.append((role, text))
+kept.reverse()
+if len(kept) < len(turns):
+    lines.append(f"_Truncated: kept the last {len(kept)} of {len(turns)} turns (500 KB cap)._")
+    lines.append("")
+
+for role, text in kept:
     # Filter out Dayflow timeline data - it's noisy screen observations, not knowledge.
     # Tool names changed when the custom dayflow MCP was replaced by the official
     # server in Dayflow 2.1.0 (12.8.2026): the dayflow_ prefix is gone, so the old
