@@ -1,6 +1,7 @@
 ### 2.70.2: 2026-09-23
 
 * Pass mouse bindings and `ctrl+space` to games
+* Sharpen the semver rule to default to patch
 
 ### 2.70.1: 2026-09-23
 
