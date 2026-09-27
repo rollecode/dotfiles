@@ -1,0 +1,9 @@
+[Unit]
+Description=Rebuild Aerion from the fork's features branch
+
+[Service]
+Type=oneshot
+ExecStart=%h/Projects/dotfiles/bin/aerion-rebuild
+TimeoutStartSec=infinity
+Nice=10
+IOSchedulingClass=idle

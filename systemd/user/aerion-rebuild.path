@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch aerion-bin for upstream updates
+
+[Path]
+PathChanged=/usr/bin/aerion
+
+[Install]
+WantedBy=default.target

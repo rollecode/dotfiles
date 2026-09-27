@@ -1,3 +1,8 @@
+### 2.71.0: 2026-09-27
+
+* Rebuild Aerion fork when aerion-bin updates
+* Link and enable systemd path units
+
 ### 2.70.3: 2026-09-25
 
 * Stop snapshotting tmux sessions for restore
