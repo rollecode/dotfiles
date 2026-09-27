@@ -10,6 +10,7 @@ BRANCH="features"
 TARGET="/usr/local/bin/aerion"
 AUTOSTART="$HOME/.config/autostart/io.github.hkdb.Aerion.desktop"
 LOG="$HOME/.local/state/aerion-rebuild.log"
+ICONS="$HOME/.local/share/icons/hicolor"
 PACMAN_LOCK="/var/lib/pacman/db.lck"
 
 export PATH="$HOME/go/bin:$PATH"
@@ -67,6 +68,12 @@ if ! { (cd frontend && npm install --no-audit --no-fund) && make build; } >"$LOG
 fi
 
 sudo -n install -m755 build/bin/aerion "$TARGET" || { notify "Could not install to $TARGET"; exit 1; }
+
+# aerion-bin 0.3.5 puts icons in hicolor/SIZE/ instead of hicolor/SIZE/apps/, where themes look.
+for icon in build/linux/icons/*/io.github.hkdb.Aerion.*; do
+  size=$(basename "$(dirname "$icon")")
+  install -Dm644 "$icon" "$ICONS/$size/apps/$(basename "$icon")"
+done
 
 if [ -f "$AUTOSTART" ]; then
   sed -i "s|^Exec=/usr/bin/aerion\$|Exec=$TARGET|" "$AUTOSTART"
