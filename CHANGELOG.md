@@ -1,3 +1,7 @@
+### 2.71.1: 2026-09-27
+
+* Install Aerion icons where themes look
+
 ### 2.71.0: 2026-09-27
 
 * Rebuild Aerion fork when aerion-bin updates
