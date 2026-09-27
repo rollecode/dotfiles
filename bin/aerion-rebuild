@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Rebuild Aerion from the fork's features branch whenever aerion-bin updates.
+# The build goes to /usr/local/bin, which is ahead of /usr/bin in PATH, so
+# upstream's binary stays installed only for its desktop entry and icons.
+
+set -uo pipefail
+
+REPO="$HOME/Projects/aerion"
+BRANCH="features"
+TARGET="/usr/local/bin/aerion"
+AUTOSTART="$HOME/.config/autostart/io.github.hkdb.Aerion.desktop"
+LOG="$HOME/.local/state/aerion-rebuild.log"
+PACMAN_LOCK="/var/lib/pacman/db.lck"
+
+export PATH="$HOME/go/bin:$PATH"
+
+notify() {
+  echo "$1"
+  notify-send -a Aerion "Aerion rebuild" "$1" 2>/dev/null || true
+}
+
+while [ -e "$PACMAN_LOCK" ] || pgrep -f SteamLaunch >/dev/null; do
+  sleep 10
+done
+
+version=$(pacman -Q aerion-bin 2>/dev/null | awk '{print $2}' | cut -d- -f1)
+if [ -z "$version" ]; then
+  echo "aerion-bin is not installed"
+  exit 0
+fi
+tag="v$version"
+
+cd "$REPO" || exit 1
+
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  notify "Skipped $tag: $REPO has uncommitted changes"
+  exit 1
+fi
+
+git fetch -q upstream --tags || { notify "Could not fetch upstream"; exit 1; }
+if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+  notify "Upstream has no tag $tag yet"
+  exit 1
+fi
+
+previous=$(git branch --show-current)
+trap '[ -n "$previous" ] && git checkout -q "$previous"' EXIT
+git checkout -q "$BRANCH" || exit 1
+
+if ! git merge-base --is-ancestor "$tag" HEAD; then
+  if ! git merge -q --no-edit "$tag"; then
+    git merge --abort
+    notify "Merging $tag into $BRANCH conflicts. Your current build stays; resolve by hand."
+    exit 1
+  fi
+fi
+
+wails_version=$(go list -m -f '{{.Version}}' github.com/wailsapp/wails/v2)
+if ! wails version 2>/dev/null | grep -q "$wails_version"; then
+  go install "github.com/wailsapp/wails/v2/cmd/wails@$wails_version" || { notify "Could not install Wails $wails_version"; exit 1; }
+fi
+
+mkdir -p "$(dirname "$LOG")"
+if ! { (cd frontend && npm install --no-audit --no-fund) && make build; } >"$LOG" 2>&1; then
+  notify "Building $tag failed. Your current build stays; log: $LOG"
+  exit 1
+fi
+
+sudo -n install -m755 build/bin/aerion "$TARGET" || { notify "Could not install to $TARGET"; exit 1; }
+
+if [ -f "$AUTOSTART" ]; then
+  sed -i "s|^Exec=/usr/bin/aerion\$|Exec=$TARGET|" "$AUTOSTART"
+fi
+
+notify "Rebuilt $tag with your features. Restart Aerion to use it."

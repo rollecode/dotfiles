@@ -481,7 +481,7 @@ setup_systemd_user_services() {
     mkdir -p "$target_dir"
 
     local need_reload=0
-    for unit in "$src_dir"/*.service; do
+    for unit in "$src_dir"/*.service "$src_dir"/*.path; do
         [ -f "$unit" ] || continue
         local name=$(basename "$unit")
         local target="$target_dir/$name"
@@ -495,7 +495,7 @@ setup_systemd_user_services() {
             need_reload=1
         fi
 
-        if ! systemctl --user is-enabled "$name" >/dev/null 2>&1; then
+        if grep -q '^\[Install\]' "$unit" && ! systemctl --user is-enabled "$name" >/dev/null 2>&1; then
             systemctl --user enable "$name" >/dev/null 2>&1 \
                 && print_success "$name enabled" \
                 || print_warning "Could not enable $name (start it manually after next login)"
