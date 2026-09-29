@@ -61,7 +61,7 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - CHANGELOG.md bullets: 2-10 words
 - Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
 - MINIMAL, CONCISE, STRAIGHT TO THE POINT. Applies to code, comments, commits and PR bodies alike
-- No excessive code comments. A comment earns its place only when the code cannot state the constraint itself. Never write a paragraph to explain a few lines, never narrate what the next line does, never justify the change to a reviewer, never tell the story of the bug with dates. If a comment is needed at all, one or two lines; the long explanation goes in docs. This holds even when the surrounding code is already verbose: match its naming and idiom, never its essay-length comments
+- Keep code comments short. Write one only when the code cannot say it itself. Never write a paragraph to explain a few lines, never describe what the next line does, never argue for the change, never tell the story of the bug with dates. One or two lines at most; a longer explanation goes in the docs. This applies even when the code around it already has long comments: copy its naming and style, not its essays
 - Never `git add -A` or `git add .` when a build step can generate ignored files: stage explicit paths. During a rebase the ignore rules of the replayed commit apply, not the final ones, so a generated secret can slip in
 - Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
 - One version bump per work session, not per fix. Consolidate same-day changes into it
@@ -130,6 +130,7 @@ This holds even when the Gmail scope technically permits sending. Google offers 
 ## Communication
 
 - Write in English by default
+- No jargon, in chat, code, comments, commits and docs. Use plain words: say what happens instead of "load-bearing", "earns its place", "surface", "blast radius", "footgun", "leverage" and the like. If a term needs explaining, write the explanation instead of the term. A trade word the reader uses every day (a customer's own product names, tarjouspyyntö, ostopolku) is not jargon
 - Finnish date format (d.M.yyyy)
 - Finnish number format, never the US one. Space as the thousands separator, comma as the decimal: `6 220`, `6 220,50`, `1 500 000`. Currency is the euro sign AFTER the number with a space: `6 220 €`. Never `6,220` - that reads as six euros to a Finn - and never `EUR 6220`, `$`, or `6220.50`. Applies to every number, not just money: `7 074 hours`, not `7,074 hours`
 - Never use emdashes, use regular dashes
