@@ -1,6 +1,7 @@
 ### 2.71.2: 2026-09-29
 
 * Forbid essay-length code comments
+* Add a no-jargon rule
 
 ### 2.71.1: 2026-09-27
 
