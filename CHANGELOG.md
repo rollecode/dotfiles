@@ -1,3 +1,7 @@
+### 2.71.2: 2026-09-29
+
+* Forbid essay-length code comments
+
 ### 2.71.1: 2026-09-27
 
 * Install Aerion icons where themes look
