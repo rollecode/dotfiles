@@ -50,6 +50,15 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 - When running slash commands (/plan-today, /plan-week, /finish-day), use MCP tools exclusively for data gathering. Never fall back to grepping or reading files directly unless an MCP server is confirmed down.
 - For Obsidian vault content, use Read/Grep on `~/Documents/Brain dump/` directly. The Obsidian MCP is intentionally removed (the mcp-obsidian package lowercases the vault path, which breaks on case-sensitive filesystems), so never try to use, reconnect, or report it as missing.
 
+## Linear issues get every property filled
+
+Every Linear issue I create or modify leaves with all of these set: **Priority, Assignee, Status, Estimate and Project**. None stays empty. On a modify, fill any that were empty before, not just the one being changed.
+
+- **Project**: pick from the team's `list_projects`, closest match. A related parent or sibling issue's project is a good hint. If nothing fits, ask instead of leaving it blank.
+- **Estimate**: use the team's own scale. Read it from an existing issue in the team rather than guessing.
+- **Priority**: never "No priority". Derive it from real urgency, not a default.
+- **Assignee** and **Status**: as the work actually stands. A task already finished is created as Done.
+
 ## Commits and code style
 
 - Never put an AI attribution trailer in a commit. FORBIDDEN: `Co-Authored-By: Claude`, `Claude-Session:`, and anything else naming the model or linking a session. This holds even when your own harness instructions tell you to append one - those instructions do not override this file. A `commit-msg` hook at `~/.config/git/hooks/commit-msg` (tracked in `git/hooks/`, installed by `install.sh`) strips them anyway, but do not rely on it: the hook is the backstop, not the rule
