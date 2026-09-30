@@ -1,3 +1,7 @@
+### 2.71.3: 2026-09-30
+
+* Require every Linear property on issues
+
 ### 2.71.2: 2026-09-29
 
 * Forbid essay-length code comments
