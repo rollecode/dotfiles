@@ -75,6 +75,8 @@ Every Linear issue I create or modify leaves with all of these set: **Priority, 
 - Real semver: patch = fix/tweak, minor = new capability, major = breaking change. Default to patch
 - One version bump per work session, not per fix. Consolidate same-day changes into it
 - Commit subject: imperative mood ("If applied, this commit will <subject>"), capitalised first letter, no trailing period
+- Commit subjects and CHANGELOG.md bullets start with the type of change in present tense: "Add x", "Fix x", "Fix regression in x", "Remove x", "Revert x", "Change x". Ultra concise, unambiguous, no jargon
+- One CHANGELOG.md bullet per task. Never repeat a Ref or split one task across bullets
 
 ## Code craft
 
