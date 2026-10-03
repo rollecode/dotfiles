@@ -17,6 +17,9 @@ function M.apply(config)
     config.window_background_opacity = 1.0
   end
 
+  -- Load user fonts from disk; the GUI CoreText lookup failed to find them
+  config.font_dirs = { wezterm.home_dir .. '/Library/Fonts' }
+
   -- Font configuration for macOS (heavier weight)
   config.font = wezterm.font_with_fallback({
     { family = 'Liga SFMono Nerd Font', weight = 400 },
