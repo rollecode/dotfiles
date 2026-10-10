@@ -1,5 +1,6 @@
-### 2.71.4: 2026-10-10
+### 2.72.0: 2026-10-10
 
+* Add NextDNS watchdog for dead DoH connections
 * Fix underlined tmux tab after tmux 3.8
 
 ### 2.71.3: 2026-09-30
