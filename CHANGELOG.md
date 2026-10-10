@@ -1,3 +1,7 @@
+### 2.71.4: 2026-10-10
+
+* Fix underlined tmux tab after tmux 3.8
+
 ### 2.71.3: 2026-09-30
 
 * Require every Linear property on issues
