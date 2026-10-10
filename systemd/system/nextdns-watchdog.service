@@ -1,0 +1,12 @@
+[Unit]
+Description=Restart nextdns when its DoH connection goes dead
+After=nextdns.service
+Requires=nextdns.service
+
+[Service]
+ExecStart=/bin/sh -c 'journalctl -u nextdns -f -n0 -o cat | /usr/local/bin/nextdns-watchdog'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

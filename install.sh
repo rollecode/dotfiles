@@ -464,7 +464,24 @@ setup_configs() {
         setup_browser_flags
         setup_wayfire
         setup_systemd_user_services
+        setup_nextdns_watchdog
     fi
+}
+
+# Restart nextdns when its DoH connection goes dead (nextdns/nextdns#1129)
+setup_nextdns_watchdog() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+
+    if ! command -v nextdns >/dev/null 2>&1; then
+        return 0
+    fi
+
+    sudo install -m755 "$dotfiles_dir/bin/nextdns-watchdog" /usr/local/bin/nextdns-watchdog
+    sudo install -m644 "$dotfiles_dir/systemd/system/nextdns-watchdog.service" /etc/systemd/system/nextdns-watchdog.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now nextdns-watchdog.service >/dev/null 2>&1 \
+        && print_success "nextdns-watchdog enabled" \
+        || print_warning "Could not enable nextdns-watchdog"
 }
 
 # Symlink and enable systemd user services from systemd/user/

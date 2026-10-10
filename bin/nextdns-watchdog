@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Restarts nextdns when its DoH connection goes dead (nextdns/nextdns#1129).
+# Reads nextdns log lines on stdin; the service pipes journalctl into it.
+set -u
+
+BURST=3
+WINDOW=10
+COOLDOWN=60
+RESTART_CMD=${RESTART_CMD:-systemctl restart nextdns}
+
+hits=()
+last_restart=0
+
+while IFS= read -r line; do
+  case "$line" in
+    *"doh resolve: context deadline exceeded"*) ;;
+    *) continue ;;
+  esac
+
+  now=$(date +%s)
+  kept=()
+  for t in "${hits[@]}"; do
+    if [ $((now - t)) -lt "$WINDOW" ]; then
+      kept+=("$t")
+    fi
+  done
+  hits=("${kept[@]}" "$now")
+
+  if [ "${#hits[@]}" -lt "$BURST" ] || [ $((now - last_restart)) -lt "$COOLDOWN" ]; then
+    continue
+  fi
+
+  echo "DoH connection dead, restarting nextdns"
+  $RESTART_CMD
+  last_restart=$now
+  hits=()
+done
