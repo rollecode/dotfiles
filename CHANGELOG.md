@@ -1,3 +1,8 @@
+### 2.73.0: 2026-10-11
+
+* Add Tokyo Night theme for bottom
+* Alias htop to bottom
+
 ### 2.72.0: 2026-10-10
 
 * Add NextDNS watchdog for dead DoH connections

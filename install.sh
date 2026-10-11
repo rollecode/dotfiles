@@ -456,6 +456,10 @@ setup_configs() {
         print_success "fastfetch config symlinked"
     fi
 
+    mkdir -p "$HOME/.config/bottom"
+    ln -sfn "$dotfiles_dir/bottom/bottom.toml" "$HOME/.config/bottom/bottom.toml"
+    print_success "bottom config symlinked"
+
     # Setup Neovim directories for plugins (fixes treesitter installation issues)
     setup_nvim_directories
 

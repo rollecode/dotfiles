@@ -34,7 +34,7 @@ alias pbcopy='wl-copy'
 alias pbpaste='wl-paste'
 
 # Tool replacements
-alias htop='btop'
+alias htop='btm'
 alias nano='nvim'
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
