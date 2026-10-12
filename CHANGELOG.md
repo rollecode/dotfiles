@@ -1,3 +1,7 @@
+### 2.73.1: 2026-10-12
+
+* Forbid commit message bodies
+
 ### 2.73.0: 2026-10-11
 
 * Add Tokyo Night theme for bottom
