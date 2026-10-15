@@ -3,6 +3,7 @@
 - 2 space indents
 - One logical change per commit
 - Commit subjects: one line, under 50 characters (GitHub's display limit), sentence case
+- **A commit subject says what the change does, NEVER "Release x.y.z".** "Spell out the headline duration", not "Release 1.8.2" or "Bump version". This holds when the same commit adds the changelog entry that publishes a release: the version lives in CHANGELOG.md and the tag, the commit log is for the work. Rolle on 15.10.2026, after 37 such commits in train-netmap: "I hate that. Even though we do release shit, commit should always depict on what has been done"
 - Commit each change
 - Use present tense in commits and CHANGELOG.md
 - Use sentence case for headings (not Title Case)
