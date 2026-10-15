@@ -67,6 +67,7 @@ Every Linear issue I create or modify leaves with all of these set: **Priority, 
 - Use present tense in commits
 - Use sentence case for headings
 - Commit subjects: one line, under 50 characters (GitHub's display limit)
+- **A commit subject says what the change does, NEVER "Release x.y.z".** "Spell out the headline duration", not "Release 1.8.2" or "Bump version". This holds when the same commit adds the changelog entry that publishes a release: the version lives in CHANGELOG.md and the tag, the commit log is for the work. Rolle on 15.10.2026, after 37 such commits in train-netmap: "I hate that. Even though we do release shit, commit should always depict on what has been done"
 - A commit message is that one line and nothing else: no body, no blank line, no "Ref:" or other lines under it. A reference goes on the same line and still fits under 50 ("Add dev docs, Ref: MEM-15"). One `-m`, never two. This holds even when a task or prompt asks for a body
 - CHANGELOG.md bullets: 2-10 words
 - Rationale belongs in code comments or docs, never in commits or CHANGELOG.md
