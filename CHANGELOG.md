@@ -1,3 +1,7 @@
+### 2.73.2: 2026-10-15
+
+* Forbid release-only commit subjects
+
 ### 2.73.1: 2026-10-12
 
 * Forbid commit message bodies
