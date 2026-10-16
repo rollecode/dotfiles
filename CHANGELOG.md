@@ -1,3 +1,7 @@
+### 2.73.4: 2026-10-16
+
+* Open WezTerm maximised on macOS for the watch pane
+
 ### 2.73.3: 2026-10-16
 
 * Change Claude Code dock background to black
