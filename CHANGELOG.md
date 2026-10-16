@@ -1,6 +1,7 @@
 ### 2.73.3: 2026-10-16
 
 * Change Claude Code dock background to black
+* Turn Claude Code verbose output and Bash diffs off
 
 ### 2.73.2: 2026-10-15
 

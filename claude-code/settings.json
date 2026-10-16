@@ -86,7 +86,8 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "verbose": true,
+  "verbose": false,
+  "bashEditDiffEnabled": false,
   "alwaysThinkingEnabled": true,
   "showThinkingSummaries": true,
   "autoScrollEnabled": true,
