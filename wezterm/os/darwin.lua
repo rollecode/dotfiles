@@ -39,9 +39,15 @@ function M.apply(config)
     bottom = '1.5cell',
   }
 
-  -- Terminal size
-  config.initial_cols = 87
-  config.initial_rows = 28
+  -- Terminal size. Start maximised so the claude-work-visualized /watch pane,
+  -- which needs at least 144 columns to open, always fits. The initial_cols
+  -- fallback stays above 144 for the rare case gui-startup does not fire.
+  config.initial_cols = 160
+  config.initial_rows = 44
+  wezterm.on('gui-startup', function(cmd)
+    local _, _, window = wezterm.mux.spawn_window(cmd or {})
+    window:gui_window():maximize()
+  end)
 
   -- macOS-specific keybindings
   -- Send Cmd+A through to nvim as a key sequence it can recognize
