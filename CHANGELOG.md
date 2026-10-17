@@ -4,6 +4,7 @@
 * Hide diffs and tool output in Claude Code
 * Fix grey Claude Code dock on macOS
 * Strip all AI trailers in commit-msg hook
+* Darken faint text in WezTerm
 
 ### 2.73.4: 2026-10-16
 

@@ -37,6 +37,14 @@ config.font_rules = {
       { family = 'Liga SFMono Nerd Font', weight = 600 },
       { family = 'Monaspace Krypton NF',  weight = 600 }
     })
+  },
+  -- Darker faint text, so the Claude Code pane divider stays quiet (like foot's dim-amount)
+  {
+    intensity = 'Half',
+    font = wezterm.font_with_fallback({
+      { family = 'Liga SFMono Nerd Font' },
+      { family = 'Monaspace Krypton NF' }
+    }, { weight = 400, foreground = '#45475a' })
   }
 }
 

@@ -933,11 +933,11 @@ setup_claude_code() {
     local theme_dst="$HOME/.claude/themes/tokyonight.json"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # The dock colour matches foot's background, which only foot turns
-        # transparent. WezTerm paints it grey, so macOS gets a black copy.
+        # transparent. On macOS it matches WezTerm's background instead.
         # Rerun install.sh after editing the theme.
         rm -f "$theme_dst"
-        jq '.overrides.composerSidebarBackground = "#000000"' "$theme_src" > "$theme_dst"
-        print_success "Tokyo Night theme copied with a black dock (select it with /theme)"
+        jq '.overrides.composerSidebarBackground = "#11111b"' "$theme_src" > "$theme_dst"
+        print_success "Tokyo Night theme copied with a WezTerm dock (select it with /theme)"
     else
         ln -sfn "$theme_src" "$theme_dst"
         print_success "Tokyo Night theme symlinked (select it with /theme)"
