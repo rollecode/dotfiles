@@ -929,8 +929,19 @@ setup_claude_code() {
 
     # Tokyo Night theme for the TUI itself; select it with /theme
     mkdir -p "$HOME/.claude/themes"
-    ln -sfn "$dotfiles_dir/claude-code/themes/tokyonight.json" "$HOME/.claude/themes/tokyonight.json"
-    print_success "Tokyo Night theme symlinked (select it with /theme)"
+    local theme_src="$dotfiles_dir/claude-code/themes/tokyonight.json"
+    local theme_dst="$HOME/.claude/themes/tokyonight.json"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # The dock colour matches foot's background, which only foot turns
+        # transparent. WezTerm paints it grey, so macOS gets a black copy.
+        # Rerun install.sh after editing the theme.
+        rm -f "$theme_dst"
+        jq '.overrides.composerSidebarBackground = "#000000"' "$theme_src" > "$theme_dst"
+        print_success "Tokyo Night theme copied with a black dock (select it with /theme)"
+    else
+        ln -sfn "$theme_src" "$theme_dst"
+        print_success "Tokyo Night theme symlinked (select it with /theme)"
+    fi
 
     # Setup secrets
     if [ ! -f "$dotfiles_dir/claude-code/secrets.sh" ]; then

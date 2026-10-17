@@ -2,6 +2,7 @@
 
 * Set foot windows to 118x36
 * Hide diffs and tool output in Claude Code
+* Fix grey Claude Code dock on macOS
 
 ### 2.73.4: 2026-10-16
 
