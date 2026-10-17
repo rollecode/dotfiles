@@ -13,6 +13,9 @@ function M.apply(config)
   local username = os.getenv("USER") or ""
   if username:lower() == "qllervo" then
     config.window_background_opacity = 0.65
+    -- WezTerm cannot make one colour see-through like foot's alpha-mode, so
+    -- coloured cell backgrounds (the Claude Code dock) get the same opacity
+    config.text_background_opacity = 0.65
   else
     config.window_background_opacity = 1.0
   end
