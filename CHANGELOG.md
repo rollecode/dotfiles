@@ -1,3 +1,7 @@
+### 2.73.5: 2026-10-17
+
+* Enlarge foot windows for the watch pane
+
 ### 2.73.4: 2026-10-16
 
 * Open WezTerm maximised on macOS for the watch pane
