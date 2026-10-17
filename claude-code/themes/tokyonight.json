@@ -44,7 +44,7 @@
     "bashMessageBackgroundColor": "#1b2733",
     "memoryBackgroundColor": "#2a2438",
     "selectionBg": "#33467c",
-    "composerSidebarBackground": "#000000",
+    "composerSidebarBackground": "#282a36",
 
     "rate_limit_fill": "#bb9af7",
     "rate_limit_empty": "#414868",
