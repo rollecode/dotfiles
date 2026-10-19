@@ -2,6 +2,7 @@
 
 * Make Claude Code dock see-through for every user
 * Make Claude Code dock see-through inside tmux
+* Change Claude to use the Obsidian MCP
 
 ### 2.73.5: 2026-10-17
 
