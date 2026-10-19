@@ -48,7 +48,7 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 
 - Always prefer MCP tools over direct file operations. Use Linear MCP instead of searching local files. Use Todoist MCP instead of curl. Use Help Scout MCP for ticket data. Use GitHub MCP for commits/releases. MCP tools are faster and more reliable than raw file searches.
 - When running slash commands (/plan-today, /plan-week, /finish-day), use MCP tools exclusively for data gathering. Never fall back to grepping or reading files directly unless an MCP server is confirmed down.
-- For Obsidian vault content, use Read/Grep on `~/Documents/Brain dump/` directly. The Obsidian MCP is intentionally removed (the mcp-obsidian package lowercases the vault path, which breaks on case-sensitive filesystems), so never try to use, reconnect, or report it as missing.
+- For Obsidian vault content, always use the claude.ai Obsidian MCP (`mcp__claude_ai_Obsidian__*`), never Read, Grep or Edit on `~/Documents/Brain dump/`. The vault the MCP serves is the canonical one and Obsidian is not always running, so the local copy can be out of date
 
 ## Linear issues get every property filled
 
