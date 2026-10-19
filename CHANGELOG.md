@@ -1,3 +1,7 @@
+### 2.73.6: 2026-10-19
+
+* Make Claude Code dock see-through for every user
+
 ### 2.73.5: 2026-10-17
 
 * Set foot windows to 118x36
