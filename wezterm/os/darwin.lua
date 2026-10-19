@@ -13,12 +13,13 @@ function M.apply(config)
   local username = os.getenv("USER") or ""
   if username:lower() == "qllervo" then
     config.window_background_opacity = 0.65
-    -- Palette colour 232 is see-through: the Claude Code dock uses it
-    -- (set by install.sh), like foot's alpha-mode=matching on Linux
-    config.colors.indexed[232] = 'rgba(0,0,0,0)'
   else
     config.window_background_opacity = 1.0
   end
+
+  -- Palette colour 232 is see-through: the Claude Code dock uses it
+  -- (set by install.sh), like foot's alpha-mode=matching on Linux
+  config.colors.indexed[232] = 'rgba(0,0,0,0)'
 
   -- Load user fonts from disk; the GUI CoreText lookup failed to find them
   config.font_dirs = { wezterm.home_dir .. '/Library/Fonts' }
