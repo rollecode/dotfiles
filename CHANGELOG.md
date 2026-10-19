@@ -1,6 +1,7 @@
 ### 2.73.6: 2026-10-19
 
 * Make Claude Code dock see-through for every user
+* Make Claude Code dock see-through inside tmux
 
 ### 2.73.5: 2026-10-17
 

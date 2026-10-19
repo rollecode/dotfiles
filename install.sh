@@ -931,18 +931,10 @@ setup_claude_code() {
     mkdir -p "$HOME/.claude/themes"
     local theme_src="$dotfiles_dir/claude-code/themes/tokyonight.json"
     local theme_dst="$HOME/.claude/themes/tokyonight.json"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # The dock colour matches foot's background, which only foot turns
-        # transparent. On macOS the dock uses palette colour 232, which
-        # wezterm/os/darwin.lua makes see-through. Rerun install.sh after
-        # editing the theme.
-        rm -f "$theme_dst"
-        jq '.overrides.composerSidebarBackground = "ansi256(232)"' "$theme_src" > "$theme_dst"
-        print_success "Tokyo Night theme copied with a see-through dock (select it with /theme)"
-    else
-        ln -sfn "$theme_src" "$theme_dst"
-        print_success "Tokyo Night theme symlinked (select it with /theme)"
-    fi
+    # The dock uses palette colour 232, which foot.ini and wezterm/os/darwin.lua
+    # make see-through, so it stays see-through inside tmux and over SSH too.
+    ln -sfn "$theme_src" "$theme_dst"
+    print_success "Tokyo Night theme symlinked (select it with /theme)"
 
     # Setup secrets
     if [ ! -f "$dotfiles_dir/claude-code/secrets.sh" ]; then
