@@ -1,3 +1,7 @@
+### 2.73.7: 2026-10-20
+
+* Stop maximising WezTerm on macOS
+
 ### 2.73.6: 2026-10-19
 
 * Make Claude Code dock see-through for every user
