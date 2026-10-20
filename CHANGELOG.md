@@ -1,3 +1,7 @@
+### 2.73.8: 2026-10-20
+
+* Restore WezTerm 87x28 start size on macOS
+
 ### 2.73.7: 2026-10-20
 
 * Stop maximising WezTerm on macOS

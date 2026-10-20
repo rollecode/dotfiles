@@ -43,9 +43,9 @@ function M.apply(config)
     bottom = '1.5cell',
   }
 
-  -- Wide enough for the claude-work-visualized /watch pane (144+ columns)
-  config.initial_cols = 160
-  config.initial_rows = 44
+  -- Terminal size
+  config.initial_cols = 87
+  config.initial_rows = 28
 
   -- macOS-specific keybindings
   -- Send Cmd+A through to nvim as a key sequence it can recognize
