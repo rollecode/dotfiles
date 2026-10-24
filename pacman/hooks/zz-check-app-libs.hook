@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Path
+Target = usr/lib/*.so.*
+
+[Action]
+Description = Checking desktop apps for missing shared libraries...
+When = PostTransaction
+Exec = /usr/local/bin/fix-missing-libs --check

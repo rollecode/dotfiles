@@ -1,3 +1,7 @@
+### 2.74.0: 2026-10-24
+
+* Add `fix-missing-libs` for prebuilt app libraries
+
 ### 2.73.8: 2026-10-20
 
 * Restore WezTerm 87x28 start size on macOS

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Prebuilt apps link against system libraries they do not declare as
+# dependencies, so an upgrade can leave them unable to start. Installs the
+# package providing each missing soname. --check only reports, for the pacman
+# hook, which runs while the database is locked.
+set -u
+
+PACKAGES=(
+  ungoogled-chromium-bin
+  ayugram-desktop
+  brave-origin-nightly-bin
+  element-desktop-nightly-bin
+  claude-desktop-bin
+  vscodium-bin
+  localsend-bin
+  1password
+  discord
+  signal-desktop
+)
+
+check_only=0
+if [ "${1:-}" = "--check" ]; then
+  check_only=1
+fi
+
+missing=()
+for pkg in "${PACKAGES[@]}"; do
+  pacman -Q "$pkg" >/dev/null 2>&1 || continue
+
+  while read -r file; do
+    if [ ! -f "$file" ] || [ ! -x "$file" ]; then
+      continue
+    fi
+
+    for soname in $(ldd "$file" 2>/dev/null | awk '/not found/ {print $1}'); do
+      missing+=("$pkg $soname")
+    done
+  done < <(pacman -Qlq "$pkg")
+done
+
+status=0
+for entry in $(printf '%s\n' "${missing[@]}" | sort -u | tr ' ' '|'); do
+  pkg=${entry%|*}
+  soname=${entry#*|}
+
+  # libfoo.so.36 is provided as libfoo.so=36-64
+  provider=$(pacman -Sp --print-format '%n' "${soname%%.so.*}.so=${soname#*.so.}-64" 2>/dev/null)
+
+  if [ -z "$provider" ]; then
+    echo "  $pkg needs $soname, no package provides it yet"
+    status=1
+  elif [ "$check_only" -eq 1 ]; then
+    echo "  $pkg needs $soname, run fix-missing-libs to install $provider"
+  else
+    echo "  $pkg needs $soname, installing $provider"
+    sudo pacman -S --needed --noconfirm --asexplicit "$provider" || status=1
+  fi
+done
+
+if [ "$check_only" -eq 1 ]; then
+  exit 0
+fi
+exit $status
