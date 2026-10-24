@@ -469,7 +469,23 @@ setup_configs() {
         setup_wayfire
         setup_systemd_user_services
         setup_nextdns_watchdog
+        setup_missing_libs_fixer
     fi
+}
+
+# Reinstall libraries prebuilt apps forget to depend on, after every `up`
+setup_missing_libs_fixer() {
+    local dotfiles_dir="$HOME/Projects/dotfiles"
+
+    if ! command -v pacman >/dev/null 2>&1; then
+        return 0
+    fi
+
+    sudo install -m755 "$dotfiles_dir/bin/up" /usr/local/bin/up
+    sudo install -m755 "$dotfiles_dir/bin/fix-missing-libs" /usr/local/bin/fix-missing-libs
+    sudo install -Dm644 "$dotfiles_dir/pacman/hooks/zz-check-app-libs.hook" /etc/pacman.d/hooks/zz-check-app-libs.hook
+    sudo rm -f /usr/local/bin/check-app-libs
+    print_success "fix-missing-libs installed"
 }
 
 # Restart nextdns when its DoH connection goes dead (nextdns/nextdns#1129)

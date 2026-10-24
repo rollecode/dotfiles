@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo pacman -Suy --noconfirm && yay -Suy --noconfirm --needed --cleanafter && fix-missing-libs
