@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Nightly Steam shader precompile, run by the steam-shader-night timers.
 #   start - launch Steam in the background so it processes queued Vulkan shaders,
-#           with steam_dev.cfg giving it more replay workers (kept for daytime too)
+#           with steam_dev.cfg giving it more replay workers for the night only
 #   stop  - shut Steam down again, only if 'start' launched it
 
 set -euo pipefail
@@ -9,8 +9,8 @@ set -euo pipefail
 STEAM_DEV_CFG="$HOME/.local/share/Steam/steam_dev.cfg"
 MARKER="${XDG_RUNTIME_DIR:-/tmp}/steam-shader-night"
 CLIENT_UNIT="steam-shader-night-client.service"
-# Steam replays with 3 processes by default. Workers run at nice 19 and Steam
-# pauses them while a game runs, so all 12 threads are safe to give.
+# Steam replays with 3 processes by default. 12 is for the night only: at nice 19
+# they still made the daytime desktop sluggish (load 29 on 25.10.2026).
 REPLAY_THREADS=12
 SHUTDOWN_WAIT_S=120
 
@@ -32,7 +32,7 @@ start() {
 
 stop() {
     [ -f "$MARKER" ] || return 0
-    rm -f "$MARKER"
+    rm -f "$MARKER" "$STEAM_DEV_CFG"
 
     /usr/bin/steam -shutdown || true
     for _ in $(seq "$SHUTDOWN_WAIT_S"); do
