@@ -383,11 +383,14 @@ void main() {
 
     // No-white grade: additive stacking used to clip to white. Peaks now
     // compress through a soft knee and slide into the violet family, so
-    // pulses read as light violet, never full white.
+    // pulses read as mid violet and transparent windows stay legible.
+    // Ceiling is KNEE + 1/KNEE_CURVE.
+    const float KNEE = 0.50;
+    const float KNEE_CURVE = 6.0;
     float peak = max(col.r, max(col.g, col.b));
-    if (peak > 0.72) {
-        float over = peak - 0.72;
-        float comp = 0.72 + over / (1.0 + over * 2.2);
+    if (peak > KNEE) {
+        float over = peak - KNEE;
+        float comp = KNEE + over / (1.0 + over * KNEE_CURVE);
         float slide = clamp(over * 1.4, 0.0, 0.75);
         col = mix(col * (comp / peak), vec3(0.78, 0.56, 1.00) * comp, slide);
     }
