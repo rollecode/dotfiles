@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Nightly Steam shader precompile, run by the steam-shader-night timers.
+#   start - launch Steam in the background so it processes queued Vulkan shaders
+#   stop  - shut Steam down again, only if 'start' launched it
+
+set -euo pipefail
+
+STEAM_DEV_CFG="$HOME/.local/share/Steam/steam_dev.cfg"
+MARKER="${XDG_RUNTIME_DIR:-/tmp}/steam-shader-night"
+CLIENT_UNIT="steam-shader-night-client.service"
+# Steam replays with 3 processes by default; leave 2 of the 12 threads free.
+REPLAY_THREADS=10
+SHUTDOWN_WAIT_S=120
+
+start() {
+    if pgrep -x steam >/dev/null; then
+        echo "Steam already running, leaving it alone."
+        return 0
+    fi
+    if pgrep -x wineserver >/dev/null; then
+        echo "A Wine game is running, skipping tonight."
+        return 0
+    fi
+
+    printf 'unShaderBackgroundProcessingThreads %s\n' "$REPLAY_THREADS" > "$STEAM_DEV_CFG"
+    touch "$MARKER"
+    systemd-run --user --collect --unit="$CLIENT_UNIT" /usr/bin/steam -silent
+    echo "Steam started for shader processing."
+}
+
+stop() {
+    [ -f "$MARKER" ] || return 0
+    rm -f "$MARKER" "$STEAM_DEV_CFG"
+
+    /usr/bin/steam -shutdown || true
+    for _ in $(seq "$SHUTDOWN_WAIT_S"); do
+        systemctl --user is-active --quiet "$CLIENT_UNIT" || { echo "Steam shut down."; return 0; }
+        sleep 1
+    done
+
+    echo "Steam ignored -shutdown, stopping $CLIENT_UNIT."
+    systemctl --user stop "$CLIENT_UNIT" || true
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    *) echo "Usage: $0 {start|stop}" >&2; exit 2 ;;
+esac

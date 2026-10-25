@@ -1,0 +1,9 @@
+[Unit]
+Description=Start Steam at night to precompile shaders
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Unit=steam-shader-night@start.service
+
+[Install]
+WantedBy=timers.target
