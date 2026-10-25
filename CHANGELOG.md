@@ -1,6 +1,7 @@
 ### 2.75.0: 2026-10-25
 
 * Add nightly Steam shader precompile timers
+* Dim the brightest quantum realm areas
 
 ### 2.74.0: 2026-10-24
 
