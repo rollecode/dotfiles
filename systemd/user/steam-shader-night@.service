@@ -1,0 +1,6 @@
+[Unit]
+Description=Nightly Steam shader precompile (%i)
+
+[Service]
+Type=oneshot
+ExecStart=%h/Projects/dotfiles/bin/steam-shader-night %i

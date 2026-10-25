@@ -1,0 +1,9 @@
+[Unit]
+Description=Stop the nightly shader precompile Steam
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Unit=steam-shader-night@stop.service
+
+[Install]
+WantedBy=timers.target

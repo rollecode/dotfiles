@@ -518,7 +518,7 @@ setup_systemd_user_services() {
     mkdir -p "$target_dir"
 
     local need_reload=0
-    for unit in "$src_dir"/*.service "$src_dir"/*.path; do
+    for unit in "$src_dir"/*.service "$src_dir"/*.path "$src_dir"/*.timer; do
         [ -f "$unit" ] || continue
         local name=$(basename "$unit")
         local target="$target_dir/$name"
