@@ -1,3 +1,7 @@
+### 2.75.1: 2026-10-26
+
+* Fix nightly shader run doing nothing
+
 ### 2.75.0: 2026-10-25
 
 * Add nightly Steam shader precompile timers
