@@ -1,51 +1,167 @@
 #!/usr/bin/env bash
 # Nightly Steam shader precompile, run by the steam-shader-night timers.
-#   start - launch Steam in the background so it processes queued Vulkan shaders,
-#           with steam_dev.cfg giving it more replay workers for the night only
-#   stop  - shut Steam down again, only if 'start' launched it
+#   start - start Steam briefly so it logs in and downloads new shader data,
+#           then replay each game's shader databases ourselves until stop
+#   stop  - end the replay and shut Steam down, only if 'start' launched them
+#
+# Steam alone does not do this: a replay cut short (game launch, Steam closed)
+# is marked completed and never resumed (26.10.2026). Fossilize's replayer
+# cache lets our own replay pick up where any earlier one stopped.
 
 set -euo pipefail
 
-STEAM_DEV_CFG="$HOME/.local/share/Steam/steam_dev.cfg"
+STEAM="$HOME/.local/share/Steam"
+FOSSILIZE="$STEAM/ubuntu12_64/fossilize_replay"
+SHADER_LOG="$STEAM/logs/shader_log.txt"
+CONNECTION_LOG="$STEAM/logs/connection_log.txt"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/steam-shader-night"
+# Read by the dms-shader-progress widget, in Steam's own log format.
+PROGRESS_LOG="$STATE_DIR/shader_log.txt"
 MARKER="${XDG_RUNTIME_DIR:-/tmp}/steam-shader-night"
 CLIENT_UNIT="steam-shader-night-client.service"
-# Steam replays with 3 processes by default. 12 is for the night only: at nice 19
-# they still made the daytime desktop sluggish (load 29 on 25.10.2026).
+REPLAY_UNIT="steam-shader-night-replay.service"
+# 12 is for the night only: at nice 19 they still made the daytime desktop
+# sluggish (load 29 on 25.10.2026).
 REPLAY_THREADS=12
+LOGON_WAIT_S=300
+# Time for Steam to fetch new shader data after logging in.
+DOWNLOAD_WAIT_S=300
 SHUTDOWN_WAIT_S=120
+PROGRESS_EVERY_S=10
+
+log_line() {
+  printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "$PROGRESS_LOG"
+}
+
+user_is_gaming() {
+  pgrep -x wineserver >/dev/null || pgrep -x steam >/dev/null
+}
+
+steam_shutdown() {
+  systemctl --user is-active --quiet "$CLIENT_UNIT" || return 0
+  /usr/bin/steam -shutdown || true
+  for _ in $(seq "$SHUTDOWN_WAIT_S"); do
+    systemctl --user is-active --quiet "$CLIENT_UNIT" || return 0
+    sleep 1
+  done
+  echo "Steam ignored -shutdown, stopping $CLIENT_UNIT."
+  systemctl --user stop "$CLIENT_UNIT" || true
+}
+
+# Steam's UI needs a display to log in; with the monitor off there is none,
+# so Steam runs on Xvfb. The NVIDIA driver also files its cache under a
+# different folder without an X display, so every replay gets one too.
+steam_warmup() {
+  local since
+  since=$(date '+%Y-%m-%d %H:%M:%S')
+  systemd-run --user --collect --unit="$CLIENT_UNIT" -E WAYLAND_DISPLAY= \
+    /usr/bin/xvfb-run -a /usr/bin/steam -silent
+
+  for _ in $(seq "$LOGON_WAIT_S"); do
+    last=$(grep 'RecvMsgClientLogOnResponse() : processing complete' "$CONNECTION_LOG" 2>/dev/null | tail -1 | cut -c2-20)
+    [[ "$last" > "$since" ]] && break
+    sleep 1
+  done
+  sleep "$DOWNLOAD_WAIT_S"
+  steam_shutdown
+}
+
+# Prints "APPID BUCKET..." per game from Steam's latest bucket listing:
+# [..] Found 2 buckets for AppId 2357570 CompatTool: proton_11:
+# [..] SteamSwarm / G7:VulkanPipelinesV6_2e6c105801134e9c
+replay_plan() {
+  cat "$STEAM/logs/shader_log.previous.txt" "$SHADER_LOG" 2>/dev/null |
+    grep -E 'Found [0-9]+ buckets for AppId|SteamSwarm / G7:VulkanPipelinesV6_' |
+    awk '
+      /Found [0-9]+ buckets for AppId/ { app = $0; sub(/^.*AppId /, "", app); sub(/ .*$/, "", app); list[app] = ""; next }
+      app != "" && match($0, /VulkanPipelinesV6_[0-9a-f]+/) { list[app] = list[app] " " substr($0, RSTART + 18, RLENGTH - 18); next }
+      END { for (a in list) if (list[a] != "") print a list[a] }'
+}
+
+app_cache_dir() {
+  awk -F'"' '/"path"/{print $4}' "$STEAM/steamapps/libraryfolders.vdf" |
+    while IFS= read -r lib; do
+      [ -d "$lib/steamapps/shadercache/$1/fozpipelinesv6" ] && echo "$lib/steamapps/shadercache/$1" && break
+    done
+}
+
+# Same arguments and cache settings Steam gives its own replay.
+replay_db() {
+  local app=$1 cache=$2 db=$3 state=$4
+  __GL_SHADER_DISK_CACHE_PATH="$cache/nvidiav1" \
+  __GL_SHADER_DISK_CACHE_APP_NAME=steamapp_shader_cache \
+  __GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME='steam_shader_cache;steamapp_merged_shader_cache' \
+  __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1 \
+  FOSSILIZE_APPLICATION_INFO_FILTER_PATH="$STEAM/fossilize_engine_filters.json" \
+  ENABLE_VK_LAYER_VALVE_steam_fossilize_1= \
+  ENABLE_VK_LAYER_VALVE_steam_overlay_1=0 \
+  WAYLAND_DISPLAY= \
+    /usr/bin/xvfb-run -a nice -n 19 "$FOSSILIZE" "$db" \
+      --master-process --quiet-slave --progress --spirv-val \
+      --num-threads "$REPLAY_THREADS" --device-index 0 --timeout-seconds 10 \
+      --on-disk-validation-whitelist "$state/steam_pipeline_cache_whitelist" \
+      --replayer-cache "$state/replay_cache" \
+      2>&1 >/dev/null </dev/null |
+    while IFS= read -r line; do
+      [[ "$line" =~ Overall\ ([0-9]+)\ /\ ([0-9]+) ]] || continue
+      [ "$SECONDS" -ge "${next_report:-0}" ] || continue
+      next_report=$((SECONDS + PROGRESS_EVERY_S))
+      log_line "Still replaying $app (0%, ${BASH_REMATCH[1]}/${BASH_REMATCH[2]})."
+      if user_is_gaming; then
+        pkill -f "^$FOSSILIZE" || true
+      fi
+    done
+  return "${PIPESTATUS[0]}"
+}
+
+replay_all() {
+  local app buckets cache state bucket db
+  replay_plan | while read -r app buckets; do
+    cache=$(app_cache_dir "$app")
+    [ -n "$cache" ] || continue
+    # Steam keeps the replay state in the newest bucket.
+    state="$cache/fozpipelinesv6/steamapprun_pipeline_cache.${buckets##* }"
+    for bucket in $buckets; do
+      db="$cache/fozpipelinesv6/steamapprun_pipeline_cache.$bucket/steam_pipeline_cache.foz"
+      [ -s "$db" ] || continue
+      if user_is_gaming || ! replay_db "$app" "$cache" "$db" "$state"; then
+        log_line "Destroyed compile job $app."
+        return 0
+      fi
+    done
+    log_line "[ App ID $app ] fossilize_replay completed, remove from build queue."
+  done
+}
+
+run() {
+  mkdir -p "$STATE_DIR"
+  steam_warmup
+  replay_all
+}
 
 start() {
-    if pgrep -x steam >/dev/null; then
-        echo "Steam already running, leaving it alone."
-        return 0
-    fi
-    if pgrep -x wineserver >/dev/null; then
-        echo "A Wine game is running, skipping tonight."
-        return 0
-    fi
+  if user_is_gaming; then
+    echo "Steam or a Wine game is running, skipping tonight."
+    return 0
+  fi
 
-    printf 'unShaderBackgroundProcessingThreads %s\n' "$REPLAY_THREADS" > "$STEAM_DEV_CFG"
-    touch "$MARKER"
-    systemd-run --user --collect --unit="$CLIENT_UNIT" /usr/bin/steam -silent
-    echo "Steam started for shader processing."
+  touch "$MARKER"
+  systemd-run --user --collect --unit="$REPLAY_UNIT" "$0" run
+  echo "Shader replay started."
 }
 
 stop() {
-    [ -f "$MARKER" ] || return 0
-    rm -f "$MARKER" "$STEAM_DEV_CFG"
-
-    /usr/bin/steam -shutdown || true
-    for _ in $(seq "$SHUTDOWN_WAIT_S"); do
-        systemctl --user is-active --quiet "$CLIENT_UNIT" || { echo "Steam shut down."; return 0; }
-        sleep 1
-    done
-
-    echo "Steam ignored -shutdown, stopping $CLIENT_UNIT."
-    systemctl --user stop "$CLIENT_UNIT" || true
+  [ -f "$MARKER" ] || return 0
+  rm -f "$MARKER"
+  systemctl --user stop "$REPLAY_UNIT" 2>/dev/null || true
+  steam_shutdown
+  echo "Shader replay stopped."
 }
 
 case "${1:-}" in
-    start) start ;;
-    stop) stop ;;
-    *) echo "Usage: $0 {start|stop}" >&2; exit 2 ;;
+  start) start ;;
+  stop) stop ;;
+  run) run ;;
+  plan) replay_plan ;;
+  *) echo "Usage: $0 {start|stop|run|plan}" >&2; exit 2 ;;
 esac
