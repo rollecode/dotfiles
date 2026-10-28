@@ -19,6 +19,17 @@
             "statusMessage": "Checking for destructive commands"
           }
         ]
+      },
+      {
+        "matcher": "mcp__cronometer__add_custom_food|mcp__cronometer__update_custom_food|mcp__cronometer__create_recipe|mcp__cronometer__update_recipe",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/cronometer-aakkoset-hook.py",
+            "timeout": 10,
+            "statusMessage": "Tarkistetaan ääkköset"
+          }
+        ]
       }
     ],
     "PostToolUse": [
