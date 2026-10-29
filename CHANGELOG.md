@@ -2,6 +2,7 @@
 
 * Add hook blocking Cronometer text without ä/ö
 * Fix slow Brave rendering path
+* Add nebula and void regions to quantum realm
 
 ### 2.75.1: 2026-10-26
 
