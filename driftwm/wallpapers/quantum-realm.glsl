@@ -65,6 +65,12 @@ float fbm2(vec2 p) {
     return v;
 }
 
+// Spawn decisions must read this per cell, never per pixel: a per-pixel
+// threshold cuts glows off along straight seams.
+float regionAt(vec2 macro) {
+    return smoothstep(0.22, 0.78, noise(macro + vec2(17.3, 4.1)));
+}
+
 float ridge(vec2 p) {
     float v = 0.0;
     float a = 0.5;
@@ -134,9 +140,18 @@ void main() {
         }
     }
 
+    // Galaxy-scale regions, so far zoom-out shows dense nebulae and empty
+    // voids instead of an even field. They steer fog strength, hue and how
+    // often cores and pockets spawn, and shrink cores and pockets at random.
+    const float MACRO = 22000.0;
+    vec2 macro = (screenPx + u_camera * 0.45) / MACRO;
+    float region = regionAt(macro);
+
     // Colored fog body: hue regions migrate slowly.
     float hueF = noise((screenPx + u_camera * 0.45) / 2600.0 + vec2(3.7, 8.1) + t * 0.006);
-    col += palette(hueF) * pow(max(f2, 0.0), 2.3) * 0.95;
+    // Dense nebulae lean pink, voids deep blue.
+    hueF = clamp(hueF * 0.55 + region * 0.60 - 0.05, 0.0, 1.0);
+    col += palette(hueF) * pow(max(f2, 0.0), 2.3) * 0.95 * (0.55 + 0.60 * region);
     col += vec3(0.22, 0.26, 0.48) * pow(max(f1, 0.0), 2.8) * 0.30;
 
     // Radiant cores: luminous nebula hearts in white-pink, blue-white,
@@ -146,15 +161,19 @@ void main() {
     for (int ry = 0; ry <= 1; ry++) {
         for (int rx = 0; rx <= 1; rx++) {
             vec2 rcp = rcell + vec2(float(rx), float(ry));
-            if (hash(rcp + 201.7) > 0.62) {
+            float rsp = hash(rcp + 201.7);
+            if (rsp > 0.42 && rsp > 0.93 - 0.50 * regionAt((rcp + 0.5) * 3000.0 / MACRO)) {
                 vec2 rpos = rcp + 0.25 + 0.5 * vec2(hash(rcp + 207.1), hash(rcp + 211.9));
                 float rd = length(rc - rpos);
+                // Shrink only: a bigger halo would outgrow the 2x2 window.
+                float rsz = 0.40 + 0.60 * hash(rcp + 233.9);
+                float rds = rd / rsz;
                 float amp = 0.7 + 0.6 * hash(rcp + 219.1);
-                float core = exp(-rd * rd * 26.0) * amp;
+                float core = exp(-rds * rds * 26.0) * amp;
                 // Fade to zero before the 2x2 scan window can drop the cell
                 // (worst case 0.75 cells), else the cutoff draws a straight
                 // seam across the halo.
-                float halo = exp(-rd * rd * 5.0) * amp * (1.0 - smoothstep(0.52, 0.72, rd));
+                float halo = exp(-rds * rds * 5.0) * amp * (1.0 - smoothstep(0.52, 0.72, rd));
                 float ch = hash(rcp + 223.3);
                 vec3 coreCol =
                     ch < 0.40 ? vec3(0.82, 0.58, 0.92) :
@@ -349,11 +368,12 @@ void main() {
         for (int cx = 0; cx <= 1; cx++) {
             vec2 c = cell + vec2(float(cx), float(cy));
             float h = hash(c);
-            if (h > 0.58) {
+            if (h > 0.45 && h > 0.90 - 0.45 * regionAt((c + 0.5) * 3200.0 / MACRO)) {
                 vec2 centre = c + 0.25 + 0.5 * vec2(hash(c + 7.7), hash(c + 13.1));
                 float d = length(pc - centre);
+                float ds = d / (0.45 + 0.55 * hash(c + 61.3));
                 // Same 2x2 window guard as the cores: fade out before drop.
-                float glow = exp(-d * d * 6.0) * (1.0 - smoothstep(0.52, 0.72, d));
+                float glow = exp(-ds * ds * 6.0) * (1.0 - smoothstep(0.52, 0.72, d));
                 float hue = hash(c + 29.3);
                 vec3 pcol =
                     hue < 0.26 ? vec3(0.30, 0.14, 0.58) :
