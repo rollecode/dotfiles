@@ -1,6 +1,7 @@
 ### 2.76.0: 2026-10-29
 
 * Add hook blocking Cronometer text without ä/ö
+* Fix slow Brave rendering path
 
 ### 2.75.1: 2026-10-26
 
