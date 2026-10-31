@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Netflix no AV1",
+  "version": "1.0.0",
+  "description": "Hide AV1 support from Netflix so it serves H.264/VP9",
+  "content_scripts": [
+    {
+      "matches": ["https://www.netflix.com/*"],
+      "js": ["no-av1.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ]
+}

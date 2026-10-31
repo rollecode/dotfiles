@@ -1,6 +1,7 @@
 ### 2.77.0: 2026-10-31
 
 * Add Brave Origin stable flags
+* Add Netflix AV1 blocker extension
 
 ### 2.76.0: 2026-10-29
 
