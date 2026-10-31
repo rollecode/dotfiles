@@ -1,3 +1,7 @@
+### 2.77.0: 2026-10-31
+
+* Add Brave Origin stable flags
+
 ### 2.76.0: 2026-10-29
 
 * Add hook blocking Cronometer text without ä/ö
