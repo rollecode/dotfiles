@@ -4,6 +4,7 @@
 * Sync driftwm and herdr configs from live
 * Host README image in the repo
 * Fix thin hyprlock clock after hyprgraphics 0.6.0
+* Dim quantum realm glow flashes
 
 ### 2.77.0: 2026-10-31
 

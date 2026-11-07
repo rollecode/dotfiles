@@ -127,14 +127,16 @@ void main() {
     for (int ly = -1; ly <= 1; ly++) {
         for (int lx = -1; lx <= 1; lx++) {
             vec2 lcp = lcell + vec2(float(lx), float(ly));
-            if (hash(lcp + 61.7) > 0.40) {
-                float period = 12.0 + 18.0 * hash(lcp + 71.3);
+            // Slow swell, long fade and a low peak: a distant glow, not a flash.
+            if (hash(lcp + 61.7) > 0.55) {
+                float period = 24.0 + 30.0 * hash(lcp + 71.3);
                 float lt = mod(t + hash(lcp + 83.9) * period, period);
-                if (lt < 2.6) {
-                    float env = pow(max(0.0, 1.0 - lt / 2.6), 2.0) * (lt < 0.25 ? lt / 0.25 : 1.0);
+                if (lt < 6.0) {
+                    float rise = smoothstep(0.0, 1.8, lt);
+                    float env = rise * pow(max(0.0, 1.0 - lt / 6.0), 2.0);
                     vec2 lpos = lcp + 0.2 + 0.6 * vec2(hash(lcp + 91.1), hash(lcp + 97.7));
                     float ld = length(lc - lpos);
-                    col += vec3(0.50, 0.55, 0.90) * exp(-ld * ld * 4.0) * env * pow(max(f1, 0.0), 1.5) * 0.75;
+                    col += vec3(0.50, 0.55, 0.90) * exp(-ld * ld * 4.0) * env * pow(max(f1, 0.0), 1.5) * 0.28;
                 }
             }
         }
