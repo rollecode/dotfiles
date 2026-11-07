@@ -437,6 +437,10 @@ void main() {
         col = mix(col * (comp / peak), vec3(0.78, 0.56, 1.00) * comp, slide);
     }
 
+    // Lift only the darkest spots to deep navy, mids and highlights untouched.
+    float dim = max(col.r, max(col.g, col.b));
+    col += vec3(0.040, 0.034, 0.085) * (1.0 - smoothstep(0.02, 0.20, dim));
+
     // Anti-banding dither.
     col += (hash(screenPx * 0.7231) - 0.5) * 0.008;
 
