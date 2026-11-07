@@ -354,8 +354,9 @@ void main() {
                     float rim3 = smoothstep(0.14 * wob, 0.30 * wob, ad2) * body2;
                     col = mix(col, BASE * 0.6, body2 * 0.85);
                     col += vec3(0.30, 0.22, 0.55) * rim3 * 0.35;
-                    float flick = pow(max(sin(t * 0.7 + aph * 3.0), 0.0), 8.0);
-                    col += vec3(0.20, 0.55, 0.30) * rim3 * flick * 0.4;
+                    // Slow faint green breath; a sharp flicker flashes the whole screen.
+                    float flick = 0.5 + 0.5 * sin(t * 0.18 + aph * 3.0);
+                    col += vec3(0.20, 0.55, 0.30) * rim3 * flick * 0.06;
                     darkMask = max(darkMask, body2);
                 }
             }
