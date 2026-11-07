@@ -250,3 +250,7 @@ bottom_right = "cycle-windows forward"
 app_id = "steam_app_*"
 pass_mouse = true
 pass_keys = ["ctrl+space"]
+
+# No placeholder boxes for last session's windows after login (on by default since 0.21).
+[session]
+restore_windows = false
