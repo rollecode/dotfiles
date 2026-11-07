@@ -108,10 +108,19 @@ void main() {
     vec2 screenPx = v_coords * size;
     float t = u_time;
 
+    // Zoomed far out, the 1400 px fog repeats as an even fine texture. Fade it
+    // into a much wider plane and drop the small detail, so the realm reads as
+    // open space. Both planes are fixed in canvas space, so zooming only blends.
+    float far = 1.0 - smoothstep(0.06, 0.35, u_zoom);
     float f1 = stratumLite(screenPx, 0.25, 1.0 / 4200.0, vec2( 0.020, 0.009), t);
-    float f2 = stratum(screenPx, 0.55, 1.0 / 1400.0, vec2(-0.014, 0.016), t);
+    float f2 = 0.0;
+    if (far < 1.0)
+        f2 = stratum(screenPx, 0.55, 1.0 / 1400.0, vec2(-0.014, 0.016), t);
+    if (far > 0.0)
+        f2 = mix(f2, stratumLite(screenPx, 0.55, 1.0 / 11000.0, vec2(-0.014, 0.016), t), far);
     float f3 = fbm((screenPx + u_camera) / 450.0 + vec2(0.009, -0.022) * t);
     float fog = f2;
+    float near = 1.0 - far;
 
     // Coverage doubles as output alpha: where fog is thin, the layer-shell
     // starmap wallpaper beneath shows through.
@@ -194,8 +203,8 @@ void main() {
                     ch < 0.92 ? vec3(0.55, 0.35, 0.90) :
                                 vec3(0.18, 0.55, 0.60);
                 float breathe = 0.9 + 0.1 * sin(t * 0.22 + hash(rcp + 229.7) * 6.2831);
-                col += coreCol * core * 0.95 * breathe * (0.55 + 0.45 * pow(max(f2, 0.0), 1.1));
-                col += haloCol * halo * 0.60 * breathe * (0.40 + 0.60 * pow(max(f2, 0.0), 1.3));
+                col += coreCol * core * 0.95 * (0.35 + 0.65 * near) * breathe * (0.55 + 0.45 * pow(max(f2, 0.0), 1.1));
+                col += haloCol * halo * 0.60 * (0.35 + 0.65 * near) * breathe * (0.40 + 0.60 * pow(max(f2, 0.0), 1.3));
             }
         }
     }
@@ -398,17 +407,17 @@ void main() {
             }
         }
     }
-    col += tint * (0.30 + 0.70 * pow(max(fog, 0.0), 1.8)) * 1.25;
+    col += tint * (0.30 + 0.70 * pow(max(fog, 0.0), 1.8)) * 1.25 * (0.30 + 0.70 * near);
 
     // Energy filaments: thin luminous veins inside the mid fog. Kept sparse
     // and faint: dense bright veins read as snakes at far zoom-out.
     vec2 fp = (screenPx + u_camera * 0.5) / 900.0 + vec2(t * 0.009, -t * 0.006);
     float fil = pow(ridge(fp * 2.2), 9.0);
-    col += vec3(0.36, 0.42, 0.85) * fil * pow(max(f2, 0.0), 1.4) * 0.55;
+    col += vec3(0.36, 0.42, 0.85) * fil * pow(max(f2, 0.0), 1.4) * 0.55 * near;
 
 
     // Sparse near wisps, thin veil only.
-    float wisp = pow(max(f3, 0.0), 6.0);
+    float wisp = pow(max(f3, 0.0), 6.0) * near;
     float veil = wisp > 0.35 ? 0.35 : wisp;
     col = col * (1.0 - veil * 0.30) + vec3(0.62, 0.55, 0.85) * veil * 0.22;
 

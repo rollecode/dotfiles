@@ -7,6 +7,7 @@
 * Dim quantum realm glow flashes
 * Add automatic GitHub releases
 * Cluster quantum realm cores and fog lanes
+* Smooth quantum realm when zoomed far out
 * Hide the title bar on Lobby
 
 ### 2.77.0: 2026-10-31
