@@ -153,7 +153,10 @@ void main() {
     float hueF = noise((screenPx + u_camera * 0.45) / 2600.0 + vec2(3.7, 8.1) + t * 0.006);
     // Dense nebulae lean pink, voids deep blue.
     hueF = clamp(hueF * 0.55 + region * 0.60 - 0.05, 0.0, 1.0);
-    col += palette(hueF) * pow(max(f2, 0.0), 2.3) * 0.95 * (0.55 + 0.60 * region);
+    // Broad dark lanes from the far plane, so the mid fog stops reading as
+    // one even texture when zoomed out.
+    float lanes = 0.55 + 0.70 * smoothstep(0.30, 0.72, f1);
+    col += palette(hueF) * pow(max(f2, 0.0), 2.3) * 0.95 * (0.55 + 0.60 * region) * lanes;
     col += vec3(0.22, 0.26, 0.48) * pow(max(f1, 0.0), 2.8) * 0.30;
 
     // Radiant cores: luminous nebula hearts in white-pink, blue-white,
@@ -164,13 +167,16 @@ void main() {
         for (int rx = 0; rx <= 1; rx++) {
             vec2 rcp = rcell + vec2(float(rx), float(ry));
             float rsp = hash(rcp + 201.7);
-            if (rsp > 0.42 && rsp > 0.93 - 0.50 * regionAt((rcp + 0.5) * 3000.0 / MACRO)) {
+            // Cores gather in clusters with empty stretches between them.
+            float rclump = smoothstep(0.30, 0.80, noise((rcp + 0.5) / 4.0 + 91.3));
+            float rdens = regionAt((rcp + 0.5) * 3000.0 / MACRO) * mix(0.45, 1.40, rclump);
+            if (rsp > 0.42 && rsp > 0.93 - 0.50 * rdens) {
                 vec2 rpos = rcp + 0.25 + 0.5 * vec2(hash(rcp + 207.1), hash(rcp + 211.9));
                 float rd = length(rc - rpos);
                 // Shrink only: a bigger halo would outgrow the 2x2 window.
                 float rsz = 0.40 + 0.60 * hash(rcp + 233.9);
                 float rds = rd / rsz;
-                float amp = 0.7 + 0.6 * hash(rcp + 219.1);
+                float amp = (0.35 + 0.95 * pow(hash(rcp + 219.1), 2.0)) * (0.50 + 0.65 * rclump);
                 float core = exp(-rds * rds * 26.0) * amp;
                 // Fade to zero before the 2x2 scan window can drop the cell
                 // (worst case 0.75 cells), else the cutoff draws a straight
@@ -371,7 +377,9 @@ void main() {
         for (int cx = 0; cx <= 1; cx++) {
             vec2 c = cell + vec2(float(cx), float(cy));
             float h = hash(c);
-            if (h > 0.45 && h > 0.90 - 0.45 * regionAt((c + 0.5) * 3200.0 / MACRO)) {
+            float pclump = smoothstep(0.30, 0.80, noise((c + 0.5) / 4.0 + 47.9));
+            float pdens = regionAt((c + 0.5) * 3200.0 / MACRO) * mix(0.45, 1.40, pclump);
+            if (h > 0.45 && h > 0.90 - 0.45 * pdens) {
                 vec2 centre = c + 0.25 + 0.5 * vec2(hash(c + 7.7), hash(c + 13.1));
                 float d = length(pc - centre);
                 float ds = d / (0.45 + 0.55 * hash(c + 61.3));
