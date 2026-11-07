@@ -8,23 +8,23 @@ focus_follows_mouse = true
 
 # DMS is the shell. Stop any leftover dms.service from a previous Hyprland
 # session first (it survives logout by design), then own a fresh instance.
-# Halloy (our fork build) starts after DMS; its window rule below pins it to the screen.
+# Halloy stays installed and keeps its rules below, but is launched by hand now.
 # reset-failed clears a start-rate-limited unit from the logout crash;
 # restart (not start) tears down a stuck activation instead of joining it;
 # --no-block so nothing can delay the rest of autostart.
 autostart = [
   "systemctl --user reset-failed xwayland-satellite.service dms-driftwm.service; systemctl --user restart --no-block xwayland-satellite.service dms-driftwm.service",
+  # Connects PAM's --login daemon to the session bus; without it that daemon
+  # dies with the login password and every login asks for a new keyring.
+  "gnome-keyring-daemon --start --components=secrets,pkcs11",
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
-  "sleep 6; exec /home/rolle/Projects/halloy/target/release/halloy",
-  # Comms neighborhood: Signal, Ayugram, Discord spawn one screen left of
-  # home (window rules below place them side by side). Staggered so the
-  # login isn't a thundering herd; final step parks the camera back home
-  # since new windows navigate the camera to themselves.
-  "sleep 9; exec signal-desktop",
-  "sleep 11; exec /usr/bin/AyuGram",
-  "sleep 13; exec /home/rolle/Projects/dotfiles/driftwm/discord-launch.sh",
-  "sleep 15; exec steam",
+  # Signal and Discord start hidden in the tray. Staggered so the login isn't
+  # a thundering herd; the last step parks the camera back home.
+  "sleep 9; exec signal-desktop --start-in-tray",
+  "sleep 13; exec /home/rolle/Projects/dotfiles/driftwm/discord-launch.sh --start-minimized",
+  # The wrapper, not /opt directly: it sets the LD_PRELOAD sqlcipher needs.
+  "sleep 14; exec /usr/bin/element-desktop-nightly",
   "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
 ]
 
@@ -55,6 +55,10 @@ accel_speed = 0.0
 # ("even more floaty"). The KMS hardware cursor is the responsive one here.
 [backend]
 disable_hardware_cursor = false
+# Test 23.8.2026: direct scanout allocates via NVKMS, the exact call that threw
+# 1096 "Failed to allocate NVKMS memory" errors before the wedge. Revert if it
+# does not stop the freezes; the cost is more GPU work for fullscreen windows.
+disable_direct_scanout = true
 
 [snap]
 gap = 42
@@ -108,6 +112,16 @@ animate_fps = 30
 animate_paused = false
 
 [keybindings]
+# Coucou: no GlobalShortcuts portal on driftwm, so its shortcuts are bound here
+"alt+shift+space" = "spawn /usr/bin/coucou --shortcut openChat"
+"alt+shift+n" = "spawn /usr/bin/coucou --shortcut toggleIsland"
+"ctrl+alt+a" = "spawn /usr/bin/coucou --shortcut goToAlert"
+"ctrl+alt+t" = "spawn /usr/bin/coucou --shortcut jumpToTerminal"
+"ctrl+alt+right" = "spawn /usr/bin/coucou --shortcut nextPill"
+"ctrl+alt+left" = "spawn /usr/bin/coucou --shortcut prevPill"
+"ctrl+alt+s" = "spawn /usr/bin/coucou --shortcut muteToggle"
+"ctrl+alt+d" = "spawn /usr/bin/coucou --shortcut desktopToggle"
+"ctrl+alt+g" = "spawn /usr/bin/coucou --shortcut wardrobeToggle"
 # Core binds (override driftwm defaults where they collide).
 "mod+q" = "exec foot"                                      # default was close-window
 "mod+c" = "close-window"                                   # default was center-window
@@ -130,9 +144,6 @@ animate_paused = false
 "ctrl+Print" = "spawn driftwm msg screenshot window -o - | wl-copy"
 # GIF recording like on Hyprland (wf-recorder based).
 "alt+Print" = "spawn /home/rolle/.local/bin/gifcap"
-# LOCAL-ONLY sensitive paste bind. Lives ONLY in ~/.config (untracked); never
-# copy this line into ~/Projects/dotfiles/driftwm/config.toml. The dotfiles
-# pre-commit hook rejects it as a backstop.
 
 [mouse.on-window]
 # Hyprland muscle memory: Super+LeftDrag moves the window under the cursor
@@ -182,14 +193,23 @@ size = [722, 853]
 
 [[window_rules]]
 app_id = "discord"
-position = [-2440, 0]
-size = [1362, 885]
+position = [-2554, 2]
+size = [1589, 1102]
 
-# Steam at boot, parked in the old nvtop slot under the Discord neighbourhood.
+# Element sits below the comms row rather than in it: too tall to share the
+# baseline. Frozen from the live window 15.8.2026.
+[[window_rules]]
+app_id = "element-nightly"
+position = [-3748, -1084]
+size = [1717, 1198]
+
+# Steam joins the comms row, immediately right of Discord with the same 42 px
+# gap. Size frozen from the live window 1.8.2026 (Rolle-approved). Discord's
+# rule spans x -3121..-1759, so Steam's left edge lands at -1717.
 [[window_rules]]
 app_id = "steam"
-position = [-3653, -913]
-size = [902, 822]
+position = [-957, 0]
+size = [1520, 1102]
 
 # foot: barless frosted glass. decoration "minimal" = no title strip, just
 # shadowless rounded glass (Super+C closes, Super+drag moves). driftwm
@@ -207,6 +227,14 @@ opacity = 0.80
 [[outputs]]
 name = "DP-1"
 mode = "3440x1440@144"
+
+# Hot corners are per-output since driftwm 0.16 (upstream #181). This sub-table
+# must sit immediately after its [[outputs]] entry: TOML binds it to the most
+# recent table header, so any [[window_rules]] in between would steal it.
+[outputs.hot_corners]
+top_right = "zoom-to-fit"
+bottom_left = "spawn dms ipc call spotlight toggle"
+bottom_right = "cycle-windows forward"
 # VRR only while a fullscreen window owns the screen (feat/vrr build).
 # SHELVED 16.7.2026: the G34w-10 panel flickers whenever FreeSync is armed
 # in its OSD, even at fixed 144 Hz — keep FreeSync OFF on this monitor and
@@ -237,12 +265,13 @@ decoration = "minimal"
 [[window_rules]]
 app_id = "halloy"
 decoration = "minimal"
-[hot_corners]
-# Compositor-side: overlays cannot occlude the trigger (the DMS plugin could
-# not close the launcher because its own overlay ate the corner's events).
-top_right = "zoom-to-fit"
-bottom_left = "spawn dms ipc call spotlight toggle"
-bottom_right = "cycle-windows forward"
+
+# Beeper: pinned to the screen like Halloy, geometry from the live window 25.10.2026.
+[[window_rules]]
+app_id = "Beeper"
+pinned_to_screen = true
+position = [1537, 67]
+size = [364, 997]
 
 # Games: compositor mouse bindings (alt+drag pan, mod+drag) and the ctrl+space
 # launcher go to the game instead of driftwm.

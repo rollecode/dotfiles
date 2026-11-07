@@ -56,7 +56,7 @@ check_marker() {
 check_marker "occluded_by_lower" "src/render/blur.rs" "blur-overlap-fix(#219)"
 check_marker "animate_paused" "src/config/toml.rs" "animate_paused"
 check_marker "let nested" "src/main.rs" "nested-env-gate"
-check_marker "check_hot_corners" "src/state/mod.rs" "hot-corners"
+check_marker "hot_corner_latch" "src/state/mod.rs" "hot-corners(upstream 0.16)"
 if [ -n "$MISSING" ]; then
   echo "REFUSING TO INSTALL: built source is missing local patches:$MISSING" >&2
   echo "A rebase likely dropped them. The existing $TARGET is untouched." >&2

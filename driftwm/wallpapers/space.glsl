@@ -1,16 +1,10 @@
-// Endless nebula: ultra-realistic living space for driftwm. v2, 3.7.2026.
-//
-// Nebula-forward rewrite: a vast domain-warped emission nebula with bright
-// filaments and DARK dust lanes is the subject; over it a power-law starfield
-// (thousands of faint pinpricks, a rare bright star with diffraction spikes),
-// spiral-hinted galaxies, and occasional supernovae. Everything is anchored
-// to canvas coordinates: endless in every direction, no tiles, no repeats.
-// Realism rules applied: star brightness follows a heavy-tail distribution,
-// bright stars barely twinkle while dim ones shimmer, color is restrained,
-// dark extinction dust breaks up the glow, exposure tonemap + dither kill
-// banding on the dark end.
-//
-// driftwm contract (docs/shaders.md): GLSL ES 1.0, no #version line.
+// Endless nebula: living space for driftwm. v3, 3.7.2026.
+// Rewritten after LOOKING at v2 on screen: stars are now pinpoint gaussian
+// PSFs sized in pixels (not fuzzy cell-fraction blobs), the field is dense
+// with a heavy-tail brightness distribution, the nebula wavelength fits the
+// screen so warped filaments and dark dust lanes actually read, and the sky
+// is patchy: most of it near-black, glow lives in regions. Canvas-anchored:
+// endless, no tiles. GLSL ES 1.0 (driftwm docs/shaders.md contract).
 
 precision highp float;
 
@@ -19,15 +13,13 @@ uniform vec2 size;
 uniform vec2 u_camera;
 uniform float u_time;
 
-// Tunables
-const float EXPOSURE     = 1.35;
-const float NEBULA_GAIN  = 0.55;   // overall nebula strength
-const float DUST_GAIN    = 0.75;   // dark lane extinction strength
-const float STAR_GAIN    = 1.0;
-const float NOVA_PERIOD  = 97.0;
-const vec3 NEB_VIOLET    = vec3(0.30, 0.16, 0.46);  // Rolle purple, deepened
-const vec3 NEB_BLUE      = vec3(0.07, 0.19, 0.40);
-const vec3 NEB_MAGENTA   = vec3(0.46, 0.20, 0.42);
+const float EXPOSURE    = 1.30;
+const float NEBULA_GAIN = 1.15;
+const float DUST_GAIN   = 0.85;
+const float NOVA_PERIOD = 97.0;
+const vec3 NEB_VIOLET   = vec3(0.34, 0.17, 0.52);
+const vec3 NEB_BLUE     = vec3(0.08, 0.20, 0.44);
+const vec3 NEB_MAGENTA  = vec3(0.52, 0.22, 0.46);
 
 float hash(vec2 p) {
     p = fract(p * vec2(443.897, 441.423));
@@ -62,7 +54,6 @@ float fbm(vec2 p) {
     return v;
 }
 
-// Sharp bright strands at noise contour lines (filaments, dust ridges).
 float ridge(vec2 p) {
     float v = 0.0;
     float a = 0.5;
@@ -77,33 +68,8 @@ float ridge(vec2 p) {
     return v;
 }
 
-// Domain-warped nebula body: emission glow, bright filaments, dark dust.
-vec3 nebula(vec2 screenPx, float par, float scale, float gain, float t) {
-    vec2 p = (screenPx + u_camera * par) * scale;
-
-    vec2 q = vec2(fbm(p + vec2(0.0, 0.0)),
-                  fbm(p + vec2(5.2, 1.3)));
-    vec2 r = vec2(fbm(p + 3.6 * q + vec2(1.7, 9.2) + t * 0.010),
-                  fbm(p + 3.6 * q + vec2(8.3, 2.8) - t * 0.007));
-    float f = fbm(p + 3.0 * r);
-
-    // Emission body: violet core regions bleeding into cold blue.
-    float body = pow(max(f, 0.0), 2.3);
-    vec3 col = mix(NEB_BLUE, NEB_VIOLET, smoothstep(0.35, 0.75, f)) * body;
-
-    // Bright filament strands inside the body only.
-    float fil = ridge(p * 2.1 + 2.4 * r);
-    col += NEB_MAGENTA * pow(fil, 3.0) * body * 1.4;
-
-    // Dark dust lanes: multiplicative extinction eating into the glow.
-    float dust = pow(ridge(p * 3.2 + 1.7 * q), 3.0);
-    col *= 1.0 - dust * DUST_GAIN;
-
-    return col * gain;
-}
-
-// One star layer. Power-law magnitudes: most stars are barely-there points,
-// brightness gates size, spikes appear only on the very brightest.
+// Star layer: gaussian point-spread cores measured in PIXELS. Dense faint
+// field, rare bright suns, independent twinkle per star.
 vec3 starLayer(vec2 screenPx, float cellPx, float par, float gain, bool spikes) {
     vec2 canvas = screenPx + u_camera * par;
     vec2 id = floor(canvas / cellPx);
@@ -112,37 +78,36 @@ vec3 starLayer(vec2 screenPx, float cellPx, float par, float gain, bool spikes) 
         for (int x = -1; x <= 1; x++) {
             vec2 cell = id + vec2(float(x), float(y));
             float h = hash(cell);
-            if (h > 0.55) {
+            if (h > 0.30) {
                 vec2 jitter = hash2(cell + 3.7);
-                float mag   = pow(hash(cell + 57.3), 7.0);   // heavy tail
-                if (mag < 0.002) continue;
+                float mag = 0.05 + pow(hash(cell + 57.3), 9.0) * 2.4;  // heavy tail
                 float hueT  = hash(cell + 11.1);
                 float phase = hash(cell + 23.9) * 6.2831853;
                 float freq  = 0.3 + hash(cell + 41.7) * 1.5;
 
-                vec2 starPos = (cell + 0.1 + jitter * 0.8) * cellPx;
+                vec2 starPos = (cell + 0.08 + jitter * 0.84) * cellPx;
                 vec2 dp = canvas - starPos;
-                float d = length(dp) / cellPx;
+                float dpx = length(dp);          // distance in canvas pixels
 
-                // Dim stars scintillate, bright stars hold steady.
-                float twAmp = mix(0.30, 0.06, min(mag * 8.0, 1.0));
+                // Point-spread: tight gaussian core, radius grows only for
+                // genuinely bright stars. Faint stars stay ~1 px.
+                float r = 0.65 + 1.9 * min(mag, 1.0);
+                float core = exp(-(dpx * dpx) / (2.0 * r * r));
+                float glow = exp(-dpx / (7.0 + 26.0 * mag)) * 0.06 * min(mag * 2.0, 1.0);
+
+                float twAmp = mix(0.32, 0.05, min(mag, 1.0));
                 float twinkle = 1.0 - twAmp + twAmp * sin(u_time * freq * 3.0 + phase);
 
-                // Mostly white, faint temperature tint.
-                vec3 starCol = mix(vec3(0.78, 0.86, 1.0), vec3(1.0, 0.92, 0.78), hueT);
+                vec3 starCol = mix(vec3(0.80, 0.87, 1.0), vec3(1.0, 0.93, 0.80), hueT);
 
-                float coreR = 0.015 + 0.10 * mag;
-                float core = smoothstep(coreR, 0.0, d);
-                float halo = smoothstep(coreR * 6.0, 0.0, d) * 0.10 * min(mag * 6.0, 1.0);
-                float s = core + halo;
-
-                if (spikes && mag > 0.35) {
-                    // Diffraction cross on the brightest few.
-                    float ax = abs(dp.x) / cellPx;
-                    float ay = abs(dp.y) / cellPx;
-                    float arm = smoothstep(0.5 * mag, 0.0, ax) * smoothstep(0.012, 0.0, ay)
-                              + smoothstep(0.5 * mag, 0.0, ay) * smoothstep(0.012, 0.0, ax);
-                    s += arm * 0.35 * mag;
+                float s = core + glow;
+                if (spikes && mag > 1.0) {
+                    float ax = abs(dp.x);
+                    float ay = abs(dp.y);
+                    float armLen = 26.0 * mag;
+                    float arm = exp(-ax / armLen) * exp(-(ay * ay) / 1.6)
+                              + exp(-ay / armLen) * exp(-(ax * ax) / 1.6);
+                    s += arm * 0.30;
                 }
 
                 col += starCol * s * mag * twinkle;
@@ -152,17 +117,50 @@ vec3 starLayer(vec2 screenPx, float cellPx, float par, float gain, bool spikes) 
     return col * gain;
 }
 
-// Distant galaxies with a spiral-arm brightness hint.
+// Patchy domain-warped nebula: glow regions with filaments and dark dust,
+// most of the sky stays near-black.
+vec3 nebulaCol(vec2 screenPx, float t, out float mass) {
+    vec2 p = (screenPx + u_camera * 0.30) * 0.0011;
+
+    // Region mask: where the nebula lives at all.
+    float region = fbm(p * 0.32 + vec2(3.1, 7.7));
+    mass = pow(smoothstep(0.42, 0.82, region), 1.6);
+    if (mass < 0.003) return vec3(0.0);
+
+    vec2 q = vec2(fbm(p), fbm(p + vec2(5.2, 1.3)));
+    vec2 r = vec2(fbm(p + 4.0 * q + vec2(1.7, 9.2) + t * 0.010),
+                  fbm(p + 4.0 * q + vec2(8.3, 2.8) - t * 0.007));
+    float f = fbm(p + 3.4 * r);
+
+    float body = pow(max(f, 0.0), 2.0);
+    vec3 col = mix(NEB_BLUE, NEB_VIOLET, smoothstep(0.30, 0.72, f)) * body;
+
+    // Bright strands.
+    float fil = ridge(p * 2.4 + 3.0 * r);
+    col += NEB_MAGENTA * pow(fil, 2.6) * body * 1.7;
+
+    // Dark dust lanes carve the glow.
+    float dust = pow(ridge(p * 3.4 + 1.8 * q), 2.4);
+    col *= 1.0 - dust * DUST_GAIN;
+
+    // Unresolved star-cloud grain inside the bright mass (astrophoto texture).
+    vec2 gcell = floor((screenPx + u_camera * 0.30) * 0.55);
+    float grain = pow(hash(gcell), 10.0);
+    col += vec3(0.9, 0.85, 0.95) * grain * body * 0.35;
+
+    return col * mass * NEBULA_GAIN;
+}
+
 vec3 galaxyLayer(vec2 screenPx) {
     vec2 canvas = screenPx + u_camera * 0.10;
-    float cellPx = 3200.0;
+    float cellPx = 2800.0;
     vec2 id = floor(canvas / cellPx);
     vec3 col = vec3(0.0);
     for (int y = -1; y <= 1; y++) {
         for (int x = -1; x <= 1; x++) {
             vec2 cell = id + vec2(float(x), float(y));
             float h = hash(cell + 101.0);
-            if (h > 0.94) {
+            if (h > 0.93) {
                 vec2 jitter = hash2(cell + 113.0);
                 vec2 gpos = (cell + 0.2 + jitter * 0.6) * cellPx;
                 vec2 p = canvas - gpos;
@@ -170,13 +168,13 @@ vec3 galaxyLayer(vec2 screenPx) {
                 float ca = cos(ang), sa = sin(ang);
                 p = mat2(ca, -sa, sa, ca) * p;
                 p.y *= 2.2 + hash(cell + 149.0) * 1.6;
-                float r2 = dot(p, p) / (cellPx * cellPx * 0.030);
+                float r2 = dot(p, p) / (cellPx * cellPx * 0.028);
                 if (r2 < 4.0) {
                     float theta = atan(p.y, p.x);
-                    float arms = 0.72 + 0.28 * cos(2.0 * theta - 3.2 * log(r2 + 0.05));
-                    float halo = exp(-r2 * 7.0) * 0.14 * arms;
-                    float core = exp(-r2 * 55.0) * 0.40;
-                    vec3 gcol = mix(vec3(0.72, 0.70, 0.90), vec3(0.92, 0.84, 0.70),
+                    float arms = 0.70 + 0.30 * cos(2.0 * theta - 3.2 * log(r2 + 0.05));
+                    float halo = exp(-r2 * 6.0) * 0.20 * arms;
+                    float core = exp(-r2 * 50.0) * 0.55;
+                    vec3 gcol = mix(vec3(0.74, 0.72, 0.92), vec3(0.94, 0.86, 0.72),
                                     hash(cell + 163.0));
                     col += gcol * (halo + core);
                 }
@@ -186,8 +184,6 @@ vec3 galaxyLayer(vec2 screenPx) {
     return col;
 }
 
-// Rare supernova: sharp flare, expanding shell, slow fade. Usually zero or
-// one on screen: catching one stays an event.
 vec3 novaLayer(vec2 screenPx) {
     vec2 canvas = screenPx + u_camera * 0.5;
     float cellPx = 1700.0;
@@ -202,14 +198,15 @@ vec3 novaLayer(vec2 screenPx) {
                 if (t < 9.0) {
                     vec2 jitter = hash2(cell + 227.0);
                     vec2 npos = (cell + 0.2 + jitter * 0.6) * cellPx;
-                    float d = length(canvas - npos) / cellPx;
+                    float dpx = length(canvas - npos);
                     float env = smoothstep(0.0, 0.35, t) * (1.0 - smoothstep(0.9, 9.0, t));
-                    float flash = smoothstep(0.10, 0.0, d) * env;
-                    float ringR = 0.02 + t * 0.045;
-                    float ring = smoothstep(0.03, 0.0, abs(d - ringR)) * env * 0.35;
+                    float flash = exp(-(dpx * dpx) / (2.0 * 9.0)) * env * 2.0
+                                + exp(-dpx / 60.0) * env * 0.25;
+                    float ringR = 20.0 + t * 55.0;
+                    float ring = exp(-abs(dpx - ringR) / 6.0) * env * 0.30;
                     vec3 ncol = mix(vec3(1.0, 0.93, 0.82), vec3(0.55, 0.70, 1.0),
                                     smoothstep(0.0, 9.0, t));
-                    col += ncol * (flash * 1.6 + ring);
+                    col += ncol * (flash + ring);
                 }
             }
         }
@@ -221,27 +218,21 @@ void main() {
     vec2 screenPx = v_coords * size;
     float t = u_time;
 
-    // Space is nearly black; the nebula provides all the character.
-    vec3 col = vec3(0.006, 0.007, 0.014);
+    vec3 col = vec3(0.005, 0.006, 0.012);
 
-    // Two nebula strata: a distant cold veil and the main violet body.
-    col += nebula(screenPx, 0.16, 0.00019, NEBULA_GAIN * 0.45, t * 0.6);
-    col += nebula(screenPx, 0.32, 0.00042, NEBULA_GAIN, t);
+    float mass;
+    col += nebulaCol(screenPx, t, mass);
 
-    // Galaxies behind the stars.
     col += galaxyLayer(screenPx);
 
-    // Starfield, far to near: dense faint dust first, rare bright suns last.
-    col += starLayer(screenPx,  55.0, 0.15, 0.35 * STAR_GAIN, false);
-    col += starLayer(screenPx, 105.0, 0.35, 0.60 * STAR_GAIN, false);
-    col += starLayer(screenPx, 170.0, 0.65, 0.85 * STAR_GAIN, false);
-    col += starLayer(screenPx, 640.0, 1.00, 1.60 * STAR_GAIN, true);
+    // Starfield far to near: dense faint dust of stars, then brighter suns.
+    col += starLayer(screenPx,  34.0, 0.12, 0.42, false);
+    col += starLayer(screenPx,  70.0, 0.35, 0.62, false);
+    col += starLayer(screenPx, 180.0, 0.65, 0.85, false);
+    col += starLayer(screenPx, 750.0, 1.00, 1.30, true);
 
-    // The occasional supernova.
     col += novaLayer(screenPx);
 
-    // Filmic-ish exposure roll-off, then a static micro-dither so the dark
-    // gradients never band.
     col = 1.0 - exp(-col * EXPOSURE);
     col += (hash(screenPx * 0.731) - 0.5) * 0.006;
 

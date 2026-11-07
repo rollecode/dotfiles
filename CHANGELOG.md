@@ -1,6 +1,7 @@
 ### 2.77.1: 2026-11-07
 
 * Turn off driftwm window restore placeholders
+* Sync driftwm and herdr configs from live
 
 ### 2.77.0: 2026-10-31
 
