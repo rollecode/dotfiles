@@ -3,6 +3,7 @@
 * Turn off driftwm window restore placeholders
 * Sync driftwm and herdr configs from live
 * Host README image in the repo
+* Fix thin hyprlock clock after hyprgraphics 0.6.0
 
 ### 2.77.0: 2026-10-31
 
