@@ -2,6 +2,7 @@
 
 * Turn off driftwm window restore placeholders
 * Sync driftwm and herdr configs from live
+* Host README image in the repo
 
 ### 2.77.0: 2026-10-31
 
