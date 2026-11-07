@@ -266,6 +266,11 @@ decoration = "minimal"
 app_id = "halloy"
 decoration = "minimal"
 
+# Lobby (own IRC client): no title bar, its own header is enough
+[[window_rules]]
+app_id = "lobby"
+decoration = "minimal"
+
 # Beeper: pinned to the screen like Halloy, geometry from the live window 25.10.2026.
 [[window_rules]]
 app_id = "Beeper"
