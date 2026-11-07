@@ -164,9 +164,11 @@ void main() {
     hueF = clamp(hueF * 0.55 + region * 0.60 - 0.05, 0.0, 1.0);
     // Broad dark lanes from the far plane, so the mid fog stops reading as
     // one even texture when zoomed out.
-    float lanes = 0.55 + 0.70 * smoothstep(0.30, 0.72, f1);
+    float lanes = 0.75 + 0.50 * smoothstep(0.30, 0.72, f1);
     col += palette(hueF) * pow(max(f2, 0.0), 2.3) * 0.95 * (0.55 + 0.60 * region) * lanes;
-    col += vec3(0.22, 0.26, 0.48) * pow(max(f1, 0.0), 2.8) * 0.30;
+    col += vec3(0.22, 0.26, 0.48) * pow(max(f1, 0.0), 2.2) * 0.38;
+    // Faint ambient haze, so thin fog reads as deep space, not a black hole.
+    col += palette(hueF) * 0.06 * (0.6 + 0.4 * region);
 
     // Radiant cores: luminous nebula hearts in white-pink, blue-white,
     // violet-white and rare teal. The bright areas of the realm.
