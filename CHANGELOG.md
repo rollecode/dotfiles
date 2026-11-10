@@ -1,3 +1,7 @@
+### 2.79.0: 2026-11-10
+
+* Add closing hour and overtime note to prompts
+
 ### 2.78.0: 2026-11-07
 
 * Turn off driftwm window restore placeholders
