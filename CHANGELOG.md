@@ -1,6 +1,8 @@
 ### 2.79.0: 2026-11-10
 
 * Add closing hour and overtime note to prompts
+* Switch WezTerm to nightly build
+* Add Hammerspoon hotkey for new WezTerm window
 
 ### 2.78.0: 2026-11-07
 
