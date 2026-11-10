@@ -23,7 +23,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/rollecode/dotfiles/master/in
 ## Requirements
 
 - [Neovim](https://neovim.io/) - 0.10+ required
-- [WezTerm](https://wezfurlong.org/wezterm/) - Terminal emulator
+- [WezTerm](https://wezfurlong.org/wezterm/) - Terminal emulator, nightly build on macOS (`brew install --cask wezterm@nightly`)
 - [Liga SFMono Nerd Font](https://github.com/shaunsingh/SFMono-Nerd-Font-Ligaturized) - Ligaturized SF Mono with Nerd Font icons
 - [Monaspace](https://monaspace.githubnext.com/) - Monaspace Krypton NF font
 - [Claude Code](https://claude.ai/download) - AI-assisted coding with Code::Stats integration
