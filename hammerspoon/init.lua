@@ -202,6 +202,15 @@ cancelHandler = hs.eventtap.new(
 state.windowCanvas = createCanvas()
 clickHandler:start()
 
+-- Cmd+Option+Return: new WezTerm window from the running instance, no cold start
+local weztermId = "com.github.wez.wezterm"
+hs.hotkey.bind({ "cmd", "alt" }, "return", function()
+  if hs.application.get(weztermId) then
+    hs.task.new("/opt/homebrew/bin/wezterm", nil, { "cli", "spawn", "--new-window" }):start()
+  end
+  hs.application.launchOrFocusByBundleID(weztermId)
+end)
+
 -- Show notification
 hs.notify.new({
   title = "Hammerspoon",
