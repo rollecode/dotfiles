@@ -1,3 +1,7 @@
+### 2.79.1: 2026-11-13
+
+* Start Element hidden in the tray
+
 ### 2.79.0: 2026-11-10
 
 * Add closing hour and overtime note to prompts

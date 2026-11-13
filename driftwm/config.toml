@@ -19,12 +19,12 @@ autostart = [
   "gnome-keyring-daemon --start --components=secrets,pkcs11",
   "swaybg -i /home/rolle/Pictures/Wallpapers/quantum-stars-bg.png -m fill",
   "sleep 15; exec /home/rolle/Projects/dotfiles/driftwm/wallpapers/lockbg-refresh.sh",
-  # Signal and Discord start hidden in the tray. Staggered so the login isn't
+  # Signal, Discord and Element start hidden in the tray. Staggered so the login isn't
   # a thundering herd; the last step parks the camera back home.
   "sleep 9; exec signal-desktop --start-in-tray",
   "sleep 13; exec /home/rolle/Projects/dotfiles/driftwm/discord-launch.sh --start-minimized",
   # The wrapper, not /opt directly: it sets the LD_PRELOAD sqlcipher needs.
-  "sleep 14; exec /usr/bin/element-desktop-nightly",
+  "sleep 14; exec /usr/bin/element-desktop-nightly --hidden",
   "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
 ]
 
