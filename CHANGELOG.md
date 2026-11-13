@@ -1,3 +1,7 @@
+### 2.79.2: 2026-11-14
+
+* Fix fastfetch taking the GPU at login
+
 ### 2.79.1: 2026-11-13
 
 * Start Element hidden in the tray

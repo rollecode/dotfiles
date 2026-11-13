@@ -22,6 +22,10 @@ set -uo pipefail
 # /usr/local/bin on Intel, so a hardcoded /usr/bin path makes the whole script a
 # silent no-op on macOS (it exits 0 when the binary is not executable).
 FF=$(command -v fastfetch 2>/dev/null || printf '%s' /usr/bin/fastfetch)
+
+# With no display server fastfetch opens /dev/dri/card1 to read the monitors and
+# becomes DRM master; shells started at login then beat driftwm to the GPU.
+[ "$(uname)" = Linux ] && [ -z "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && set -- --ds-force-drm sysfs-only "$@"
 CFG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/fastfetch"
 FULL="$CFG_DIR/full.jsonc"
 COMPACT_TPL="$CFG_DIR/compact.template.jsonc"
