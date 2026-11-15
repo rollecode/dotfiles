@@ -95,3 +95,23 @@ claudeqwen() {
   ANTHROPIC_DEFAULT_HAIKU_MODEL="${QWEN_SMALL:-qwen3.6-flash}" \
   claude "$@"
 }
+
+# Claude with Remote Control in a named tmux session, attached if it already
+# exists. One tap from Termius on a phone. ct <name> [claude flags], e.g. ct dough -c
+ct() {
+  local name="${1:-$(basename "$PWD")}"
+  shift 2>/dev/null
+  local bin args
+  bin="$(command -v claude)" || { echo "claude not found" >&2; return 1; }
+  [ $# -gt 0 ] && args="$(printf ' %q' "$@")"
+
+  if ! tmux has-session -t "=$name" 2>/dev/null; then
+    tmux new-session -d -s "$name" -c "$PWD" "$bin --remote-control $(printf %q "$name")$args; exec \$SHELL"
+  fi
+
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t "=$name"
+  else
+    tmux attach -t "=$name"
+  fi
+}
