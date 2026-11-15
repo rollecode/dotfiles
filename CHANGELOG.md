@@ -1,6 +1,7 @@
 ### 2.80.0: 2026-11-15
 
 * Add `ct` tmux launcher for Claude
+* Restore tmux sessions and Claude conversations at login
 
 ### 2.79.2: 2026-11-14
 
