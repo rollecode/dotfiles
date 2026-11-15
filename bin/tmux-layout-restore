@@ -2,17 +2,22 @@
 """Recreate the tmux sessions recorded by tmux-layout-save and put each one's
 foot window back where it was on the canvas.
 
-Sessions are recreated with their old working directory; the program that was
-running (claude, ssh) is not relaunched, since resuming those is a decision
-rather than a replay. Existing sessions are never touched.
+Sessions are recreated with their old working directory, and claude or ssh is
+started again in them. claude resumes the conversation the tmux-session-id.sh
+hook last saw in that session. Existing sessions are never touched.
 """
 import json
 import os
+import shlex
 import subprocess
 import sys
 import time
 
 STATE = os.path.expanduser("~/.local/state/tmux-restore/layout.json")
+CLAUDE_IDS = os.path.expanduser("~/.local/state/tmux-restore/claude")
+RELAUNCH = {"claude", "ssh"}
+RESUME_FLAGS = {"-r", "--resume"}
+CONTINUE_FLAGS = {"-c", "--continue"}
 
 
 def env_with_wayland():
@@ -63,6 +68,41 @@ def window_id_for(session):
     return None
 
 
+def claude_argv(session, argv):
+    """Saved claude flags with --resume pointed at the session's conversation."""
+    try:
+        sid = open(os.path.join(CLAUDE_IDS, session)).read().strip()
+    except OSError:
+        sid = ""
+    if not sid:
+        return argv
+
+    out, skip = [], False
+    for i, arg in enumerate(argv):
+        if skip:
+            skip = False
+            continue
+        if arg in CONTINUE_FLAGS:
+            continue
+        if arg in RESUME_FLAGS:
+            nxt = argv[i + 1] if i + 1 < len(argv) else "-"
+            skip = not nxt.startswith("-")
+            continue
+        out.append(arg)
+    return out + ["--resume", sid]
+
+
+def launch_command(entry):
+    """The command to type into a recreated session, or None for a bare shell."""
+    cmd = entry.get("cmd")
+    if cmd not in RELAUNCH:
+        return None
+    argv = entry.get("argv") or [cmd]
+    if cmd == "claude":
+        argv = claude_argv(entry["session"], argv)
+    return shlex.join(argv)
+
+
 def main():
     if not os.path.exists(STATE):
         print("tmux-layout-restore: nothing saved at %s" % STATE, file=sys.stderr)
@@ -72,39 +112,26 @@ def main():
 
     placed = payload.get("windows", [])
 
-    # Sessions that had no window get one anyway, laid out in a row continuing
-    # to the right of the rightmost restored window, sharing its baseline.
-    GAP = 42
-    cursor_x, row_y, fallback = None, None, [1000, 900]
-    if placed:
-        rightmost = max(placed, key=lambda w: (w.get("position") or [0, 0])[0]
-                        + (w.get("size") or fallback)[0])
-        rp = rightmost.get("position") or [0, 0]
-        rs = rightmost.get("size") or fallback
-        cursor_x, row_y = rp[0] + rs[0] + GAP, rp[1]
-        fallback = rs
+    # Every session comes back; only the ones that had a window get one again.
+    for entry in placed + payload.get("detached", []):
+        name = entry["session"]
+        if name in have:
+            continue
+        subprocess.run(["tmux", "new-session", "-d", "-s", name, "-c", entry["cwd"]])
+        # Typed into the interactive shell so it gets the full login env.
+        command = launch_command(entry)
+        if command:
+            subprocess.run(["tmux", "send-keys", "-t", "=" + name, command, "Enter"])
+        print("  %s recreated%s" % (name, ": " + command if command else ""))
 
-    queue = list(placed)
-    for entry in payload.get("detached", []):
-        e = dict(entry)
-        e["size"] = fallback
-        if cursor_x is not None:
-            e["position"] = [cursor_x, row_y]
-            cursor_x += fallback[0] + GAP
-        else:
-            e["position"] = None
-        queue.append(e)
-
-    for entry in queue:
-        name, cwd = entry["session"], entry["cwd"]
+    for entry in placed:
+        name = entry["session"]
         pos, size = entry.get("position"), entry.get("size")
         # Idempotent: a session already on screen keeps the window it has, so
         # running this twice (or after a compositor-only restart) adds nothing.
         if window_id_for(name) is not None:
             print("  %s already has a window, skipping" % name)
             continue
-        if name not in have:
-            subprocess.run(["tmux", "new-session", "-d", "-s", name, "-c", cwd])
 
         cmd = ["foot"]
         if size and len(size) == 2:

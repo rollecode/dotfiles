@@ -80,6 +80,15 @@
             "command": "~/.claude/hooks/task-list-reminder.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-session-id.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Notification": [

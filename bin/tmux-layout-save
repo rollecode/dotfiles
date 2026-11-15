@@ -21,14 +21,27 @@ def sh(*cmd):
         return ""
 
 
+def foreground_argv(pane_pid):
+    """The command line of the program the pane's shell is running, if any."""
+    child = sh("pgrep", "-P", pane_pid).split()
+    if not child:
+        return []
+    try:
+        raw = open("/proc/%s/cmdline" % child[0], "rb").read()
+    except OSError:
+        return []
+    return [a.decode(errors="replace") for a in raw.split(b"\0") if a]
+
+
 def tmux_sessions():
     out = sh("tmux", "list-panes", "-a", "-F",
-             "#{session_name}\t#{pane_current_path}\t#{pane_current_command}")
+             "#{session_name}\t#{pane_current_path}\t#{pane_current_command}\t#{pane_pid}")
     sessions = {}
     for line in out.strip().splitlines():
         parts = line.split("\t")
-        if len(parts) == 3 and parts[0] not in sessions:
-            sessions[parts[0]] = {"cwd": parts[1], "cmd": parts[2]}
+        if len(parts) == 4 and parts[0] not in sessions:
+            sessions[parts[0]] = {"cwd": parts[1], "cmd": parts[2],
+                                  "argv": foreground_argv(parts[3])}
     return sessions
 
 
@@ -82,7 +95,8 @@ def main():
 
     payload = {"windows": [], "detached": []}
     for name, info in sorted(sessions.items()):
-        entry = {"session": name, "cwd": info["cwd"], "cmd": info["cmd"]}
+        entry = {"session": name, "cwd": info["cwd"], "cmd": info["cmd"],
+                 "argv": info["argv"]}
         if name in placed:
             entry.update(placed[name])
             payload["windows"].append(entry)
