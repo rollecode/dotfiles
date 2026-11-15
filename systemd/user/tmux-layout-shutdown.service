@@ -1,0 +1,16 @@
+[Unit]
+Description=Save the tmux layout when the session ends
+# Best effort: at teardown driftwm may already be gone, in which case the save
+# refuses to clobber and the 5-minute timer's snapshot is what gets restored.
+Before=shutdown.target
+DefaultDependencies=no
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=%h/.local/bin/tmux-layout-save
+
+[Install]
+WantedBy=default.target

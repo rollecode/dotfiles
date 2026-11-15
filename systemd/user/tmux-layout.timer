@@ -1,0 +1,10 @@
+[Unit]
+Description=Keep the tmux layout snapshot fresh
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

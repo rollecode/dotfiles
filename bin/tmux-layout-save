@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+"""Record every tmux session and, where one is on screen, the canvas geometry of
+the foot window showing it. foot inherits tmux's title ("<session> · <cmd>"),
+which is the only link between a tmux session and its window.
+
+Written on shutdown by tmux-layout.service; replayed by tmux-layout-restore.
+"""
+import json
+import os
+import subprocess
+import sys
+
+STATE = os.path.expanduser("~/.local/state/tmux-restore/layout.json")
+
+
+def sh(*cmd):
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        return r.stdout if r.returncode == 0 else ""
+    except Exception:
+        return ""
+
+
+def tmux_sessions():
+    out = sh("tmux", "list-panes", "-a", "-F",
+             "#{session_name}\t#{pane_current_path}\t#{pane_current_command}")
+    sessions = {}
+    for line in out.strip().splitlines():
+        parts = line.split("\t")
+        if len(parts) == 3 and parts[0] not in sessions:
+            sessions[parts[0]] = {"cwd": parts[1], "cmd": parts[2]}
+    return sessions
+
+
+def driftwm_windows():
+    env = dict(os.environ)
+    env.setdefault("XDG_RUNTIME_DIR", "/run/user/%d" % os.getuid())
+    if "WAYLAND_DISPLAY" not in env:
+        rt = env["XDG_RUNTIME_DIR"]
+        socks = [f for f in os.listdir(rt) if f.startswith("wayland-") and not f.endswith(".lock")]
+        if not socks:
+            return []
+        env["WAYLAND_DISPLAY"] = sorted(socks)[0]
+    try:
+        r = subprocess.run(["driftwm", "msg", "state", "--json"],
+                           capture_output=True, text=True, timeout=10, env=env)
+        data = json.loads(r.stdout)
+    except Exception:
+        return []
+    found = []
+
+    def walk(o):
+        if isinstance(o, dict):
+            if "app_id" in o and "position" in o:
+                found.append(o)
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(data)
+    return found
+
+
+def main():
+    sessions = tmux_sessions()
+    if not sessions:
+        print("tmux-layout-save: no tmux sessions, nothing to record", file=sys.stderr)
+        return 0
+
+    placed = {}
+    for w in driftwm_windows():
+        if w.get("app_id") != "foot":
+            continue
+        title = w.get("title") or ""
+        if " · " not in title:
+            continue
+        name = title.split(" · ")[0].strip()
+        if name in sessions and name not in placed:
+            placed[name] = {"position": w.get("position"), "size": w.get("size")}
+
+    payload = {"windows": [], "detached": []}
+    for name, info in sorted(sessions.items()):
+        entry = {"session": name, "cwd": info["cwd"], "cmd": info["cmd"]}
+        if name in placed:
+            entry.update(placed[name])
+            payload["windows"].append(entry)
+        else:
+            payload["detached"].append(entry)
+
+    # Never trade a snapshot that has geometry for one that has none. A save
+    # racing compositor teardown sees no windows at all, and silently writing
+    # that would destroy the only copy of the layout it exists to preserve.
+    if not payload["windows"] and os.path.exists(STATE):
+        try:
+            prev = json.load(open(STATE))
+        except Exception:
+            prev = {}
+        if prev.get("windows"):
+            print("tmux-layout-save: no windows visible, keeping the previous "
+                  "snapshot (%d placed)" % len(prev["windows"]), file=sys.stderr)
+            return 0
+
+    os.makedirs(os.path.dirname(STATE), exist_ok=True)
+    tmp = STATE + ".tmp"
+    with open(tmp, "w") as fh:
+        json.dump(payload, fh, indent=2)
+    os.replace(tmp, STATE)
+    print("tmux-layout-save: %d placed, %d detached -> %s"
+          % (len(payload["windows"]), len(payload["detached"]), STATE))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

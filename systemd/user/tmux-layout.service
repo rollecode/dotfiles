@@ -1,0 +1,6 @@
+[Unit]
+Description=Snapshot tmux sessions and their driftwm canvas positions
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/tmux-layout-save
