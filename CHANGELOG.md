@@ -1,3 +1,7 @@
+### 2.80.1: 2026-11-15
+
+* Bind Coucou chat to Ctrl+Shift+Space
+
 ### 2.80.0: 2026-11-15
 
 * Add `ct` tmux launcher for Claude

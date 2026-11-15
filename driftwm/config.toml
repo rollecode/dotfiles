@@ -115,7 +115,7 @@ animate_paused = false
 
 [keybindings]
 # Coucou: no GlobalShortcuts portal on driftwm, so its shortcuts are bound here
-"alt+shift+space" = "spawn /usr/bin/coucou --shortcut openChat"
+"ctrl+shift+space" = "spawn /usr/bin/coucou --shortcut openChat"
 "alt+shift+n" = "spawn /usr/bin/coucou --shortcut toggleIsland"
 "ctrl+alt+a" = "spawn /usr/bin/coucou --shortcut goToAlert"
 "ctrl+alt+t" = "spawn /usr/bin/coucou --shortcut jumpToTerminal"
