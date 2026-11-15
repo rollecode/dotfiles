@@ -121,7 +121,7 @@ def main():
         # Typed into the interactive shell so it gets the full login env.
         command = launch_command(entry)
         if command:
-            subprocess.run(["tmux", "send-keys", "-t", "=" + name, command, "Enter"])
+            subprocess.run(["tmux", "send-keys", "-t", "=%s:" % name, command, "Enter"])
         print("  %s recreated%s" % (name, ": " + command if command else ""))
 
     for entry in placed:
