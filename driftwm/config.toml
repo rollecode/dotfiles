@@ -26,7 +26,7 @@ autostart = [
   # The wrapper, not /opt directly: it sets the LD_PRELOAD sqlcipher needs.
   "sleep 14; exec /usr/bin/element-desktop-nightly --hidden",
   "sleep 20; driftwm msg camera 0 0; driftwm msg zoom 1.0",
-  # tmux sessions with claude resumed, windows back where they were.
+  # tmux sessions with claude resumed, detached: no windows, no empty sessions.
   "sleep 22; systemctl --user restart --no-block tmux-layout-restore.service",
 ]
 

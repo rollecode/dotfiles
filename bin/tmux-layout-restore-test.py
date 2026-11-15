@@ -14,7 +14,7 @@ assert lc("lobby", "claude", ["claude", "--resume", "irc-client"]) == "claude --
 assert lc("lobby", "claude", ["/x/claude", "--remote-control", "lobby", "-c"]) == "/x/claude --remote-control lobby --resume abc-123"
 assert lc("lobby", "claude", ["claude", "-r", "--model", "opus"]) == "claude --model opus --resume abc-123"
 assert lc("lobby", "claude", []) == "claude --resume abc-123"
-assert lc("nobody", "claude", ["claude", "--resume", "x"]) == "claude --resume x"
+assert lc("nobody", "claude", ["claude", "--resume", "x"]) is None
 assert lc("srv", "ssh", ["ssh", "-p", "2222", "example.com"]) == "ssh -p 2222 example.com"
 assert lc("m", "sudo", ["sudo", "su", "mastodon"]) is None
 assert lc("m", "bash", []) is None

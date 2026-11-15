@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Recreate the tmux sessions recorded by tmux-layout-save and put each one's
-foot window back where it was on the canvas.
+"""Recreate the tmux sessions recorded by tmux-layout-save, detached, with
+claude or ssh running in them. With --windows, also put each one's foot window
+back where it was on the canvas.
 
-Sessions are recreated with their old working directory, and claude or ssh is
-started again in them. claude resumes the conversation the tmux-session-id.sh
-hook last saw in that session. Existing sessions are never touched.
+claude resumes the conversation the tmux-session-id.sh hook last saw in that
+session. A session with nothing to resume is left out rather than recreated
+empty. Existing sessions are never touched.
 """
 import json
 import os
@@ -18,6 +19,7 @@ CLAUDE_IDS = os.path.expanduser("~/.local/state/tmux-restore/claude")
 RELAUNCH = {"claude", "ssh"}
 RESUME_FLAGS = {"-r", "--resume"}
 CONTINUE_FLAGS = {"-c", "--continue"}
+WINDOWS_FLAG = "--windows"
 
 
 def env_with_wayland():
@@ -69,13 +71,14 @@ def window_id_for(session):
 
 
 def claude_argv(session, argv):
-    """Saved claude flags with --resume pointed at the session's conversation."""
+    """Saved claude flags with --resume pointed at the session's conversation,
+    or None when no conversation is known (it would only open the picker)."""
     try:
         sid = open(os.path.join(CLAUDE_IDS, session)).read().strip()
     except OSError:
         sid = ""
     if not sid:
-        return argv
+        return None
 
     out, skip = [], False
     for i, arg in enumerate(argv):
@@ -93,14 +96,14 @@ def claude_argv(session, argv):
 
 
 def launch_command(entry):
-    """The command to type into a recreated session, or None for a bare shell."""
+    """The command to run in a recreated session, or None to leave it out."""
     cmd = entry.get("cmd")
     if cmd not in RELAUNCH:
         return None
     argv = entry.get("argv") or [cmd]
     if cmd == "claude":
         argv = claude_argv(entry["session"], argv)
-    return shlex.join(argv)
+    return shlex.join(argv) if argv else None
 
 
 def main():
@@ -112,20 +115,26 @@ def main():
 
     placed = payload.get("windows", [])
 
-    # Every session comes back; only the ones that had a window get one again.
+    # Only sessions with something to run come back, never as empty shells.
     for entry in placed + payload.get("detached", []):
         name = entry["session"]
-        if name in have:
+        command = launch_command(entry)
+        if name in have or not command:
             continue
         subprocess.run(["tmux", "new-session", "-d", "-s", name, "-c", entry["cwd"]])
         # Typed into the interactive shell so it gets the full login env.
-        command = launch_command(entry)
-        if command:
-            subprocess.run(["tmux", "send-keys", "-t", "=%s:" % name, command, "Enter"])
-        print("  %s recreated%s" % (name, ": " + command if command else ""))
+        subprocess.run(["tmux", "send-keys", "-t", "=%s:" % name, command, "Enter"])
+        print("  %s recreated: %s" % (name, command))
 
+    # Windows only on request: the login restore opens none.
+    if WINDOWS_FLAG not in sys.argv[1:]:
+        return 0
+
+    have = existing_sessions()
     for entry in placed:
         name = entry["session"]
+        if name not in have:
+            continue
         pos, size = entry.get("position"), entry.get("size")
         # Idempotent: a session already on screen keeps the window it has, so
         # running this twice (or after a compositor-only restart) adds nothing.

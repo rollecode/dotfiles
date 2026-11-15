@@ -1,8 +1,8 @@
 [Unit]
-Description=Bring back tmux sessions, their programs and windows
+Description=Bring back tmux sessions with their programs running
 
-# Started by driftwm autostart. The tmux server and foot windows it spawns live
-# in this unit, so stopping or restarting it must leave them running.
+# Started by driftwm autostart. The tmux server it starts lives in this unit,
+# so stopping or restarting the unit must leave the server running.
 [Service]
 Type=oneshot
 RemainAfterExit=yes
