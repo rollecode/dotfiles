@@ -3,6 +3,8 @@ Description=Save the tmux layout when the session ends
 # Best effort: at teardown driftwm may already be gone, in which case the save
 # refuses to clobber and the 5-minute timer's snapshot is what gets restored.
 Before=shutdown.target
+# Stops before these, so the last save still sees tmux and the windows.
+After=driftwm.service dms-driftwm.service tmux-layout-restore.service
 DefaultDependencies=no
 Conflicts=shutdown.target
 

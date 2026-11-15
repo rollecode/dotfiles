@@ -517,6 +517,12 @@ setup_systemd_user_services() {
     print_info "Setting up systemd user services..."
     mkdir -p "$target_dir"
 
+    # The tmux-layout units run these from ~/.local/bin
+    mkdir -p "$HOME/.local/bin"
+    for f in tmux-layout-save tmux-layout-restore; do
+        ln -sfn "$dotfiles_dir/bin/$f" "$HOME/.local/bin/$f"
+    done
+
     local need_reload=0
     for unit in "$src_dir"/*.service "$src_dir"/*.path "$src_dir"/*.timer; do
         [ -f "$unit" ] || continue

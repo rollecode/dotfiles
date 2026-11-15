@@ -1,0 +1,11 @@
+[Unit]
+Description=Bring back tmux sessions, their programs and windows
+
+# Started by driftwm autostart. The tmux server and foot windows it spawns live
+# in this unit, so stopping or restarting it must leave them running.
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+KillMode=process
+TimeoutStartSec=5min
+ExecStart=%h/.local/bin/tmux-layout-restore
