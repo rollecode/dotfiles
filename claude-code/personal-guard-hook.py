@@ -25,7 +25,15 @@ def personal_term(text):
     return None
 
   for term in terms:
-    if re.search(rf"\b{re.escape(term)}\b", text, re.I):
+    # A "re:" line is a case-sensitive regex, for words that are also ordinary ones (git stash).
+    try:
+      if term.startswith("re:"):
+        found = re.search(term[3:], text)
+      else:
+        found = re.search(rf"(?<!\w){re.escape(term)}(?!\w)", text, re.I)
+    except re.error:
+      continue
+    if found:
       return term
   return None
 
@@ -33,7 +41,7 @@ def personal_term(text):
 def main():
   payload = json.load(sys.stdin)
   tool = payload.get("tool_name", "")
-  text = json.dumps(payload.get("tool_input", {}), ensure_ascii=False)
+  text = re.sub(r"\\[nrt]", " ", json.dumps(payload.get("tool_input", {}), ensure_ascii=False))
   if not (WORK_SERVICE_WRITE.search(tool) or (tool == "Bash" and WORK_API_IN_BASH.search(text))):
     return
 
