@@ -119,6 +119,8 @@ Never defer, postpone or hand back work you can do now. No "flag it Monday", no 
 
 Never send personal data, customer data, or anything identifiable to an outside party without asking first. This covers every outbound path, not just email: web searches, API calls to services outside Dude, third-party MCP servers, pasting into external tools, and anything published to a URL.
 
+Rolle's personal servers, domains and side projects (NanoClaw, Son of Anton, his self-hosted services, his own sites and apps) never go anywhere Dude staff can read: Linear, Slack outside his own DM, Outline, Twenty, Timely, calendar events, Better Stack. Paraphrases count too. `personal-guard-hook.py` refuses writes that name anything in `~/Documents/Brain dump/personal-terms.txt`; rewrite the text rather than working around it.
+
 Never send these without explicit permission in the current conversation:
 
 - Personal data: names, email addresses, phone numbers, postal addresses, personal identity codes

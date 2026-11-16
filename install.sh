@@ -882,6 +882,9 @@ setup_claude_code() {
     ln -sfn "$dotfiles_dir/claude-code/date-context-hook.sh" "$claude_hooks_dir/date-context-hook.sh"
     print_success "Date context hook symlinked"
 
+    ln -sfn "$dotfiles_dir/claude-code/personal-guard-hook.py" "$claude_hooks_dir/personal-guard-hook.py"
+    print_success "Personal guard hook symlinked"
+
     ln -sfn "$dotfiles_dir/claude-code/append-changelog.sh" "$claude_hooks_dir/append-changelog.sh"
     print_success "Append-changelog hook symlinked"
 

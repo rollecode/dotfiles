@@ -30,6 +30,17 @@
             "statusMessage": "Tarkistetaan ääkköset"
           }
         ]
+      },
+      {
+        "matcher": "Bash|mcp__(linear|claude_ai_Slack|claude_ai_Outline|twenty|timely|claude_ai_Google_Calendar|betterstack)__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/personal-guard-hook.py",
+            "timeout": 10,
+            "statusMessage": "Checking for personal servers and projects"
+          }
+        ]
       }
     ],
     "PostToolUse": [

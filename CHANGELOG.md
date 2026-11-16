@@ -1,3 +1,7 @@
+### 2.81.0: 2026-11-16
+
+* Block personal projects in work tool writes
+
 ### 2.80.1: 2026-11-15
 
 * Bind Coucou chat to Ctrl+Shift+Space
