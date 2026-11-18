@@ -1,3 +1,7 @@
+### 2.82.0: 2026-11-18
+
+* Change task rules from Todoist to Unbury
+
 ### 2.81.0: 2026-11-16
 
 * Block personal projects in work tool writes
