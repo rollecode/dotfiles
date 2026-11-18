@@ -46,7 +46,7 @@ The user changed their GitHub username from `ronilaukkarinen` to `rollecode`. Th
 
 ## Tool preferences
 
-- Always prefer MCP tools over direct file operations. Use Linear MCP instead of searching local files. Use the Unbury MCP (`unbury`, Rolle's own task app at https://unbury.rolle.wtf) for tasks; Todoist is retired since 18.11.2026. Use Help Scout MCP for ticket data. Use GitHub MCP for commits/releases. MCP tools are faster and more reliable than raw file searches.
+- Always prefer MCP tools over direct file operations. Use Linear MCP instead of searching local files. Use the 0do MCP (`zerodo`, Rolle's own task app at https://0do.app) for tasks; Todoist is retired since 18.11.2026. Use Help Scout MCP for ticket data. Use GitHub MCP for commits/releases. MCP tools are faster and more reliable than raw file searches.
 - When running slash commands (/plan-today, /plan-week, /finish-day), use MCP tools exclusively for data gathering. Never fall back to grepping or reading files directly unless an MCP server is confirmed down.
 - For Obsidian vault content, always use the claude.ai Obsidian MCP (`mcp__claude_ai_Obsidian__*`), never Read, Grep or Edit on `~/Documents/Brain dump/`. The vault the MCP serves is the canonical one and Obsidian is not always running, so the local copy can be out of date
 
@@ -115,7 +115,7 @@ Do not ask me to write the code myself, and do not pause for me to fill in `TODO
 
 Never defer, postpone or hand back work you can do now. No "flag it Monday", no "worth deciding later", no offering a future date as an option. When you find a root cause, fix it completely in the same session - the structural fix, not only the symptom - then report. Scaling the work down is my call, not yours. You are an AI; the cost of finishing is yours, not mine. If something genuinely blocks you, say what blocks it and what would unblock it.
 
-Work that truly waits on something outside the session (a release, a reply, a date) is never a promise in chat. "When 3.0 ships, I'll port it" loses the task: nothing remembers it after the session ends. Put it in Unbury in the same turn (`quick_add` or `create_task`), with a date and the steps, and report its id and link (https://unbury.rolle.wtf/?task=<id>). No task leaves a session untracked.
+Work that truly waits on something outside the session (a release, a reply, a date) is never a promise in chat. "When 3.0 ships, I'll port it" loses the task: nothing remembers it after the session ends. Put it in 0do in the same turn (`quick_add` or `create_task`), with a date and the steps, and report its id and link (https://0do.app/?task=<id>). No task leaves a session untracked.
 
 ## Data disclosure
 
@@ -158,7 +158,7 @@ This holds even when the Gmail scope technically permits sending. Google offers 
 - Reply to a review finding with just "Fixed in <short-sha>." Nothing else. Never "Valid bug, fixed in", "Good catch" or "Thanks for", and do not restate the technicalities back - the reviewer already described the bug, repeating it is noise. Add a sentence only when something genuinely differs from what they proposed (a different fix, a disagreement, a caveat)
 - Always run `date +%H:%M` to check the actual time before mentioning it. Never guess or approximate times.
 - Always mention task name, not just ID (e.g. "DEV-232 Lisäosien päivittäjä scriptin kautta", not just "DEV-232")
-- Every write to a task system is reported back with its identifier and URL, in the message that reports the work. Creating, editing, reassigning, re-prioritising, rescheduling and closing all count, in Linear and Unbury alike. Never "created a ticket" or "moved it to tomorrow" without the id and link beside it - an unnamed write is one I cannot find, check or undo
+- Every write to a task system is reported back with its identifier and URL, in the message that reports the work. Creating, editing, reassigning, re-prioritising, rescheduling and closing all count, in Linear and 0do alike. Never "created a ticket" or "moved it to tomorrow" without the id and link beside it - an unnamed write is one I cannot find, check or undo
 - Always use proper ääkköset (ä, ö, å) in Finnish words. Never write "paivittaja" when it should be "päivittäjä".
-- NEVER blindly suggest tasks. Before suggesting what to work on, ALWAYS check the current status first: git log, Linear status, Unbury completion state. Tasks mentioned earlier in the conversation may already be done. Verify before recommending.
-- Do NOT trust Linear/Unbury urgency labels or due dates as sole source of truth - they are often missing or outdated. Derive real urgency from context: Slack messages, emails, Help Scout tickets, calendar events, who is waiting on what.
+- NEVER blindly suggest tasks. Before suggesting what to work on, ALWAYS check the current status first: git log, Linear status, 0do completion state. Tasks mentioned earlier in the conversation may already be done. Verify before recommending.
+- Do NOT trust Linear/0do urgency labels or due dates as sole source of truth - they are often missing or outdated. Derive real urgency from context: Slack messages, emails, Help Scout tickets, calendar events, who is waiting on what.
