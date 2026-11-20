@@ -35,7 +35,7 @@ if [ -f "$CLAUDE_JSON" ]; then
         | (.organizationRateLimitTier // "") as $rateTier
         | (.seatTier // "") as $seat
         | {"team_tier_1": "6.25x"} as $teamTierMultipliers
-        | (if $type == "claude_max" then "Max"
+        | (if $type == "claude_max" then "Ultra"
            elif $type == "claude_team" then "Team"
            elif $type == "claude_pro" then "Pro"
            elif $type != "" then $type

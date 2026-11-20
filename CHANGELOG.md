@@ -1,3 +1,9 @@
+### 2.83.0: 2026-11-20
+
+* Change the task app name to 0do
+* Add `claudepersonal` Claude profile
+* Show the personal plan as Ultra in the statusline
+
 ### 2.82.0: 2026-11-18
 
 * Change task rules from Todoist to Unbury
