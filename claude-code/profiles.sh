@@ -19,3 +19,8 @@
 cw() {
   CLAUDE_CONFIG_DIR="$HOME/.claude-work" claude "$@"
 }
+
+# Personal subscription.
+claudepersonal() {
+  CLAUDE_CONFIG_DIR="$HOME/.claude-personal" claude "$@"
+}
