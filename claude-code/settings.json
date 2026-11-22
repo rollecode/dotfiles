@@ -118,8 +118,8 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "verbose": false,
-  "viewMode": "focus",
+  "verbose": true,
+  "viewMode": "verbose",
   "bashEditDiffEnabled": false,
   "alwaysThinkingEnabled": true,
   "showThinkingSummaries": true,

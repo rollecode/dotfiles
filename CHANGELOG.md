@@ -5,6 +5,7 @@
 ### 2.83.1: 2026-11-22
 
 * Remove todoist-wrapper from the Hyprland layout restore
+* Turn on Claude Code verbose view and thinking
 
 ### 2.83.0: 2026-11-20
 
