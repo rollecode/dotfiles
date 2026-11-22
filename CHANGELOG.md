@@ -1,3 +1,7 @@
+### 2.83.1: 2026-11-22
+
+* Remove todoist-wrapper from the Hyprland layout restore
+
 ### 2.83.0: 2026-11-20
 
 * Change the task app name to 0do

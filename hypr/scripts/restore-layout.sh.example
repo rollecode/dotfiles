@@ -43,9 +43,6 @@ jq -c '.[]' "$SNAPSHOT_FILE" | while read -r window; do
                 hyprctl dispatch exec ghostty &
             fi
             ;;
-        "todoist-wrapper")
-            hyprctl dispatch exec todoist-wrapper &
-            ;;
         "Spotify")
             hyprctl dispatch exec spotify &
             ;;
