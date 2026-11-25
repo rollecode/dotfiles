@@ -6,9 +6,9 @@ Behaviour:
   - Reads the Edit/Write/NotebookEdit tool input JSON from stdin.
   - Computes the language ONLY from the file extension via a fixed
     extension → official Code::Stats language name table.
-  - Computes XP as the line count of the new content (Edit's new_string,
-    Write's content, NotebookEdit's new_source) — matching the existing
-    hook's pulse policy of "1 XP per line".
+  - Computes XP as the characters a person would have typed, the way the
+    editor plugins count keystrokes: 1 XP per character of Write content
+    and NotebookEdit source, and only the changed part of an Edit.
   - POSTs ONLY {coded_at, xps:[{language, xp}]} to codestats.net.
   - Drops the event silently if the extension isn't in the table. This
     guarantees no path, no project name, no content can ever leak —
@@ -165,24 +165,31 @@ def detect_language(file_path: str) -> str | None:
 
 
 def compute_xp(tool_name: str, tool_input: dict) -> int:
-    """1 XP per line of the new content the tool is writing. Matches the
-    existing hook's policy so accumulated XP doesn't reset visibly."""
+    """1 XP per character a person would have typed."""
     if tool_name == "Edit":
-        content = tool_input.get("new_string", "")
-    elif tool_name == "Write":
+        old = tool_input.get("old_string", "")
+        new = tool_input.get("new_string", "")
+        if not isinstance(old, str) or not isinstance(new, str) or old == new:
+            return 0
+        # Text shared at both ends was already there, so only the middle counts.
+        start = 0
+        while start < min(len(old), len(new)) and old[start] == new[start]:
+            start += 1
+        end = 0
+        while (end < min(len(old), len(new)) - start
+               and old[-1 - end] == new[-1 - end]):
+            end += 1
+        # A pure deletion is still a few keystrokes.
+        return max(len(new) - start - end, 1)
+    if tool_name == "Write":
         content = tool_input.get("content", "")
     elif tool_name == "NotebookEdit":
         content = tool_input.get("new_source", "")
     else:
         return 0
-    if not isinstance(content, str) or not content:
+    if not isinstance(content, str):
         return 0
-    # Match the upstream bash logic: `wc -l` counts newlines; one extra if
-    # the buffer doesn't terminate with a newline.
-    line_count = content.count("\n")
-    if not content.endswith("\n"):
-        line_count += 1
-    return max(line_count, 0)
+    return len(content)
 
 
 def post_pulse(api_key: str, language: str, xp: int) -> tuple[bool, int]:

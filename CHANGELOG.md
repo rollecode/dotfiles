@@ -1,3 +1,7 @@
+### 2.83.2: 2026-11-25
+
+* Count Code::Stats XP per typed character
+
 ### 2.83.1: 2026-11-22
 
 * Remove todoist-wrapper from the Hyprland layout restore
