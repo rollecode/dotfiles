@@ -719,6 +719,14 @@ for key, value in tpl.items():
         live[key] = value
         added.append(key)
 
+# Code::Stats hook: every profile shares ~/.claude/hooks, so cw and
+# claudepersonal count XP too.
+post = live.setdefault("hooks", {}).setdefault("PostToolUse", [])
+if "codestats-hook" not in json.dumps(post):
+    post.insert(0, {"matcher": "Edit|Write|NotebookEdit", "hooks": [
+        {"type": "command", "command": "~/.claude/hooks/codestats-hook.py", "async": True}]})
+    added.append("codestats hook")
+
 if not added:
     print("NOCHANGE")
     sys.exit(0)
@@ -990,6 +998,14 @@ setup_claude_code() {
 
     setup_remote_control "$settings_file"
     setup_claude_settings_merge "$settings_file"
+
+    # The cw and claudepersonal profiles (claude-code/profiles.sh)
+    local profile
+    for profile in "$HOME/.claude-work" "$HOME/.claude-personal"; do
+        mkdir -p "$profile"
+        [ -f "$profile/settings.json" ] || echo '{}' > "$profile/settings.json"
+        setup_claude_settings_merge "$profile/settings.json"
+    done
 
     # Install conversation-saver plugin if Claude Code is available
     if command_exists claude; then
